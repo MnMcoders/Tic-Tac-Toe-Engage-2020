@@ -15,4 +15,8 @@ export class LeftbarComponent implements OnInit {
   ngOnInit(): void {
   }
 
+
+  onClick(){
+    console.log("Button Clicked");
+  }
 }

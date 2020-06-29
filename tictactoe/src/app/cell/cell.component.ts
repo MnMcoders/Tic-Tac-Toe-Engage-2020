@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input} from '@angular/core';
 
 @Component({
   selector: 'app-cell',
@@ -7,6 +7,8 @@ import { Component, OnInit } from '@angular/core';
 })
 export class CellComponent implements OnInit {
 
+  @Input() public row : number;
+  @Input() public col : number; 
   constructor() { }
 
   ngOnInit(): void {
