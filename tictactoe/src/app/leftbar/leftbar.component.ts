@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output ,EventEmitter} from '@angular/core';
 
 @Component({
   selector: 'app-leftbar',
@@ -6,6 +6,9 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./leftbar.component.css']
 })
 export class LeftbarComponent implements OnInit {
+
+  @Output() childEvent = new EventEmitter<Boolean>();
+  game = false;
 
   constructor() { }
 
