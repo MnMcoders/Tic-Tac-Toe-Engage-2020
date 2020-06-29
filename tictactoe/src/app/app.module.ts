@@ -7,6 +7,11 @@ import { TitleComponent } from './title/title.component';
 import { LeftbarComponent } from './leftbar/leftbar.component';
 import { RightbarComponent } from './rightbar/rightbar.component';
 import { MainGameComponent } from './main-game/main-game.component';
+import { ThreeEasyComponent } from './three-easy/three-easy.component';
+import { ThreeMediumComponent } from './three-medium/three-medium.component';
+import { ThreeHardComponent } from './three-hard/three-hard.component';
+import { FourXfourComponent } from './four-xfour/four-xfour.component';
+import { NineXnineComponent } from './nine-xnine/nine-xnine.component';
 
 @NgModule({
   declarations: [
@@ -14,7 +19,12 @@ import { MainGameComponent } from './main-game/main-game.component';
     TitleComponent,
     LeftbarComponent,
     RightbarComponent,
-    MainGameComponent
+    MainGameComponent,
+    ThreeEasyComponent,
+    ThreeMediumComponent,
+    ThreeHardComponent,
+    FourXfourComponent,
+    NineXnineComponent
   ],
   imports: [
     BrowserModule,
