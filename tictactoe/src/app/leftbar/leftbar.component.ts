@@ -14,6 +14,7 @@ export class LeftbarComponent implements OnInit {
   ngOnInit(): void {
   }
 
+<<<<<<< HEAD
   onClickEasy(){
     this.childEvent.emit("easy");
   }
@@ -30,4 +31,10 @@ export class LeftbarComponent implements OnInit {
     this.childEvent.emit("nine");
   }
 
+=======
+
+  onClick(){
+    console.log("Button Clicked");
+  }
+>>>>>>> 66f9a409d8a037aaf4338b0b1300b8befcbbf941
 }
