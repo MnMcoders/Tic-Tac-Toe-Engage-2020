@@ -1,0 +1,11 @@
+.container{
+    margin-left: 35%;
+    margin-top: -35%;
+}
+.board{
+    display: inline-flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    color: cornsilk;
+}
