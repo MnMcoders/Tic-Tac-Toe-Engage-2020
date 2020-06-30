@@ -7,12 +7,27 @@ import { Component, OnInit, Output ,EventEmitter} from '@angular/core';
 })
 export class LeftbarComponent implements OnInit {
 
-  @Output() childEvent = new EventEmitter<Boolean>();
-  game = false;
+  @Output() childEvent = new EventEmitter<string>();
 
   constructor() { }
 
   ngOnInit(): void {
+  }
+
+  onClickEasy(){
+    this.childEvent.emit("easy");
+  }
+  onClickMedium(){
+    this.childEvent.emit("medium");
+  }
+  onClickHard(){
+    this.childEvent.emit("hard");
+  }
+  onClickFour(){
+    this.childEvent.emit("four");
+  }
+  onClickNine(){
+    this.childEvent.emit("nine");
   }
 
 }

@@ -6,7 +6,6 @@ import { AppComponent } from './app.component';
 import { TitleComponent } from './title/title.component';
 import { LeftbarComponent } from './leftbar/leftbar.component';
 import { RightbarComponent } from './rightbar/rightbar.component';
-import { MainGameComponent } from './main-game/main-game.component';
 import { ThreeEasyComponent } from './three-easy/three-easy.component';
 import { ThreeMediumComponent } from './three-medium/three-medium.component';
 import { ThreeHardComponent } from './three-hard/three-hard.component';
@@ -21,7 +20,6 @@ import { CellComponent } from './cell/cell.component';
     TitleComponent,
     LeftbarComponent,
     RightbarComponent,
-    MainGameComponent,
     ThreeEasyComponent,
     ThreeMediumComponent,
     ThreeHardComponent,

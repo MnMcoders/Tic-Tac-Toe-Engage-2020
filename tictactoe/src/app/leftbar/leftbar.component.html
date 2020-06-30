@@ -1,22 +1,25 @@
 <div class="container">
         <div class="sub-container">
         <h3>Game</h3>
+        <h4>Standard</h4>
+        <button>3x3</button>
+        <h5>Level</h5>
         <div class="btn-group">
-            <button type="button" class="btn btn-primary">3x3</button>
-            <button type="button" class="btn btn-primary">4x4</button>
-            <button type="button" class="btn btn-primary">9x9</button>
+            <button (click)="onClickEasy()" type="button" class="btn btn-primary">Easy</button>
+            <button (click)="onClickMedium()" type="button" class="btn btn-primary">Medium</button>
+            <button (click)="onClickHard()" type="button" class="btn btn-primary">Hard</button>
         </div>
+
+        <h4>Advanced</h4>
+        <button (click)="onClickFour()">4x4</button>
+        <button (click)="onClickNine()">9x9</button>
+
         <h3>Starting Player</h3>
         <div class="btn-group">
             <button type="button" class="btn btn-primary">Human</button>
             <button type="button" class="btn btn-primary">Machine</button>
         </div>
 
-        <h3>Level</h3>
-        <div class="btn-group">
-            <button (click)="onClick()" type="button" class="btn btn-primary">Easy</button>
-            <button type="button" class="btn btn-primary">Medium</button>
-            <button type="button" class="btn btn-primary">Hard</button>
-        </div>
+        
         </div>
 </div>

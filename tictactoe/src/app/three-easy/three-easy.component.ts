@@ -12,12 +12,4 @@ export class ThreeEasyComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  checkWinner()
-  {
-    for(let i=0;i<3;i++)
-    {
-      board[i][j] = 
-    }
-  }
-
 }
