@@ -11,7 +11,6 @@ import { ThreeMediumComponent } from './three-medium/three-medium.component';
 import { ThreeHardComponent } from './three-hard/three-hard.component';
 import { FourXfourComponent } from './four-xfour/four-xfour.component';
 import { NineXnineComponent } from './nine-xnine/nine-xnine.component';
-import { BoardComponent } from './board/board.component';
 import { CellComponent } from './cell/cell.component';
 
 @NgModule({
@@ -25,7 +24,6 @@ import { CellComponent } from './cell/cell.component';
     ThreeHardComponent,
     FourXfourComponent,
     NineXnineComponent,
-    BoardComponent,
     CellComponent
   ],
   imports: [
