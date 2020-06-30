@@ -29,7 +29,4 @@ export class LeftbarComponent implements OnInit {
   onClickNine(){
     this.childEvent.emit("nine");
   }
-  onClick(){
-    console.log("Button Clicked");
-  }
 }
