@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 
 @Component({
   selector: 'app-three-medium',
@@ -6,7 +6,7 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./three-medium.component.css']
 })
 export class ThreeMediumComponent implements OnInit {
-
+  
   constructor() { }
 
   ngOnInit(): void {

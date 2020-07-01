@@ -1,5 +1,8 @@
 <div class="container">
     <div class ="status text-center p-4">{{statusMessage}}</div>
+    
+    <h2>{{"Hello " + parentData}}</h2>
+
     <div class ="board" *ngFor ="let row of [0,1,2]">
         <app-cell *ngFor ="let col of [0,1,2]" 
                     [row] = "row" 
@@ -14,3 +17,4 @@
             class ="btn btn-primary new-game"
             (click) ="newGame()">New Game</button>
 </div>
+

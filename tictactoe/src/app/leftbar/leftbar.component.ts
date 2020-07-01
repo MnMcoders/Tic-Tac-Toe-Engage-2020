@@ -8,6 +8,7 @@ import { Component, OnInit, Output ,EventEmitter} from '@angular/core';
 export class LeftbarComponent implements OnInit {
 
   @Output() childEvent = new EventEmitter<string>();
+  @Output() playerEvent = new EventEmitter<string>();
 
   constructor() { }
 
@@ -28,5 +29,11 @@ export class LeftbarComponent implements OnInit {
   }
   onClickNine(){
     this.childEvent.emit("nine");
+  }
+  playerHuman(){
+    this.playerEvent.emit("human");
+  }
+  playerMachine(){
+    this.playerEvent.emit("machine");
   }
 }

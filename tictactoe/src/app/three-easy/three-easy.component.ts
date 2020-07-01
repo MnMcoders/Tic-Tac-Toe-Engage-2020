@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { Element } from '@angular/compiler';
 import { Cellenum } from '../cell/cellenum.enum';
 import { Playerenum } from '../cell/playerenum.enum'
@@ -9,6 +9,8 @@ import { Playerenum } from '../cell/playerenum.enum'
   styleUrls: ['./three-easy.component.css']
 })
 export class ThreeEasyComponent implements OnInit {
+
+  @Input() public parentData;
 
   public currentPlayer:Playerenum;
   private currentPlayerMove:Cellenum;
@@ -55,11 +57,17 @@ export class ThreeEasyComponent implements OnInit {
       }
     }
     //First Player is computer and is X
-    this.currentPlayerMove = Cellenum.X;
-    this.currentPlayer = Playerenum.c;
+    if(this.parentData=="machine"){
+      this.currentPlayer = Playerenum.c;
+      this.currentPlayerMove = Cellenum.X;
+    }
+    else if(this.parentData=="human"){
+      this.currentPlayer = Playerenum.h;
+      this.currentPlayerMove = Cellenum.O;
+    }
     this.isGameOver = false;
     this.statusMessage = `Player ${this.currentPlayer}'s turn`;
-    this.moveComputer();
+    if(this.currentPlayer===Playerenum.c)this.moveComputer();
   }
 
   //Make a move if the current is empty - for human
