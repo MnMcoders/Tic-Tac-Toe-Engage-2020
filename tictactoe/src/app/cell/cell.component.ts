@@ -1,4 +1,6 @@
 import { Component, OnInit, Input} from '@angular/core';
+import { Cellenum } from './cellenum.enum';
+
 
 @Component({
   selector: 'app-cell',
@@ -7,8 +9,10 @@ import { Component, OnInit, Input} from '@angular/core';
 })
 export class CellComponent implements OnInit {
 
-  @Input() public row : number;
-  @Input() public col : number; 
+  @Input() row : number;
+  @Input() col : number;
+  @Input() piece : Cellenum = Cellenum.EMPTY;
+
   constructor() { }
 
   ngOnInit(): void {

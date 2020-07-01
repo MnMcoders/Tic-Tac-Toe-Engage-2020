@@ -1,6 +1,16 @@
 <div class="container">
-    <div class ="board" *ngFor="let row of [0,1,2]">
-        <app-cell *ngFor = "let col of [0,1,2]" [row]="row" [col]="col"></app-cell>
+    <div class ="status text-center p-4">{{statusMessage}}</div>
+    <div class ="board" *ngFor ="let row of [0,1,2]">
+        <app-cell *ngFor ="let col of [0,1,2]" 
+                    [row] = "row" 
+                    [col] = "col" 
+                    [piece] = "board[row][col]" 
+                    (click) = "currentPlayer==='human'?move(row,col):false">
+        </app-cell>
     </div>
-</div>
 
+    <div class ="pt-2"></div>
+    <button *ngIf="gameOver"
+            class ="btn btn-primary new-game"
+            (click) ="newGame()">New Game</button>
+</div>
