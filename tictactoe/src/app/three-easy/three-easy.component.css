@@ -7,7 +7,12 @@
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: flex-start;
+<<<<<<< HEAD
     color: blueviolet;
     border: 10px;
 
+=======
+    color: cornsilk;
+    border: 10px;
+>>>>>>> 17c133a0a176f82cfed88d08f8cb50aa8d64cfd8
 }
