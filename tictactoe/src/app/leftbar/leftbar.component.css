@@ -1,6 +1,6 @@
 .container{
     width: 20%;
-    height: 650px;
+    height: 700 px;
     margin-left: 15px;
     padding-top: 90px;
     text-align: center;
@@ -17,6 +17,7 @@ h5{
 }
 .p{
     padding-top: 35px;
+    padding-bottom: 50px;
 }
 .btn-group{
     border-radius: 12px;
