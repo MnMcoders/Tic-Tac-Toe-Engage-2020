@@ -15,6 +15,9 @@ h5{
     font-style: normal;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
+.p{
+    padding-top: 35px;
+}
 .btn-group{
     border-radius: 12px;
     color: lightcoral;
