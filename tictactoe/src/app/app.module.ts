@@ -7,8 +7,6 @@ import { TitleComponent } from './title/title.component';
 import { LeftbarComponent } from './leftbar/leftbar.component';
 import { RightbarComponent } from './rightbar/rightbar.component';
 import { ThreeEasyComponent } from './three-easy/three-easy.component';
-import { ThreeMediumComponent } from './three-medium/three-medium.component';
-import { ThreeHardComponent } from './three-hard/three-hard.component';
 import { FourXfourComponent } from './four-xfour/four-xfour.component';
 import { NineXnineComponent } from './nine-xnine/nine-xnine.component';
 import { CellComponent } from './cell/cell.component';
@@ -20,8 +18,6 @@ import { CellComponent } from './cell/cell.component';
     LeftbarComponent,
     RightbarComponent,
     ThreeEasyComponent,
-    ThreeMediumComponent,
-    ThreeHardComponent,
     FourXfourComponent,
     NineXnineComponent,
     CellComponent

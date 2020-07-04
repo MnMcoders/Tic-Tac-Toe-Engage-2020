@@ -12,6 +12,7 @@ export class LeftbarComponent implements OnInit {
   @Output() playerEvent = new EventEmitter<string>();
   @Output() displayEvent = new EventEmitter<boolean>();
 
+
   public gameSelection = false;
   public playerSelection = false;
 

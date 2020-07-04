@@ -9,5 +9,6 @@ export class AppComponent {
   title = 'tictactoe';
   public check;
   public select;
+  public play;
   public display;
 }

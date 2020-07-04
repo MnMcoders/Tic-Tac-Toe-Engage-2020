@@ -22,7 +22,7 @@ export class ThreeEasyComponent implements OnInit {
   public isFirstMove : boolean; 
   public statusMessage;
   public index:number;
-  public iterator:number;
+
   constructor() { }
 
   ngOnInit(): void {
@@ -64,15 +64,10 @@ export class ThreeEasyComponent implements OnInit {
       }
     }
 
+    this.currentPlayerMove = Cellenum.X;
     //First Player 
-    if(this.playerData=="machine"){
-      this.currentPlayer = Playerenum.c;
-      this.currentPlayerMove = Cellenum.X;
-    }
-    else if(this.playerData=="human"){
-      this.currentPlayer = Playerenum.h;
-      this.currentPlayerMove = Cellenum.X;
-    }
+    if(this.playerData=="machine")this.currentPlayer = Playerenum.c;
+    if(this.playerData=="human")this.currentPlayer = Playerenum.h;
     this.isGameOver = false;
     if(this.currentPlayer===Playerenum.c)this.isFirstMove = true;
     if(this.currentPlayer===Playerenum.h)this.isFirstMove = false;
@@ -92,9 +87,8 @@ export class ThreeEasyComponent implements OnInit {
         this.isGameOver = true;
       }else{
         this.currentPlayer = Playerenum.c;
-        if(this.currentPlayerMove==Cellenum.O)
-        this.currentPlayerMove = Cellenum.X;
-        else this.currentPlayerMove = Cellenum.O;
+        this.currentPlayerMove = this.currentPlayerMove === Cellenum.X?Cellenum.O:Cellenum.X;
+        this.statusMessage =`Player ${this.currentPlayer}'s turn`;
       }
     }
     if(!this.isGameOver)this.moveComputer();
@@ -189,9 +183,8 @@ export class ThreeEasyComponent implements OnInit {
       this.isGameOver = true;
     }else{
       this.currentPlayer = Playerenum.h;
-      if(this.currentPlayerMove==Cellenum.O)
-      this.currentPlayerMove = Cellenum.X;
-      else this.currentPlayerMove = Cellenum.O;
+      this.currentPlayerMove = this.currentPlayerMove === Cellenum.X?Cellenum.O:Cellenum.X;
+      this.statusMessage =`Player ${this.currentPlayer}'s turn`;
     }
   }
 
@@ -251,7 +244,11 @@ export class ThreeEasyComponent implements OnInit {
   }
 
   alphaBetaPruning(board:Cellenum[][],depth:number,alpha:number,beta:number,isMaximizing:boolean){
-    if(depth==0)return 0;  
+    if(depth==0)
+      {
+        if(isMaximizing)return 1;
+        else return -1; 
+      } 
     if(this.isDraw())return 0;
       if(this.isWin())
       {
