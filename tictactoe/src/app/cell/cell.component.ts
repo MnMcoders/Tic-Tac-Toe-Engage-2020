@@ -8,7 +8,7 @@ import { Cellenum } from './cellenum.enum';
   styleUrls: ['./cell.component.css']
 })
 export class CellComponent implements OnInit {
-
+  @Input() size : number;
   @Input() row : number;
   @Input() col : number;
   @Input() piece : Cellenum = Cellenum.EMPTY;

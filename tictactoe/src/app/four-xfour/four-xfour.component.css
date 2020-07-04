@@ -1,0 +1,11 @@
+.container{
+    margin-left: 45%;
+    margin-top: -40%;
+}
+.board{
+    display: inline-flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    color: palevioletred;
+    border: 30px;
+}
