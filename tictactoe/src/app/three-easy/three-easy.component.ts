@@ -65,11 +65,11 @@ export class ThreeEasyComponent implements OnInit {
     }
 
     //First Player 
-    if(this.parentData=="machine"){
+    if(this.parentData==="machine"){
       this.currentPlayer = Playerenum.c;
       this.currentPlayerMove = Cellenum.X;
     }
-    else if(this.parentData=="human"){
+    else if(this.parentData==="human"){
       this.currentPlayer = Playerenum.h;
       this.currentPlayerMove = Cellenum.O;
     }

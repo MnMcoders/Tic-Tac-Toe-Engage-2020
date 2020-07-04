@@ -1,10 +1,10 @@
 <app-title></app-title>
 <app-leftbar (displayEvent)="display=$event" (childEvent)="check=$event" (playerEvent)="select=$event"></app-leftbar>
 <app-three-easy *ngIf = "display==true" [gameData]=check [parentData]=select></app-three-easy>
-<!--<app-three-medium *ngIf = "check=='medium'" ></app-three-medium>
+<app-three-medium *ngIf = "check=='medium'" ></app-three-medium>
 <app-three-hard *ngIf = "check=='hard'"></app-three-hard>
-<app-four-xfour *ngIf = "check=='four'"></app-four-xfour>
-<app-nine-xnine *ngIf = "check=='nine'"></app-nine-xnine>-->
+<app-four-xfour *ngIf = "check ==='four'"[gameData]=check [parentData]=select></app-four-xfour>
+<app-nine-xnine *ngIf = "check=='nine'"></app-nine-xnine>
 <router-outlet></router-outlet>
 
 
