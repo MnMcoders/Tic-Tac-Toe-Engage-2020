@@ -5,18 +5,20 @@
         <button>3x3</button>
         <h5>Level</h5>
         <div class="btn-group">
-                <button (click)="onClickEasy()">Easy</button>
+                <button (click)="onClickEasy()" >Easy</button>
                 <button (click)="onClickMedium()">Medium</button>
                 <button (click)="onClickHard()">Hard</button>
                 <button (click)="onClickUnbeatable()">Unbeatable</button>
         </div>
 
         <h4>Advanced</h4>
+        <div class="btn-group">
             <button (click)="onClickFour()">4x4</button>
             <button (click)="onClickNine()">9x9</button>
-
+        </div>
+        
         <h3>Starting Player</h3>
-        <div class="tn-group">
+        <div class="btn-group">
             <button (click)="playerHuman()">Human</button>
             <button (click)="playerMachine()">Machine</button>
         </div>

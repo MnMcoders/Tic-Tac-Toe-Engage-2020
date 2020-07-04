@@ -10,7 +10,7 @@ import { Playerenum } from '../cell/playerenum.enum'
 })
 export class ThreeEasyComponent implements OnInit {
 
-  @Input() public parentData;
+  @Input() public playerData;
   @Input() public gameData;
 
   public currentPlayer:Playerenum;
@@ -65,13 +65,13 @@ export class ThreeEasyComponent implements OnInit {
     }
 
     //First Player 
-    if(this.parentData=="machine"){
+    if(this.playerData=="machine"){
       this.currentPlayer = Playerenum.c;
       this.currentPlayerMove = Cellenum.X;
     }
-    else if(this.parentData=="human"){
+    else if(this.playerData=="human"){
       this.currentPlayer = Playerenum.h;
-      this.currentPlayerMove = Cellenum.O;
+      this.currentPlayerMove = Cellenum.X;
     }
     this.isGameOver = false;
     if(this.currentPlayer===Playerenum.c)this.isFirstMove = true;
@@ -92,7 +92,9 @@ export class ThreeEasyComponent implements OnInit {
         this.isGameOver = true;
       }else{
         this.currentPlayer = Playerenum.c;
+        if(this.currentPlayerMove==Cellenum.O)
         this.currentPlayerMove = Cellenum.X;
+        else this.currentPlayerMove = Cellenum.O;
       }
     }
     if(!this.isGameOver)this.moveComputer();
@@ -124,7 +126,7 @@ export class ThreeEasyComponent implements OnInit {
         this.shuffle(this.first);
         if(this.first[2]==0)
         {
-          this.board[0][0] = Cellenum.X;
+          this.board[0][0] = this.currentPlayerMove;
         }
         else if(this.first[2]==2)
         {
@@ -154,7 +156,7 @@ export class ThreeEasyComponent implements OnInit {
           {
             if(this.board[i][j]===Cellenum.EMPTY)
             {
-              this.board[i][j] = Cellenum.X;
+              this.board[i][j] = this.currentPlayerMove;
               let currScore;
               if(this.gameData=="medium"){
                 currScore = this.minimax(this.board,3,false);
@@ -175,7 +177,7 @@ export class ThreeEasyComponent implements OnInit {
           }
         }
 
-        this.board[bestMove[0]][bestMove[1]] = Cellenum.X;
+        this.board[bestMove[0]][bestMove[1]] = this.currentPlayerMove;
       }
     }
 
@@ -187,18 +189,24 @@ export class ThreeEasyComponent implements OnInit {
       this.isGameOver = true;
     }else{
       this.currentPlayer = Playerenum.h;
-      this.currentPlayerMove = Cellenum.O;
+      if(this.currentPlayerMove==Cellenum.O)
+      this.currentPlayerMove = Cellenum.X;
+      else this.currentPlayerMove = Cellenum.O;
     }
   }
 
   public isWinner;
-  minimax(board:Cellenum[][],depth:number,isMaximizing:boolean){
-    if(depth==0)return 0;  
-    if(this.isDraw())return 0;
+  minimax(board:Cellenum[][],depth:number,isMaximizing:boolean){  
+      if(depth==0)
+      {
+        if(isMaximizing)return 1;
+        else return -1; 
+      }
+      if(this.isDraw())return 0;
       if(this.isWin())
       {
         //console.log(this.isWinner);
-        if(this.isWinner===Cellenum.X)return 1;
+        if(this.isWinner===this.currentPlayerMove)return 1;
         else return -1;
       }
 
@@ -210,7 +218,7 @@ export class ThreeEasyComponent implements OnInit {
           {
             if(board[i][j]===Cellenum.EMPTY)
             {
-              board[i][j] = Cellenum.X;
+              board[i][j] = this.currentPlayerMove;
               let currScore = this.minimax(board,depth-1,false);
               board[i][j] = Cellenum.EMPTY;
               bestScore = Math.max(currScore,bestScore);
@@ -228,7 +236,10 @@ export class ThreeEasyComponent implements OnInit {
           {
             if(board[i][j]===Cellenum.EMPTY)
             {
+              if(this.currentPlayerMove===Cellenum.X)
               board[i][j] = Cellenum.O;
+              else
+              board[i][j] = Cellenum.X;
               let currScore = this.minimax(board,depth-1,true);
               board[i][j] = Cellenum.EMPTY;
               bestScore = Math.min(currScore,bestScore);

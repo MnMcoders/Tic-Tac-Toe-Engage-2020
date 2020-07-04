@@ -8,12 +8,12 @@ import { logWarnings } from 'protractor/built/driverProviders';
 })
 export class LeftbarComponent implements OnInit {
 
-  @Output() childEvent = new EventEmitter<string>();
+  @Output() gameEvent = new EventEmitter<string>();
   @Output() playerEvent = new EventEmitter<string>();
   @Output() displayEvent = new EventEmitter<boolean>();
 
-  public gameSelection;
-  public playerSelection;
+  public gameSelection = false;
+  public playerSelection = false;
 
   constructor() { }
 
@@ -22,32 +22,32 @@ export class LeftbarComponent implements OnInit {
 
   onClickEasy(){
     this.gameSelection = true;
-    this.childEvent.emit("easy");
+    this.gameEvent.emit("easy");
     this.displayEvent.emit(false);
   }
   onClickMedium(){
     this.gameSelection = true;
-    this.childEvent.emit("medium");
+    this.gameEvent.emit("medium");
     this.displayEvent.emit(false);
   }
   onClickHard(){
     this.gameSelection = true;
-    this.childEvent.emit("hard");
+    this.gameEvent.emit("hard");
     this.displayEvent.emit(false);
   }
   onClickUnbeatable(){
     this.gameSelection = true;
-    this.childEvent.emit("unbeatable");
+    this.gameEvent.emit("unbeatable");
     this.displayEvent.emit(false);
   }
   onClickFour(){
     this.gameSelection = true;
-    this.childEvent.emit("four");
+    this.gameEvent.emit("four");
     this.displayEvent.emit(false);
   }
   onClickNine(){
     this.gameSelection = true;
-    this.childEvent.emit("nine");
+    this.gameEvent.emit("nine");
     this.displayEvent.emit(false);
   }
   playerHuman(){
@@ -64,9 +64,18 @@ export class LeftbarComponent implements OnInit {
     if(this.gameSelection==true && this.playerSelection==true){
     this.displayEvent.emit(true);
     }
-    else{
-      console.log("Please Select all the options!");
+    else if(this.gameSelection==true && this.playerSelection==false){
+      alert("Please Select the starting Player!");
        this.displayEvent.emit(false);
+    }
+    else if(this.gameSelection==false && this.playerSelection==true){
+      alert("Please Select the Game Type!");
+       this.displayEvent.emit(false);
+    }
+    else
+    {
+      alert("Please Select the starting Player and the Game Type!");
+      this.displayEvent.emit(false);
     }
   }
 }
