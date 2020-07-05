@@ -159,7 +159,7 @@ export class ThreeEasyComponent implements OnInit {
                   currScore = this.minimax(this.board,7,false);
                   break;
                 case "unbeatable":
-                  currScore = this.alphaBetaPruning(this.board,10,-Infinity,Infinity,false);
+                  currScore = this.alphaBetaPruning(this.board,11,-Infinity,Infinity,false);
                   break;
                 }
               this.board[i][j] = Cellenum.EMPTY;
