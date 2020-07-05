@@ -5,26 +5,26 @@
         <button>3x3</button>
         <h5>Level</h5>
         <div class="btn-group">
-                <button (click)="onClickEasy()" >Easy</button>
-                <button (click)="onClickMedium()">Medium</button>
-                <button (click)="onClickHard()">Hard</button>
-                <button (click)="onClickUnbeatable()">Unbeatable</button>
+                <button (click)="onClickGameType('easy')" >Easy</button>
+                <button (click)="onClickGameType('medium')">Medium</button>
+                <button (click)="onClickGameType('hard')">Hard</button>
+                <button (click)="onClickGameType('unbeatable')">Unbeatable</button>
         </div>
 
         <h4>Advanced</h4>
         <div class="btn-group">
-            <button (click)="onClickFour()">4x4</button>
-            <button (click)="onClickNine()">9x9</button>
+            <button (click)="onClickGameType('four')">4x4</button>
+            <button (click)="onClickGameType('nine')">9x9</button>
         </div>
         
         <h3>Starting Player</h3>
         <div class="btn-group">
-            <button (click)="playerHuman()">Human</button>
-            <button (click)="playerMachine()">Machine</button>
+            <button (click)="onClickPlayerType('human')">Human</button>
+            <button (click)="onClickPlayerType('machine')">Machine</button>
         </div>
 
         <div class="p">
-            <button (click)="toPlay()" >Let's Go!</button>
+            <button (click)="onClickToPlay()" >Let's Go!</button>
         </div>
 
         </div>

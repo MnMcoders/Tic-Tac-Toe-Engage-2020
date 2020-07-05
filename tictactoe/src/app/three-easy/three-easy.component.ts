@@ -64,8 +64,8 @@ export class ThreeEasyComponent implements OnInit {
       }
     }
 
-    this.currentPlayerMove = Cellenum.X;
-    //First Player 
+    //First Player is Always X
+    this.currentPlayerMove = Cellenum.X; 
     if(this.playerData=="machine")this.currentPlayer = Playerenum.c;
     if(this.playerData=="human")this.currentPlayer = Playerenum.h;
     this.isGameOver = false;
@@ -120,7 +120,7 @@ export class ThreeEasyComponent implements OnInit {
         this.shuffle(this.first);
         if(this.first[2]==0)
         {
-          this.board[0][0] = this.currentPlayerMove;
+          this.board[0][0] = Cellenum.X;
         }
         else if(this.first[2]==2)
         {
@@ -159,7 +159,7 @@ export class ThreeEasyComponent implements OnInit {
                 currScore = this.minimax(this.board,6,false);
               }
               if(this.gameData=="unbeatable"){
-                currScore = this.alphaBetaPruning(this.board,100,-Infinity,Infinity,false);
+                currScore = this.alphaBetaPruning(this.board,10,-Infinity,Infinity,false);
               }
               this.board[i][j] = Cellenum.EMPTY;
               if(currScore>bestScore){
@@ -192,7 +192,7 @@ export class ThreeEasyComponent implements OnInit {
   minimax(board:Cellenum[][],depth:number,isMaximizing:boolean){  
       if(depth==0)
       {
-        if(isMaximizing)return 1;
+        if(isMaximizing)return +1;
         else return -1; 
       }
       if(this.isDraw())return 0;
