@@ -1,12 +1,16 @@
 .container{
     margin-left: 45%;
-    margin-top: -40%;
+    margin-top: -42%;
 }
 .board{
     display: inline-flex;
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: flex-start;
-    color: palevioletred;
-    border: 30px;
+    color: white;
+    opacity: 0.6;   
+}
+
+h2{
+    margin-top: -150px;
 }

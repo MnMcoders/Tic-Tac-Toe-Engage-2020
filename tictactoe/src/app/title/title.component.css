@@ -1,12 +1,53 @@
 .jumbotron{
-    background-color: rgb(108, 197, 207);
-    color: rgb(197, 26, 132);
-    padding-top: 25px;
+    background-color: black(108, 197, 207);
+    color: white;
+    padding-top: 10px;
     padding-bottom: 10px;
     margin-bottom: 25px;
     font-size: larger;
     font-family: Georgia, 'Times New Roman', Times, serif;
+    background-blend-mode: color-dodge;
+    
 }
 h2{
     text-align: center;
+}
+
+/* The animation code */
+@keyframes heading {
+    0%   {background-color:black; left:0px}
+    25%  {background-color:rgb(68, 68, 172); left:40px}
+    50%  {background-color:black; left:40px}
+    75%  {background-color:rgb(76, 76, 179); left:0px}
+    100% {background-color:black; left:0px}
+  }
+  
+  /* The element to apply the animation to */
+  .jumbotron {
+    width: 1000;
+    height: 70px;
+    position: relative;
+    background-color: black;
+    animation-name: heading;
+    animation-duration: 4s;
+    animation-iteration-count: infinite;
+    text-align: center;
+    vertical-align: 20px;
+    margin-left: -50px;
+    
+  }
+
+  body, html {
+    background-color: #000;
+    color: #fff;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+canvas {
+    position: absolute;
+    top:0;
+    left:0
 }
