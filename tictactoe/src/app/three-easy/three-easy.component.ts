@@ -118,25 +118,23 @@ export class ThreeEasyComponent implements OnInit {
       {
         this.first = [0, 2, 4, 6, 8];
         this.shuffle(this.first);
-        if(this.first[2]==0)
+        switch(this.first[2])
         {
-          this.board[0][0] = Cellenum.X;
-        }
-        else if(this.first[2]==2)
-        {
-          this.board[0][2] = Cellenum.X;
-        }
-        else if(this.first[2]==4)
-        {
-          this.board[1][1] = Cellenum.X;
-        }
-        else if(this.first[2]==6)
-        {
-          this.board[2][0] = Cellenum.X;
-        }
-        else if(this.first[2]==8)
-        {
-          this.board[2][2] = Cellenum.X;
+          case 0:
+            this.board[0][0] = Cellenum.X;
+            break;
+          case 2:
+            this.board[0][2] = Cellenum.X;
+            break;
+          case 4:
+            this.board[1][1] = Cellenum.X;
+            break;
+          case 6:
+            this.board[2][0] = Cellenum.X;
+            break;
+          case 8:
+            this.board[2][2] = Cellenum.X;
+            break;
         }
 
         this.isFirstMove = false;
@@ -152,20 +150,23 @@ export class ThreeEasyComponent implements OnInit {
             {
               this.board[i][j] = this.currentPlayerMove;
               let currScore;
-              if(this.gameData=="medium"){
-                currScore = this.minimax(this.board,3,false);
-              }
-              if(this.gameData=="hard"){
-                currScore = this.minimax(this.board,6,false);
-              }
-              if(this.gameData=="unbeatable"){
-                currScore = this.alphaBetaPruning(this.board,10,-Infinity,Infinity,false);
-              }
+              switch(this.gameData)
+              {
+                case "medium":
+                  currScore = this.minimax(this.board,3,false);
+                  break;
+                case "hard":
+                  currScore = this.minimax(this.board,6,false);
+                  break;
+                case "unbeatable":
+                  currScore = this.alphaBetaPruning(this.board,10,-Infinity,Infinity,false);
+                  break;
+                }
               this.board[i][j] = Cellenum.EMPTY;
               if(currScore>bestScore){
                 bestScore = currScore;
                 bestMove = [i, j];
-                console.log(bestScore);
+                //console.log(bestScore);
               }
             }
           }
@@ -192,7 +193,7 @@ export class ThreeEasyComponent implements OnInit {
   minimax(board:Cellenum[][],depth:number,isMaximizing:boolean){  
       if(depth==0)
       {
-        if(isMaximizing)return +1;
+        if(isMaximizing)return 1;
         else return -1; 
       }
       if(this.isDraw())return 0;
@@ -231,8 +232,7 @@ export class ThreeEasyComponent implements OnInit {
             {
               if(this.currentPlayerMove===Cellenum.X)
               board[i][j] = Cellenum.O;
-              else
-              board[i][j] = Cellenum.X;
+              else board[i][j] = Cellenum.X;
               let currScore = this.minimax(board,depth-1,true);
               board[i][j] = Cellenum.EMPTY;
               bestScore = Math.min(currScore,bestScore);
@@ -253,7 +253,7 @@ export class ThreeEasyComponent implements OnInit {
       if(this.isWin())
       {
         //console.log(this.isWinner);
-        if(this.isWinner===Cellenum.X)return 1;
+        if(this.isWinner===this.currentPlayerMove)return 1;
         else return -1;
       }
 
@@ -265,7 +265,7 @@ export class ThreeEasyComponent implements OnInit {
           {
             if(board[i][j]===Cellenum.EMPTY)
             {
-              board[i][j] = Cellenum.X;
+              board[i][j] = this.currentPlayerMove;
               let currScore = this.alphaBetaPruning(board,depth-1,alpha,beta,false);
               board[i][j] = Cellenum.EMPTY;
               bestScore = Math.max(currScore,bestScore);
@@ -285,7 +285,9 @@ export class ThreeEasyComponent implements OnInit {
           {
             if(board[i][j]===Cellenum.EMPTY)
             {
+              if(this.currentPlayerMove===Cellenum.X)
               board[i][j] = Cellenum.O;
+              else board[i][j] = Cellenum.X;
               let currScore = this.alphaBetaPruning(board,depth-1,alpha,beta,true);
               board[i][j] = Cellenum.EMPTY;
               bestScore = Math.min(currScore,bestScore);
