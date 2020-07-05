@@ -156,7 +156,7 @@ export class ThreeEasyComponent implements OnInit {
                   currScore = this.minimax(this.board,3,false);
                   break;
                 case "hard":
-                  currScore = this.minimax(this.board,6,false);
+                  currScore = this.minimax(this.board,7,false);
                   break;
                 case "unbeatable":
                   currScore = this.alphaBetaPruning(this.board,10,-Infinity,Infinity,false);
