@@ -1,9 +1,9 @@
 /* You can add global styles to this file, and also import other style files */
 
 body{
-    background-color: navy;
-    background-image: url(C:/Users/Nikita Sadhnani/Desktop/microsoft/Tic-Tac-Toe-Engage-2020/tictactoe/src/app/images/background.jpg);
-    background-repeat:no-repeat;
+    background-color: rgb(221, 211, 152);
+   /* background-image: https://images.pexels.com/photos/207529/pexels-photo-207529.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940;
+    */background-repeat:no-repeat;
     background-size:cover;
 }
     

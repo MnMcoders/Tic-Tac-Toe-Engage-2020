@@ -1,8 +1,8 @@
 <div class="container">
     <div class ="status text-center p-4">{{statusMessage}}</div>
     
-    <h2>{{"Hello " + playerData}}</h2>
-    <h2>{{"Hey, It's " + gameData}}</h2>
+    <h3>{{"Hello " + playerData}}</h3>
+    <h3>{{"Hey, It's " + gameData}}</h3>
     <div class ="board" *ngFor ="let row of [0,1,2]">
         <app-cell *ngFor ="let col of [0,1,2]" 
                     [size] = "2"
@@ -14,8 +14,8 @@
     </div>
 
     <div class ="pt-2"></div>
-    <button *ngIf="gameOver"
-            class ="btn btn-primary new-game"
+    <button class ="btn btn-primary new-game"
             (click) ="newGame()">New Game</button>
+    <button (click) ="undo()">Undo</button> 
 </div>
 

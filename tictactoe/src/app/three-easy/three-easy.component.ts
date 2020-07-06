@@ -22,6 +22,7 @@ export class ThreeEasyComponent implements OnInit {
   public isFirstMove : boolean; 
   public statusMessage;
   public index:number;
+  public selectedMoves = [];
 
   constructor() { }
 
@@ -63,7 +64,10 @@ export class ThreeEasyComponent implements OnInit {
         this.board[row][col] = Cellenum.EMPTY;
       }
     }
-
+    while(this.selectedMoves.length)
+    {
+      this.selectedMoves.pop();
+    }
     //First Player is Always X
     this.currentPlayerMove = Cellenum.X; 
     if(this.playerData=="machine")this.currentPlayer = Playerenum.c;
@@ -79,6 +83,7 @@ export class ThreeEasyComponent implements OnInit {
   move(row:number,col:number){
     if(!this.isGameOver && this.board[row][col]==Cellenum.EMPTY){
       this.board[row][col] = this.currentPlayerMove;
+      this.selectedMoves.push([row,col]);
       if(this.isDraw()){
         this.statusMessage = 'It\'s a Draw!';
         this.isGameOver = true;
@@ -105,6 +110,7 @@ export class ThreeEasyComponent implements OnInit {
           c = this.moves[this.index]%3;
           if(this.board[r][c] === Cellenum.EMPTY){
             this.board[r][c] = this.currentPlayerMove;
+            this.selectedMoves.push([r,c]);
             this.index++;
             break;
           }
@@ -122,18 +128,23 @@ export class ThreeEasyComponent implements OnInit {
         {
           case 0:
             this.board[0][0] = Cellenum.X;
+            this.selectedMoves.push([0,0]);
             break;
           case 2:
             this.board[0][2] = Cellenum.X;
+            this.selectedMoves.push([0,0]);
             break;
           case 4:
             this.board[1][1] = Cellenum.X;
+            this.selectedMoves.push([0,0]);
             break;
           case 6:
             this.board[2][0] = Cellenum.X;
+            this.selectedMoves.push([0,0]);
             break;
           case 8:
             this.board[2][2] = Cellenum.X;
+            this.selectedMoves.push([0,0]);
             break;
         }
 
@@ -171,8 +182,8 @@ export class ThreeEasyComponent implements OnInit {
             }
           }
         }
-
         this.board[bestMove[0]][bestMove[1]] = this.currentPlayerMove;
+        this.selectedMoves.push([bestMove[0],bestMove[1]]);
       }
     }
 
@@ -186,6 +197,27 @@ export class ThreeEasyComponent implements OnInit {
       this.currentPlayer = Playerenum.h;
       this.currentPlayerMove = this.currentPlayerMove === Cellenum.X?Cellenum.O:Cellenum.X;
       this.statusMessage =`Player ${this.currentPlayer}'s turn`;
+    }
+  }
+
+    
+  undo(){
+    /*if(this.isGameOver==true)
+    {
+      alert('Please start a New Game!');
+    }*/
+    console.log("HEY YOU");
+    console.log(this.selectedMoves);
+    let undoLast = [];
+    let undoSecondLast = [];
+    if(this.selectedMoves.length>1)
+    {
+      undoLast = this.selectedMoves.pop();
+      undoSecondLast = this.selectedMoves.pop();
+      console.log(this.selectedMoves);
+      this.board[undoLast[0]][undoLast[1]] = Cellenum.EMPTY;
+      this.board[undoSecondLast[0]][undoSecondLast[1]] = Cellenum.EMPTY;
+      if(this.gameData=="easy")this.index--;
     }
   }
 
@@ -299,8 +331,8 @@ export class ThreeEasyComponent implements OnInit {
         return bestScore;
       }
   }
-  
-  //Is the game a Draw
+
+  //Is the game a 
   isDraw(): boolean {
     for(const columns of this.board){
       for(const cols of columns){
@@ -355,3 +387,4 @@ export class ThreeEasyComponent implements OnInit {
     return false;
   }
 }
+
