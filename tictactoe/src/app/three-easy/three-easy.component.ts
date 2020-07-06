@@ -18,7 +18,7 @@ export class ThreeEasyComponent implements OnInit {
   private moves: number[];
   private first: number[];
   public board : Cellenum[][];
-  private isGameOver: boolean;
+  public isGameOver: boolean;
   public isFirstMove : boolean; 
   public statusMessage;
   public index:number;
@@ -202,10 +202,6 @@ export class ThreeEasyComponent implements OnInit {
 
     
   undo(){
-    /*if(this.isGameOver==true)
-    {
-      alert('Please start a New Game!');
-    }*/
     console.log("HEY YOU");
     console.log(this.selectedMoves);
     let undoLast = [];
