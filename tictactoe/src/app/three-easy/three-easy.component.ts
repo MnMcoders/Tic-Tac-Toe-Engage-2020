@@ -51,7 +51,7 @@ export class ThreeEasyComponent implements OnInit {
 
   //Start a new game 
   newGame(){
-    if(this.gameData=="easy")
+    if(this.gameData=="Easy")
     {
       this.index = 0;
       this.moves = [1,4,3,2,5,7,6,8,0];
@@ -100,7 +100,7 @@ export class ThreeEasyComponent implements OnInit {
   }
   // Make a move if possible - for computer 
   moveComputer(){
-    if(this.gameData=="easy")
+    if(this.gameData=="Easy")
     {
       let r;
       let c;
@@ -163,13 +163,13 @@ export class ThreeEasyComponent implements OnInit {
               let currScore;
               switch(this.gameData)
               {
-                case "medium":
+                case "Medium":
                   currScore = this.minimax(this.board,3,false);
                   break;
-                case "hard":
+                case "Hard":
                   currScore = this.minimax(this.board,7,false);
                   break;
-                case "unbeatable":
+                case "Pro":
                   currScore = this.alphaBetaPruning(this.board,11,-Infinity,Infinity,false);
                   break;
                 }
@@ -213,7 +213,7 @@ export class ThreeEasyComponent implements OnInit {
       console.log(this.selectedMoves);
       this.board[undoLast[0]][undoLast[1]] = Cellenum.EMPTY;
       this.board[undoSecondLast[0]][undoSecondLast[1]] = Cellenum.EMPTY;
-      if(this.gameData=="easy")this.index--;
+      if(this.gameData=="Easy")this.index--;
     }
   }
 

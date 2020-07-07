@@ -175,6 +175,7 @@
     </script>
     <canvas id="bgCanvas"></canvas>
 -->
+
 <app-title></app-title>
 <app-leftbar (displayEvent)="display=$event" (gameEvent)="check=$event" (playerEvent)="select=$event"></app-leftbar>
 <app-three-easy *ngIf = "display==true && check!='four' && check!='nine'" [gameData]=check [playerData]=select></app-three-easy>

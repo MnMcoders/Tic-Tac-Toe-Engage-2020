@@ -11,7 +11,6 @@ export class FourXfourComponent implements OnInit {
 
   @Input() public playerData;
   @Input() public gameData;
-  
   public currentPlayer:Playerenum;
   private currentPlayerMove:Cellenum;
   private first: number[];

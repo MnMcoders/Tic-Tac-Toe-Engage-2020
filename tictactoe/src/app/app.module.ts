@@ -29,4 +29,5 @@ import { CellComponent } from './cell/cell.component';
   providers: [],
   bootstrap: [AppComponent]
 })
+
 export class AppModule { }

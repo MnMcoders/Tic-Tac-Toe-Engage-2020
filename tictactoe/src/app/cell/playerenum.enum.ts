@@ -1,4 +1,5 @@
 export enum Playerenum {
-    h = 'human',
-    c = 'computer'
+    c = 'computer',
+    h = 'human'
+    
 }

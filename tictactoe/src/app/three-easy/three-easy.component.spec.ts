@@ -5,6 +5,7 @@ import { ThreeEasyComponent } from './three-easy.component';
 describe('ThreeEasyComponent', () => {
   let component: ThreeEasyComponent;
   let fixture: ComponentFixture<ThreeEasyComponent>;
+  
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
