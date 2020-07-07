@@ -1,6 +1,21 @@
+.container {
+    width: 40%;
+    height: 40%;
+
+}
+
 .cell {
-    width: 170px;
-    height: 170px;
+    position: relative;
+    width: 130px;
+    height: 130px;
+    @media (max-width: 300px){
+        .cell{
+            position: relative;
+            height: 50px;
+            weight: 50px;
+        }
+    
+    }
     box-sizing: border-box;
     font-size: 5em;
     font-family: sans-serif;
@@ -10,18 +25,41 @@
     justify-content: center;
     align-items: center;    
     background-color: white;
+    opacity: 0.6;
     
 }
 
 .cell :hover {
     background-color: darkgray;
     cursor: pointer;
+    
 }
 
 .v{
-    border-right: 3px solid black;
+    border: 10px solid black; 
+    cursor: pointer;
+   
+}
+.v:hover {
+    background-color: rgb(105, 105, 182);
+    transform: scale(1.15); 
+}
+.h{
+    border: 10px solid black; 
+    cursor: pointer;
+   
+}
+.h:hover {
+    background-color: rgb(105, 105, 182);
+    transform: scale(1.15); 
+}
+.l{
+    border: 10px solid black; 
+    cursor: pointer;
+   
+}
+.l:hover {
+    background-color: rgb(105, 105, 182);
+    transform: scale(1.15); 
 }
 
-.h {
-    border-bottom: 3px solid black;
-}

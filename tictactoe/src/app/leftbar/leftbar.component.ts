@@ -17,7 +17,6 @@ export class LeftbarComponent implements OnInit {
   public playerSelection = false;
 
   constructor() { }
-
   ngOnInit(): void {
   }
 

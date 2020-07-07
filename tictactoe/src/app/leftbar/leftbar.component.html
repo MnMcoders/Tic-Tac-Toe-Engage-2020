@@ -1,31 +1,31 @@
 <div class="container">
-        <div class="sub-container">
-        <h3>Game</h3>
-        <h4>Standard</h4>
-        <button>3x3</button>
-        <h5>Level</h5>
-        <div class="btn-group">
-                <button (click)="onClickGameType('easy')" >Easy</button>
-                <button (click)="onClickGameType('medium')">Medium</button>
-                <button (click)="onClickGameType('hard')">Hard</button>
-                <button (click)="onClickGameType('unbeatable')">Unbeatable</button>
-        </div>
+    <div class="sub-container">
+    <h3>Game</h3>
+    <h4>Standard</h4>
+    <button class="type">3x3</button>
+    <h5>Level</h5>
+    <div class="btn-group">
+            <button (click)="onClickGameType('Easy')" >Easy</button>
+            <button (click)="onClickGameType('Medium')">Medium</button>
+            <button (click)="onClickGameType('Hard')">Hard</button>
+            <button (click)="onClickGameType('Pro')">Pro</button>
+    </div>
 
-        <h4>Advanced</h4>
-        <div class="btn-group">
-            <button (click)="onClickGameType('four')">4x4</button>
-            <button (click)="onClickGameType('nine')">9x9</button>
-        </div>
-        
-        <h3>Starting Player</h3>
-        <div class="btn-group">
-            <button (click)="onClickPlayerType('human')">Human</button>
-            <button (click)="onClickPlayerType('machine')">Machine</button>
-        </div>
+    <h4>Advanced</h4>
+    <div class="btn-group">
+        <button class="type" (click)="onClickGameType('four')">4x4</button>
+        <button class="type" (click)="onClickGameType('nine')">9x9</button>
+    </div>
+    
+    <h3>Starting Player</h3>
+    <div class="btn-group">
+        <button (click)="onClickPlayerType('human')">Human</button>
+        <button (click)="onClickPlayerType('machine')">Machine</button>
+    </div>
 
-        <div class="p">
-            <button (click)="onClickToPlay()" >Let's Go!</button>
-        </div>
+    <div class="play">
+        <button class="start"(click)="onClickToPlay()" >Let's Play</button>
+    </div>
 
-        </div>
+    </div>
 </div>
