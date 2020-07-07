@@ -1,1 +1,26 @@
-<p>nine-xnine works!</p>
+<div class="bigtable">
+    <div class ="row" *ngFor="let row of [0,1,2]">
+        <div class="col-md-4" *ngFor="let col of [0,1,2]">
+            <table class="smallBoard">
+                <tr>
+                    <td class="cell" id="{{col}}.0" (click)="Onclick()"><p>X</p></td>
+                    <td class="cell" id="{{col}}.1" (click)="Onclick()"></td>
+                    <td class="cell" id="{{col}}.2" (click)="Onclick()"></td>
+                </tr>
+    
+                <tr>
+                    <td class="cell" id="{{col}}.3" (click)="Onclick()"></td>
+                    <td class="cell" id="{{col}}.4" (click)="Onclick()"></td>
+                    <td class="cell" id="{{col}}.5" (click)="Onclick()"></td>
+                </tr>
+    
+                <tr>
+                    <td class="cell" id="{{col}}.6" (click)="Onclick()"></td>
+                    <td class="cell" id="{{col}}.7" (click)="Onclick()"></td>
+                    <td class="cell" id="{{col}}.8" (click)="Onclick()"></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+

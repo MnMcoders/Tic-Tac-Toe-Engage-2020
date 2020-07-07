@@ -9,7 +9,7 @@
                     [row] = "row" 
                     [col] = "col" 
                     [piece] = "board[row][col]" 
-                    (click) = "currentPlayer==='human'?move(row,col):false">
+                    (click) = "(currentPlayer==='human' && board[row][col]==' ')?move(row,col):false">
         </app-cell>
     </div>
 

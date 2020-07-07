@@ -12,4 +12,8 @@ export class NineXnineComponent implements OnInit {
   ngOnInit(): void {
   }
 
+ Onclick(){
+
+ }
+
 }
