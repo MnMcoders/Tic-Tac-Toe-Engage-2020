@@ -57,7 +57,7 @@ export class NineXnineComponent implements OnInit {
     if(this.playerData=="human")this.currentPlayer = Playerenum.h;
     this.isGameOver = false;
     this.statusMessage = `Player ${this.currentPlayer}'s turn`;
-    //if(this.currentPlayer===Playerenum.c)this.moveComputer();
+    if(this.currentPlayer===Playerenum.c)this.moveComputer(1,1);
   }
   move(row:number, col:number, pos:number){
     console.log(row);
@@ -68,17 +68,17 @@ export class NineXnineComponent implements OnInit {
         document.getElementById((row+"."+col+"."+pos)).innerHTML = this.currentPlayerMove;
         console.log(this.currentPlayerMove);
     }
-    /* if(this.isDraw()){
+      if(this.isDrawGame()){
         this.statusMessage = 'It\'s a Draw!';
         this.isGameOver = true;
-      }else if(this.isWin()){
+      }else if(this.isWinGame()){
         this.statusMessage = `Player ${this.currentPlayer} won!`;
         this.isGameOver = true;
       }else{
         this.currentPlayer = Playerenum.c;
         this.currentPlayerMove = this.currentPlayerMove === Cellenum.X?Cellenum.O:Cellenum.X;
         this.statusMessage =`Player ${this.currentPlayer}'s turn`;
-      }*/
+      }
       this.nextCell = this.calculateNextCell(pos);
       if(!this.isGameOver)this.moveComputer(this.nextCell[0],this.nextCell[1]);
   }
@@ -110,8 +110,29 @@ export class NineXnineComponent implements OnInit {
   }
 
   moveComputer(row:number,col:number){
-    this.board[row][col][4] = Cellenum.O;
-    document.getElementById(row+"."+col+"."+4).innerHTML = Cellenum.O;
+    for(let pos=0;pos<9;pos++)
+    {
+      if(this.board[row][col][pos]==Cellenum.EMPTY)
+      {
+          //Monte Carlo Search Tree Function Comes Here
+          this.board[row][col][pos] = this.currentPlayerMove;
+          document.getElementById(row+"."+col+"."+pos).innerHTML = this.currentPlayerMove;
+          break;
+      }
+    }
+
+    if(this.isDrawGame()){
+      this.statusMessage = 'It\'s a Draw!';
+      this.isGameOver = true;
+    }else if(this.isWinGame()){
+      this.statusMessage = `Player ${this.currentPlayer} won!`;
+      this.isGameOver = true;
+    }else{
+      this.currentPlayer = Playerenum.h;
+      this.currentPlayerMove = this.currentPlayerMove === Cellenum.X?Cellenum.O:Cellenum.X;
+      this.statusMessage =`Player ${this.currentPlayer}'s turn`;
+    }
+    
   }
   
   isWinBoard(row:number,col:number):boolean{

@@ -28,6 +28,14 @@ h2{
     font-weight: bolder;
     
 }
+.undo{
+    margin-top: 10px;
+    background-color: cornflowerblue;
+    border-radius: 10px;
+    border-color: black;
+    padding: 5px;
+    font-weight: bolder;
+}
 
 button:hover{
     background-color:purple;
