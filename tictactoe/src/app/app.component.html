@@ -179,7 +179,7 @@
 <app-leftbar (displayEvent)="display=$event" (gameEvent)="check=$event" (playerEvent)="select=$event"></app-leftbar>
 <app-three-easy *ngIf = "display==true && check!='four' && check!='nine'" [gameData]=check [playerData]=select></app-three-easy>
 <app-four-xfour *ngIf = "display==true && check=='four'" [gameData]=check [playerData]=select></app-four-xfour>
-<app-nine-xnine *ngIf = "display==true && check=='nine'"></app-nine-xnine>
+<app-nine-xnine *ngIf = "display==true && check=='nine'" [gameData]=check [playerData]=select></app-nine-xnine>
 <router-outlet></router-outlet>
 
 

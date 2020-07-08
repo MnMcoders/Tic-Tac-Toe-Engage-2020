@@ -3,21 +3,21 @@
         <div class="col-md-4" *ngFor="let col of [0,1,2]">
             <table class="smallBoard">
                 <tr>
-                    <td class="cell" id="{{col}}.0" (click)="Onclick()"><p>X</p></td>
-                    <td class="cell" id="{{col}}.1" (click)="Onclick()"></td>
-                    <td class="cell" id="{{col}}.2" (click)="Onclick()"></td>
+                    <td class="cell" id="{{row}}.{{col}}.0" (click)="move(row,col,0)"></td>
+                    <td class="cell" id="{{col}}.1" (click)="move(row,col,1)"></td>
+                    <td class="cell" id="{{col}}.2" (click)="move(row,col,2)"></td>
                 </tr>
     
                 <tr>
-                    <td class="cell" id="{{col}}.3" (click)="Onclick()"></td>
-                    <td class="cell" id="{{col}}.4" (click)="Onclick()"></td>
-                    <td class="cell" id="{{col}}.5" (click)="Onclick()"></td>
+                    <td class="cell" id="{{col}}.3" (click)="move(row,col,3)"></td>
+                    <td class="cell" id="{{col}}.4" (click)="move(row,col,4)"></td>
+                    <td class="cell" id="{{col}}.5" (click)="move(row,col,5)"></td>
                 </tr>
     
                 <tr>
-                    <td class="cell" id="{{col}}.6" (click)="Onclick()"></td>
-                    <td class="cell" id="{{col}}.7" (click)="Onclick()"></td>
-                    <td class="cell" id="{{col}}.8" (click)="Onclick()"></td>
+                    <td class="cell" id="{{col}}.6" (click)="move(row,col,6)"></td>
+                    <td class="cell" id="{{col}}.7" (click)="move(row,col,7)"></td>
+                    <td class="cell" id="{{col}}.8" (click)="move(row,col,8)"></td>
                 </tr>
             </table>
         </div>

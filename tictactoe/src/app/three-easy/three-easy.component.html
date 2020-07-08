@@ -17,4 +17,5 @@
     <button 
             class ="btn btn-primary new-game"
             (click) ="newGame()">New Game</button>
+            <button  *ngIf = "isGameOver==false" (click) ="undo()">Undo</button>
 </div>

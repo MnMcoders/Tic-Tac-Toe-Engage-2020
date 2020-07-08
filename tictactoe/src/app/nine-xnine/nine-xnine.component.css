@@ -31,13 +31,14 @@ table tr td:last-child{
 }
 
 .bigtable{
-    display: flex;
+    display: inline-block;
     justify-content: space-evenly;
     width: fit-content;
     height: fit-content;
     margin: 5%;
-    margin-left: 35%;
-    margin-top: -25%;   
+    margin-left: 45%;
+    margin-top: -37%;   
+    background-color: antiquewhite;
 }
 
 .col-md-4{
