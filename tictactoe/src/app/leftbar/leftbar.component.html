@@ -4,27 +4,27 @@
     <h4>Standard</h4>
     <button class="type">3x3</button>
     <h5>Level</h5>
-    <div class="btn-group">
-            <button (click)="onClickGameType('Easy')" >Easy</button>
-            <button (click)="onClickGameType('Medium')">Medium</button>
-            <button (click)="onClickGameType('Hard')">Hard</button>
-            <button (click)="onClickGameType('Pro')">Pro</button>
+    <div class="btn-block levels">
+            <button class="levels" (click)="onClickGameType('Easy')" >Easy</button>
+            <button class="levels" (click)="onClickGameType('Medium')">Medium</button>
+            <button class="levels" (click)="onClickGameType('Hard')">Hard</button>
+            <button class="levels" (click)="onClickGameType('Pro')">Pro</button>
     </div>
 
     <h4>Advanced</h4>
-    <div class="btn-group">
+    <div class="btn-block">
         <button class="type" (click)="onClickGameType('four')">4x4</button>
         <button class="type" (click)="onClickGameType('nine')">9x9</button>
     </div>
     
-    <h3>Starting Player</h3>
-    <div class="btn-group">
+    <h5>Starter</h5>
+    <div class="btn-block player">
         <button (click)="onClickPlayerType('human')">Human</button>
         <button (click)="onClickPlayerType('machine')">Machine</button>
     </div>
 
-    <div class="play">
-        <button class="start"(click)="onClickToPlay()" >Let's Play</button>
+    <div class="btn-block play">
+        <button class="start"(click)="onClickToPlay()" >Play</button>
     </div>
 
     </div>

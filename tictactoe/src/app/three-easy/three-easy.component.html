@@ -1,21 +1,24 @@
 <div class="container">
-    <div class ="status text-center p-4">{{statusMessage}}</div>
-<!--     
-    <h2>{{"Hello " + playerData}}</h2>
-    <h2>{{"Hey, It's " + gameData}}</h2> -->
-    <div class ="board" *ngFor ="let row of [0,1,2]">
-        <app-cell *ngFor ="let col of [0,1,2]" 
-                    [size] = "2"
-                    [row] = "row" 
-                    [col] = "col" 
-                    [piece] = "board[row][col]" 
-                    (click) = "(currentPlayer==='human' && board[row][col]==' ')?move(row,col):false">
-        </app-cell>
+   
+    <!--    
+        <div class ="status text-center p-4">{{statusMessage}}</div> 
+        <h2>{{"Hello " + playerData}}</h2>
+        <h2>{{"Hey, It's " + gameData}}</h2> 
+    -->
+        <div class ="board" *ngFor ="let row of [0,1,2]">
+            <app-cell  *ngFor ="let col of [0,1,2]" 
+                        [size] = "2"
+                        [row] = "row" 
+                        [col] = "col" 
+                        [piece] = "board[row][col]" 
+                        (click) = "currentPlayer==='human'?move(row,col):false">
+            </app-cell>
+        </div>
+    
+        <div class ="pt-2"></div>
+        <button 
+                class ="btn btn-primary new-game"
+                (click) ="newGame()">New Game</button>
     </div>
-
-    <div class ="pt-2"></div>
-    <button class ="btn btn-primary new-game"
-            (click) ="newGame()">New Game</button>
-    <button  *ngIf = "isGameOver==false" class ="btn btn-primary undo" 
-                    (click) ="undo()">Undo</button>
-</div>
+    
+    

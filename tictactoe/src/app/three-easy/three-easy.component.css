@@ -1,11 +1,9 @@
-.container{
-    margin-left: 45%;
-    margin-top: -37%;
-    @media only screen and (max-width: 45em) {
-        font-size: 5rem;
-        padding: 1.5rem 0;
-      }
-}
+/* .container{
+    position: fixed;
+    width: 30%;
+    height:30%;
+} */
+
 .board{
     display: flex; 
     flex-direction: row;
@@ -13,10 +11,7 @@
     justify-content: flex-start;
     color: palevioletred;
     border: 30px; 
-}
 
-h2{
-    margin-top: -5%;
 }
 
 .new-game{
@@ -28,15 +23,25 @@ h2{
     font-weight: bolder;
     
 }
-.undo{
-    margin-top: 10px;
-    background-color: cornflowerblue;
-    border-radius: 10px;
-    border-color: black;
-    padding: 5px;
-    font-weight: bolder;
-}
 
 button:hover{
     background-color:purple;
     }
+
+@media screen and (max-width: 1024px) {
+    .board{
+        font-size: 8px;
+    }
+} 
+
+@media screen and (max-width: 768px) {
+    .board{
+        font-size: 6px;
+    }
+} 
+@media screen and (max-width: 480px) {
+    .board{
+        font-size: 6px;
+    }
+} 
+

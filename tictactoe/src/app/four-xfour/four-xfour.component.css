@@ -1,12 +1,46 @@
-.container{
-    margin-left: 45%;
-    margin-top: -40%;
-}
+/* .container{
+    position: fixed;
+    width: 30%;
+    height:30%;
+} */
+
 .board{
     display: flex; 
     flex-direction: row;
     flex-wrap: wrap; 
     justify-content: flex-start;
     color: palevioletred;
-    border: 10px;
+    border: 30px; 
+
 }
+
+.new-game{
+    border-radius: 10px;
+    border-color: black;
+    padding: 5px;
+    font-weight: bolder;
+    margin-bottom: 10px;
+    
+}
+
+button:hover{
+    background-color:purple;
+    }
+
+@media screen and (max-width: 1024px) {
+    .board{
+        font-size: 8px;
+    }
+} 
+
+@media screen and (max-width: 768px) {
+    .board{
+        font-size: 6px;
+    }
+} 
+
+@media screen and (max-width: 480px) {
+    .board{
+        font-size: 4px;
+    }
+} 

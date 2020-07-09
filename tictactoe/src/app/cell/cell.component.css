@@ -1,33 +1,45 @@
-.container {
-    width: 40%;
-    height: 40%;
-
-}
-
 .cell {
-    position: relative;
-    width: 130px;
-    height: 130px;
-    @media (max-width: 300px){
-        .cell{
-            position: relative;
-            height: 50px;
-            weight: 50px;
-        }
-    
-    }
-    box-sizing: border-box;
-    font-size: 5em;
+    width: 120px;
+    height: 120px; 
+       font-size: 5em;
     font-family: sans-serif;
     color:black;
-    opacity:1;
     display: flex;
     justify-content: center;
     align-items: center;    
     background-color: white;
-    opacity: 0.6;
-    
+    opacity: 0.7;
 }
+
+
+
+
+@media screen and (max-width: 1024px) {
+  .cell {
+    width: 80px;
+    height: 80px;
+    
+  }
+}  
+@media screen and (max-width: 768px) {
+    .cell {
+      width: 50px;
+      height: 50px;
+    }
+  } 
+
+  @media screen and (max-width: 480px) {
+    .cell {
+      width: 45px;
+      height: 45px;
+    }
+} 
+@media screen and (max-width: 320px) {
+  .cell {
+    width: 40px;
+    height: 40px;
+  }
+} 
 
 .cell :hover {
     background-color: darkgray;
@@ -35,31 +47,17 @@
     
 }
 
-.v{
+.v,.h,.l{
     border: 10px solid black; 
     cursor: pointer;
-   
 }
-.v:hover {
+
+
+.v:hover,.h:hover,.l:hover {
     background-color: rgb(105, 105, 182);
     transform: scale(1.15); 
 }
-.h{
-    border: 10px solid black; 
-    cursor: pointer;
-   
-}
-.h:hover {
-    background-color: rgb(105, 105, 182);
-    transform: scale(1.15); 
-}
-.l{
-    border: 10px solid black; 
-    cursor: pointer;
-   
-}
-.l:hover {
-    background-color: rgb(105, 105, 182);
-    transform: scale(1.15); 
-}
+
+
+
 
