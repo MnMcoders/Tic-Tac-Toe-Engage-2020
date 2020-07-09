@@ -1,6 +1,8 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Cellenum } from '../cell/cellenum.enum';
 import { Playerenum } from '../cell/playerenum.enum'
+import { Tree, Node } from './node';
+
 
 @Component({
   selector: 'app-nine-xnine',
@@ -116,6 +118,7 @@ export class NineXnineComponent implements OnInit {
       {
           //Monte Carlo Search Tree Function Comes Here
           this.board[row][col][pos] = this.currentPlayerMove;
+          this.MCTS();
           document.getElementById(row+"."+col+"."+pos).innerHTML = this.currentPlayerMove;
           break;
       }
@@ -134,7 +137,13 @@ export class NineXnineComponent implements OnInit {
     }
     
   }
-  
+
+  rootNode: Tree;
+  MCTS(){
+  }
+
+
+
   isWinBoard(row:number,col:number):boolean{
     //Horizontal 
     for(let pos = 0 ; pos < 9 ; pos+=3){

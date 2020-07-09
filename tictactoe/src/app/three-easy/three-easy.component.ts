@@ -1,5 +1,4 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { Element, BoundTextAst } from '@angular/compiler';
 import { Cellenum } from '../cell/cellenum.enum';
 import { Playerenum } from '../cell/playerenum.enum'
 
@@ -8,11 +7,12 @@ import { Playerenum } from '../cell/playerenum.enum'
   templateUrl: './three-easy.component.html',
   styleUrls: ['./three-easy.component.css']
 })
+
 export class ThreeEasyComponent implements OnInit {
 
   @Input() public playerData;
   @Input() public gameData;
-
+  
   public currentPlayer:Playerenum;
   private currentPlayerMove:Cellenum;
   private moves: number[];
