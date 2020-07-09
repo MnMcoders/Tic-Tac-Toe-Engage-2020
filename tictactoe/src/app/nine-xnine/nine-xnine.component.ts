@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input} from '@angular/core';
 import { Cellenum } from '../cell/cellenum.enum';
 import { Playerenum } from '../cell/playerenum.enum'
 import { Tree, Node } from './node';
@@ -118,7 +118,8 @@ export class NineXnineComponent implements OnInit {
       {
           //Monte Carlo Search Tree Function Comes Here
           this.board[row][col][pos] = this.currentPlayerMove;
-          this.MCTS();
+          this.nextCell = this.calculateNextCell(pos);
+          this.MCTS(this.board,false,row,col,pos);
           document.getElementById(row+"."+col+"."+pos).innerHTML = this.currentPlayerMove;
           break;
       }
@@ -139,8 +140,82 @@ export class NineXnineComponent implements OnInit {
   }
 
   rootNode: Tree;
-  MCTS(){
+  currNode: Node;
+  childNode: Node;
+  selectedChildNode: Node;
+  nodeToExplore: Node;
+  simulationResult: number;
+  bestValue: number;
+  UCTValue: number;
+  iterator: number;
+//For finding UCT Value
+  totalVisit: number;
+  nodeWinScore: number;
+  nodeVisit:number;
+  MCTS(board:Cellenum[][][],isMachine:boolean,row:number,col:number,pos:number){  
+    this.nextCell = this.calculateNextCell(pos);
+    this.setNodeState(this.rootNode.root,row,col,pos);
+    for(let i=0;i<9;i++)
+    {
+      if(board[this.nextCell[0]][this.nextCell[1]][i]==Cellenum.EMPTY){
+          this.setNodeState(this.childNode,this.nextCell[0],this.nextCell[1],i);
+          this.rootNode.root.children.push(this.childNode);
+      }
+    }
+    this.currNode = this.MCTSSelectNode(this.rootNode);
+    if(this.currNode!=this.checkIfLeafNode())
+    {
+      this.MCTSExpandNode(this.currNode);
+    }
+    this.nodeToExplore = this.currNode;
+    this.simulationResult = this.MCTSSimulate(this.nodeToExplore);
+    this.MCTSUpdate(this.nodeToExplore,this.simulationResult);
   }
+
+  //MCTS Algo Functions
+  MCTSSelectNode(rootNode:Tree):any{
+    this.iterator = 0;
+    while(this.iterator!=rootNode.root.children.length){
+      this.UCTValue = this.getUCTValue();
+      if(this.UCTValue>this.bestValue)
+      {
+        this.bestValue = this.UCTValue;
+        this.selectedChildNode = rootNode.root.children[this.iterator];
+      }
+      this.iterator++;
+    }
+  }
+  getUCTValue():any{
+    if(this.nodeVisit==0)return 2147483647;
+
+    return (this.nodeWinScore/this.nodeVisit) + (1.41*(Math.sqrt(Math.log(this.totalVisit))))/(this.nodeVisit)
+  }
+
+  MCTSExpandNode(currNode:Node):any{
+    
+  }
+
+  MCTSSimulate(nodeToExplore:Node):any{
+    
+  }
+
+  MCTSUpdate(nodeToExplore:Node,simulationResult:number):any{
+    
+  }
+
+  //MCTS Helper Functions
+  setNodeState(settingNode:Node,row:number,col:number,pos:number){
+    settingNode.currentState.row = row;
+    settingNode.currentState.col = col;
+    settingNode.currentState.pos = pos;
+    settingNode.currentState.isVisited = true;
+  }
+  checkIfLeafNode():any{
+    
+  }
+
+
+
 
 
 
