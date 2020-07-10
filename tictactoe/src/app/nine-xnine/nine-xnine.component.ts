@@ -1,7 +1,7 @@
 import { Component, OnInit, Input} from '@angular/core';
 import { Cellenum } from '../cell/cellenum.enum';
 import { Playerenum } from '../cell/playerenum.enum'
-import { Tree, Node } from './node';
+import { Tree, Node, State } from './node';
 import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 
 
@@ -23,6 +23,24 @@ export class NineXnineComponent implements OnInit {
   public nextCell=[];
   public bestMove=[];
   public winner;
+
+  //MCTS Variables
+  rootNode:Tree;
+  currNode: Node;
+  childNode: Node;
+  selectedChildNode: Node;
+  nodeToExplore: Node;
+  expandChildNode: Node;
+  winnerNode: Node;
+  bestChildNode: Node;
+  simulationResult: number;
+  bestValue: number;
+  UCTValue: number;
+  iterator: number;
+  count: number;
+//For finding UCT Value
+  totalVisit: number;
+  nodeVisit:number;
   
   constructor() { }
 
@@ -51,10 +69,12 @@ export class NineXnineComponent implements OnInit {
     this.currentPlayerMove = Cellenum.X;
     if(this.playerData=="machine")this.currentPlayer = Playerenum.c;
     if(this.playerData=="human")this.currentPlayer = Playerenum.h;
+    //this.currentPlayer = Playerenum.c;
     this.isGameOver = false;
     this.statusMessage = `Player ${this.currentPlayer}'s turn`;
     /*Computers First Move at Center of board*/
-    if(this.currentPlayer===Playerenum.c) this.moveComputer(1,1);
+    this.rootNode = new Tree(new Node(null,0,new State(1,1,0),[]))
+    if(this.currentPlayer === Playerenum.c)this.moveComputer(1,1);
   }
  
 
@@ -145,48 +165,28 @@ export class NineXnineComponent implements OnInit {
  
 }
 
-
-  rootNode: Tree;
-  currNode: Node;
-  childNode: Node;
-  selectedChildNode: Node;
-  nodeToExplore: Node;
-  expandChildNode: Node;
-  winnerNode: Node;
-  bestChildNode: Node;
-  simulationResult: number;
-  bestValue: number;
-  UCTValue: number;
-  iterator: number;
-  count: number;
-//For finding UCT Value
-  totalVisit: number;
-  nodeVisit:number;
   MCTS(board:Cellenum[][][],row:number,col:number,pos:number){  
     this.count = 3;
     while(this.count>0){
       this.nextCell = this.calculateNextCell(pos);
       console.log(this.nextCell);
       console.log(this.rootNode.root)
-      this.setNodeState(this.rootNode.root,row,col,pos);
+      this.rootNode.root.setState(row,col,pos);
       this.rootNode.root.player = 1;
       for(let i=0;i<9;i++)
       {
         if(board[this.nextCell[0]][this.nextCell[1]][i]==Cellenum.EMPTY){
-            this.setNodeState(this.childNode,this.nextCell[0],this.nextCell[1],i);
-            this.childNode.parent = this.rootNode.root;
-            this.childNode.player = 0;
+            this.childNode = new Node(this.rootNode.root,0,new State(this.nextCell[0],this.nextCell[1],i),[]);
             this.rootNode.root.children.push(this.childNode);
         }
       }
       this.currNode = this.MCTSSelectNode(this.rootNode);
-      if(this.currNode!=this.checkIfLeafNode())
-      {
-        this.MCTSExpandNode(this.currNode,board);
-      }
-      this.nodeToExplore = this.currNode;
-      this.simulationResult = this.MCTSSimulate(this.nodeToExplore);
-      this.MCTSUpdate(this.nodeToExplore,this.simulationResult);
+      console.log("Before Expand");
+      console.log(this.currNode);
+      this.MCTSExpandNode(this.currNode,board);
+      console.log("After Expand");
+      console.log(this.currNode);
+      this.simulationResult = this.MCTSSimulate(this.currNode);
       this.count--;
     }
 
@@ -195,8 +195,9 @@ export class NineXnineComponent implements OnInit {
   }
 
   //MCTS Algo Functions
-  MCTSSelectNode(rootNode:Tree):any{
+  MCTSSelectNode(rootNode:Tree):Node{
     this.iterator = 0;
+    this.bestValue = -Infinity;
     while(this.iterator!=rootNode.root.children.length){
       this.UCTValue = Math.fround(this.getUCTValue(rootNode.root.children[this.iterator]));
       rootNode.root.children[this.iterator].nodeWinScore = this.UCTValue;
@@ -207,21 +208,21 @@ export class NineXnineComponent implements OnInit {
       }
       this.iterator++;
     }
+    return this.selectedChildNode;
   }
-  getUCTValue(child:Node):any{
-    if(this.nodeVisit==0)return 2147483647;
 
-    return Math.fround(child.nodeWinScore/this.nodeVisit) + Math.fround((1.41*(Math.sqrt(Math.log(this.totalVisit))))/(this.nodeVisit))
+  getUCTValue(child:Node):any{
+    if(child.numberOfTimesVisited==0)return 2147483647;
+    return Math.fround(child.numberOfWins/child.numberOfTimesVisited) + Math.fround((1.41*(Math.sqrt(Math.log(this.totalVisit))))/(child.numberOfTimesVisited))
   }
 
   MCTSExpandNode(currNode:Node,board:Cellenum[][][]):any{
+    console.log(currNode);
     this.nextCell = this.calculateNextCell(currNode.currentState.pos);
     for(let i=0;i<9;i++)
     {
       if(board[this.nextCell[0]][this.nextCell[1]][i]==Cellenum.EMPTY){
-          this.setNodeState(this.expandChildNode,this.nextCell[0],this.nextCell[1],i);
-          this.expandChildNode.parent = this.currNode;
-          this.expandChildNode.player = 1;
+          this.expandChildNode = new Node(currNode,1,new State(this.nextCell[0],this.nextCell[1],i),[]);
           break;
       }
     }
@@ -233,12 +234,12 @@ export class NineXnineComponent implements OnInit {
   let tempBoard = this.board;
   let tempBoardStatus = this.boardStatus;
   let winner;
-  let currentNode = nodeToExplore;
+  let currentNode:Node = nodeToExplore;
   let nextNode:Node;
-  currentNode.numberOfTimesVisited++;
+  currentNode.incrementVisits();
   while(this.isTerminalState(tempBoard,tempBoardStatus,winner)==0){
     nextNode = this.getBestChildNode(currentNode);
-    nextNode.numberOfTimesVisited++;
+    nextNode.incrementVisits();
     currentNode = nextNode;
   }
   let simulationResult;
@@ -250,7 +251,7 @@ export class NineXnineComponent implements OnInit {
    /* 1 if Machine wins and -1 if human wins*/
   }
   /* Current Node will be the terminal node*/
-  if(simulationResult == 1)this.MCTSUpdate(currentNode,simulationResult);
+  this.MCTSUpdate(currentNode,simulationResult);
  
  }
  
@@ -269,18 +270,12 @@ export class NineXnineComponent implements OnInit {
     //Add Simulation Result
     let currentNode = nodeToExplore;
     while(currentNode.parent!=null){
-      currentNode.nodeWinScore+=simulationResult;
+      if(this.simulationResult===1)currentNode.numberOfWins+=simulationResult;
       currentNode = currentNode.parent;
     }
   } 
 
-  //MCTS Helper Functions
-  setNodeState(settingNode:Node,row:number,col:number,pos:number){
-    settingNode.currentState.row = row;
-    settingNode.currentState.col = col;
-    settingNode.currentState.pos = pos;
-    settingNode.currentState.isVisited = true;
-  }
+
   getBestChildNode(rootNode:Node):any{
     this.iterator = 0;
     this.bestValue = 0;
@@ -294,8 +289,10 @@ export class NineXnineComponent implements OnInit {
     }
     return this.bestChildNode;
   }
-  checkIfLeafNode():any{
-    
+
+  checkIfLeafNode(node:Node):any{
+    if(node.children.length ===0) return true;
+    return false;
   }
 
 
