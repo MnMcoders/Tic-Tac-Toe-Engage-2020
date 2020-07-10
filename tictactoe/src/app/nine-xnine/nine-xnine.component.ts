@@ -23,7 +23,9 @@ export class NineXnineComponent implements OnInit {
   public nextCell=[];
   public bestMove=[];
   public winner;
-
+  public available=[];
+  public tempBoard: Cellenum[][][];
+  public tempBoardStatus: number[][];
   //MCTS Variables
   rootNode:Tree;
   currNode: Node;
@@ -33,6 +35,8 @@ export class NineXnineComponent implements OnInit {
   expandChildNode: Node;
   winnerNode: Node;
   bestChildNode: Node;
+  nextNode: Node;
+  tempNode: Node;
   simulationResult: number;
   bestValue: number;
   UCTValue: number;
@@ -231,30 +235,79 @@ export class NineXnineComponent implements OnInit {
 
    
  MCTSSimulate(nodeToExplore:Node):any{
-  let tempBoard = this.board;
-  let tempBoardStatus = this.boardStatus;
+  this.tempBoard = this.board;
+  this.tempBoardStatus = this.boardStatus;
   let winner;
-  let currentNode:Node = nodeToExplore;
-  let nextNode:Node;
-  currentNode.incrementVisits();
-  while(this.isTerminalState(tempBoard,tempBoardStatus,winner)==0){
-    nextNode = this.getBestChildNode(currentNode);
-    nextNode.incrementVisits();
-    currentNode = nextNode;
+  this.tempNode = nodeToExplore.children[0];
+  console.log("HI");
+  console.log(this.tempNode);
+  this.tempNode.incrementVisits();
+  while(this.isTerminalState(this.tempBoard,this.tempBoardStatus,winner)==0){
+    /*this.nextNode = this.getBestChildNode(currentNode);
+    this.nextNode.incrementVisits();
+    currentNode = this.nextNode;*/
+    this.nextNode = this.randomPlay(this.tempNode);
+    if(this.nextNode==null)break;
+    this.tempNode = this.nextNode.children[0];
   }
   let simulationResult;
-  if(this.isTerminalState(tempBoard,tempBoardStatus,winner)==2){
+  if(this.isTerminalState(this.tempBoard,this.tempBoardStatus,winner)==2){
      simulationResult = 0; //Draw
   }
   else{
-   simulationResult =this.isTerminalState(tempBoard,tempBoardStatus,winner);
-   /* 1 if Machine wins and -1 if human wins*/
-  }
+  simulationResult =this.isTerminalState(this.tempBoard,this.tempBoardStatus,winner);
+   /* 1 if Machine wins and -1 if human wins*/ }
   /* Current Node will be the terminal node*/
-  this.MCTSUpdate(currentNode,simulationResult);
- 
+  this.MCTSUpdate(this.tempNode,simulationResult);
  }
- 
+ randomPlay(tempNode:Node):Node{
+    //Making Availablle Empty Cells Array
+    console.log("yeeee");
+    console.log(tempNode);
+    let childTempNode: Node;
+    this.nextCell = this.calculateNextCell(tempNode.currentState.pos);
+    console.log(this.nextCell);
+    for(let i=0;i<9;i++)
+    {
+      if(this.tempBoard[this.nextCell[0]][this.nextCell[1]][i]==Cellenum.EMPTY){
+          this.available.push(i);
+      }
+    }
+    if(this.available.length==0)return null;
+    //Selecting Random Child and Making the Move
+    this.shuffle(this.available);
+    let len = this.available.length;
+    console.log("I'm Avaialble");
+    console.log(this.available);
+    let p = this.available[0];
+    if(tempNode.player==0){
+      this.tempBoard[this.nextCell[0]][this.nextCell[1]][p]==Cellenum.X;
+      childTempNode = new Node(tempNode,1,new State(this.nextCell[0],this.nextCell[1],p),[]);
+    }
+    if(tempNode.player==1){
+      this.tempBoard[this.nextCell[0]][this.nextCell[1]][p]==Cellenum.O;
+      childTempNode = new Node(tempNode,0,new State(this.nextCell[0],this.nextCell[1],p),[]);
+    }
+    tempNode.children.push(childTempNode);
+    while(this.available.length>0)
+    {
+      this.available.pop();
+    }
+    return tempNode;
+ }
+ shuffle(array: number[]){
+    let currentIndex = array.length, temporaryValue :number , randomIndex : number;
+    while(currentIndex!=0){
+       
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex -= 1;
+      // And swap it with the current element.
+      temporaryValue = array[currentIndex];
+      array[currentIndex] = array[randomIndex];
+      array[randomIndex] = temporaryValue;
+    }
+    return array;
+  }
  isTerminalState(board:Cellenum[][][],boardStatus:number[][],winner:number):number{
    if(this.isWinGame(boardStatus,winner)){
      return winner;
