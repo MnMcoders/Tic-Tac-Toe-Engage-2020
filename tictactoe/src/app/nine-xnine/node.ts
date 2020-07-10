@@ -1,4 +1,7 @@
 export class Node {
+    parent: Node;
+    player: number;
+    nodeWinScore: number;
     currentState: State;
     numberOfWins : number;
     numberOfTimesVisited : number;

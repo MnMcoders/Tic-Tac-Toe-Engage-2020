@@ -2,6 +2,7 @@ import { Component, OnInit, Input} from '@angular/core';
 import { Cellenum } from '../cell/cellenum.enum';
 import { Playerenum } from '../cell/playerenum.enum'
 import { Tree, Node } from './node';
+import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 
 
 @Component({
@@ -18,10 +19,11 @@ export class NineXnineComponent implements OnInit {
   public board : Cellenum[][][];
   public isGameOver: boolean;
   public statusMessage;
-  public boardsWonHuman : number[][];
-  public boardsWonMachine : number[][];
-  public boardAvailable : boolean[][];
+  public boardStatus:number[][]; /* 0 -> Empty ; 1 -> Machine won ; -1 -> Human won ; 2 -> Draw */
   public nextCell=[];
+  public bestMove=[];
+  public winner;
+  
   constructor() { }
 
   ngOnInit(): void {
@@ -29,22 +31,15 @@ export class NineXnineComponent implements OnInit {
   }
 
   newGame(){
-
     this.board=[];
-    this.boardAvailable=[];
-    this.boardsWonHuman=[];
-    this.boardsWonMachine=[];
+    this.boardStatus=[];
     for(let row=0;row<3;row++)
     {
       this.board[row]=[];
-      this.boardAvailable[row] = [];
-      this.boardsWonHuman[row] = [];
-      this.boardsWonMachine[row] = [];
+      this.boardStatus[row] = [];
       for(let col=0;col<3;col++)
       {
-        this.boardAvailable[row][col] = true;
-        this.boardsWonHuman[row][col] = 0;
-        this.boardsWonMachine[row][col] = 0;
+        this.boardStatus[row][col] = 0;
         this.board[row][col]=[];
         for(let pos=0;pos<9;pos++)
         {
@@ -52,15 +47,17 @@ export class NineXnineComponent implements OnInit {
         }
       }
     }
-    
-
-    this.currentPlayerMove = Cellenum.X; 
+  
+    this.currentPlayerMove = Cellenum.X;
     if(this.playerData=="machine")this.currentPlayer = Playerenum.c;
     if(this.playerData=="human")this.currentPlayer = Playerenum.h;
     this.isGameOver = false;
     this.statusMessage = `Player ${this.currentPlayer}'s turn`;
-    if(this.currentPlayer===Playerenum.c)this.moveComputer(1,1);
+    /*Computers First Move at Center of board*/
+    if(this.currentPlayer===Playerenum.c) this.moveComputer(1,1);
   }
+ 
+
   move(row:number, col:number, pos:number){
     console.log(row);
     console.log(col);
@@ -70,22 +67,26 @@ export class NineXnineComponent implements OnInit {
         document.getElementById((row+"."+col+"."+pos)).innerHTML = this.currentPlayerMove;
         console.log(this.currentPlayerMove);
     }
-      if(this.isDrawGame()){
+      //TODO - Rectify the errors -- need to include win board and draw board
+    if(this.isDrawBoard(row,col,this.board,this.boardStatus,this.currentPlayer)|| this.isWinBoard(row,col,this.board,this.boardStatus,this.currentPlayer)){
+      if(this.isDrawGame(this.boardStatus)){
         this.statusMessage = 'It\'s a Draw!';
         this.isGameOver = true;
-      }else if(this.isWinGame()){
+      }else if(this.isWinGame(this.boardStatus,this.winner)){
         this.statusMessage = `Player ${this.currentPlayer} won!`;
         this.isGameOver = true;
-      }else{
-        this.currentPlayer = Playerenum.c;
-        this.currentPlayerMove = this.currentPlayerMove === Cellenum.X?Cellenum.O:Cellenum.X;
-        this.statusMessage =`Player ${this.currentPlayer}'s turn`;
       }
-      this.nextCell = this.calculateNextCell(pos);
-      if(!this.isGameOver)this.moveComputer(this.nextCell[0],this.nextCell[1]);
-  }
-  /*board[row][col][pos]: pos -> 1 to 9*/
-  /*Function to tell if smaller board at (row,col) is won*/
+    }
+    else{
+      this.currentPlayer = Playerenum.h;
+      this.currentPlayerMove = this.currentPlayerMove === Cellenum.X?Cellenum.O:Cellenum.X;
+      this.statusMessage =`Player ${this.currentPlayer}'s turn`;
+    }
+    this.nextCell = this.calculateNextCell(pos);
+    // TODO - what if next board is full ?
+    if(!this.isGameOver)this.moveComputer(this.nextCell[0],this.nextCell[1]);
+}
+
   calculateNextCell(pos:number):any{
     switch(pos)
     {
@@ -112,71 +113,87 @@ export class NineXnineComponent implements OnInit {
   }
 
   moveComputer(row:number,col:number){
+    this.bestMove = [-1,-1,-1];
     for(let pos=0;pos<9;pos++)
     {
       if(this.board[row][col][pos]==Cellenum.EMPTY)
       {
           //Monte Carlo Search Tree Function Comes Here
           this.board[row][col][pos] = this.currentPlayerMove;
-          this.nextCell = this.calculateNextCell(pos);
-          this.MCTS(this.board,false,row,col,pos);
-          document.getElementById(row+"."+col+"."+pos).innerHTML = this.currentPlayerMove;
-          break;
+          this.bestMove = this.MCTS(this.board,row,col,pos);
+          document.getElementById(this.bestMove[0]+"."+this.bestMove[1]+"."+this.bestMove[2]).innerHTML = this.currentPlayerMove;
       }
     }
 
-    if(this.isDrawGame()){
+    /* This part of move computer I have changed */
+   if(this.isDrawBoard(row,col,this.board,this.boardStatus,this.currentPlayer)|| this.isWinBoard(row,col,this.board,this.boardStatus,this.currentPlayer)){
+    if(this.isDrawGame(this.boardStatus)){
       this.statusMessage = 'It\'s a Draw!';
       this.isGameOver = true;
-    }else if(this.isWinGame()){
+    }else if(this.isWinGame(this.boardStatus,this.winner)){
       this.statusMessage = `Player ${this.currentPlayer} won!`;
       this.isGameOver = true;
-    }else{
-      this.currentPlayer = Playerenum.h;
-      this.currentPlayerMove = this.currentPlayerMove === Cellenum.X?Cellenum.O:Cellenum.X;
-      this.statusMessage =`Player ${this.currentPlayer}'s turn`;
     }
-    
   }
+  else{
+    this.currentPlayer = Playerenum.h;
+    this.currentPlayerMove = this.currentPlayerMove === Cellenum.X?Cellenum.O:Cellenum.X;
+    this.statusMessage =`Player ${this.currentPlayer}'s turn`;
+  }
+ 
+}
+
 
   rootNode: Tree;
   currNode: Node;
   childNode: Node;
   selectedChildNode: Node;
   nodeToExplore: Node;
+  expandChildNode: Node;
+  winnerNode: Node;
+  bestChildNode: Node;
   simulationResult: number;
   bestValue: number;
   UCTValue: number;
   iterator: number;
 //For finding UCT Value
   totalVisit: number;
-  nodeWinScore: number;
   nodeVisit:number;
-  MCTS(board:Cellenum[][][],isMachine:boolean,row:number,col:number,pos:number){  
-    this.nextCell = this.calculateNextCell(pos);
-    this.setNodeState(this.rootNode.root,row,col,pos);
-    for(let i=0;i<9;i++)
-    {
-      if(board[this.nextCell[0]][this.nextCell[1]][i]==Cellenum.EMPTY){
-          this.setNodeState(this.childNode,this.nextCell[0],this.nextCell[1],i);
-          this.rootNode.root.children.push(this.childNode);
+  MCTS(board:Cellenum[][][],row:number,col:number,pos:number){  
+   
+    while(1){
+      this.nextCell = this.calculateNextCell(pos);
+      this.setNodeState(this.rootNode.root,row,col,pos);
+      this.rootNode.root.player = 1;
+      for(let i=0;i<9;i++)
+      {
+        if(board[this.nextCell[0]][this.nextCell[1]][i]==Cellenum.EMPTY){
+            this.setNodeState(this.childNode,this.nextCell[0],this.nextCell[1],i);
+            this.childNode.parent = this.rootNode.root;
+            this.childNode.player = 0;
+            this.rootNode.root.children.push(this.childNode);
+        }
       }
+      this.currNode = this.MCTSSelectNode(this.rootNode);
+      if(this.currNode!=this.checkIfLeafNode())
+      {
+        this.MCTSExpandNode(this.currNode,board);
+      }
+      this.nodeToExplore = this.currNode;
+      this.simulationResult = this.MCTSSimulate(this.nodeToExplore);
+      this.MCTSUpdate(this.nodeToExplore,this.simulationResult);
     }
-    this.currNode = this.MCTSSelectNode(this.rootNode);
-    if(this.currNode!=this.checkIfLeafNode())
-    {
-      this.MCTSExpandNode(this.currNode);
-    }
-    this.nodeToExplore = this.currNode;
-    this.simulationResult = this.MCTSSimulate(this.nodeToExplore);
-    this.MCTSUpdate(this.nodeToExplore,this.simulationResult);
+
+    this.winnerNode = this.getBestChildNode(this.rootNode.root);
+    return [this.winnerNode.currentState.row,this.winnerNode.currentState.col,this.winnerNode.currentState.pos];
   }
 
   //MCTS Algo Functions
   MCTSSelectNode(rootNode:Tree):any{
     this.iterator = 0;
     while(this.iterator!=rootNode.root.children.length){
-      this.UCTValue = this.getUCTValue();
+      this.UCTValue = Math.fround(this.getUCTValue(rootNode.root.children[this.iterator]));
+      rootNode.root.children[this.iterator].nodeWinScore = this.UCTValue;
       if(this.UCTValue>this.bestValue)
       {
         this.bestValue = this.UCTValue;
@@ -185,23 +202,71 @@ export class NineXnineComponent implements OnInit {
       this.iterator++;
     }
   }
-  getUCTValue():any{
+  getUCTValue(child:Node):any{
     if(this.nodeVisit==0)return 2147483647;
 
-    return (this.nodeWinScore/this.nodeVisit) + (1.41*(Math.sqrt(Math.log(this.totalVisit))))/(this.nodeVisit)
+    return Math.fround(child.nodeWinScore/this.nodeVisit) + Math.fround((1.41*(Math.sqrt(Math.log(this.totalVisit))))/(this.nodeVisit))
   }
 
-  MCTSExpandNode(currNode:Node):any{
-    
+  MCTSExpandNode(currNode:Node,board:Cellenum[][][]):any{
+    this.nextCell = this.calculateNextCell(currNode.currentState.pos);
+    for(let i=0;i<9;i++)
+    {
+      if(board[this.nextCell[0]][this.nextCell[1]][i]==Cellenum.EMPTY){
+          this.setNodeState(this.expandChildNode,this.nextCell[0],this.nextCell[1],i);
+          this.expandChildNode.parent = this.currNode;
+          this.expandChildNode.player = 1;
+          break;
+      }
+    }
+    this.currNode.children.push(this.expandChildNode);
   }
 
-  MCTSSimulate(nodeToExplore:Node):any{
-    
+   
+ MCTSSimulate(nodeToExplore:Node):any{
+  let tempBoard = this.board;
+  let tempBoardStatus = this.boardStatus;
+  let winner;
+  let currentNode = nodeToExplore;
+  let nextNode:Node;
+  currentNode.numberOfTimesVisited++;
+  while(this.isTerminalState(tempBoard,tempBoardStatus,winner)==0){
+    nextNode = this.getBestChildNode(currentNode);
+    nextNode.numberOfTimesVisited++;
+    currentNode = nextNode;
   }
+  let simulationResult;
+  if(this.isTerminalState(tempBoard,tempBoardStatus,winner)==2){
+     simulationResult = 0; //Draw
+  }
+  else{
+   simulationResult =this.isTerminalState(tempBoard,tempBoardStatus,winner);
+   /* 1 if Machine wins and -1 if human wins*/
+  }
+  /* Current Node will be the terminal node*/
+  if(simulationResult == 1)this.MCTSUpdate(currentNode,simulationResult);
+ 
+ }
+ 
+ isTerminalState(board:Cellenum[][][],boardStatus:number[][],winner:number):number{
+   if(this.isWinGame(boardStatus,winner)){
+     return winner;
+   }
+   else if(this.isDrawGame(boardStatus)){
+     return 2;
+   }
+   else return 0;
+ }
+
 
   MCTSUpdate(nodeToExplore:Node,simulationResult:number):any{
-    
-  }
+    //Add Simulation Result
+    let currentNode = nodeToExplore;
+    while(currentNode.parent!=null){
+      currentNode.nodeWinScore+=simulationResult;
+      currentNode = currentNode.parent;
+    }
+  } 
 
   //MCTS Helper Functions
   setNodeState(settingNode:Node,row:number,col:number,pos:number){
@@ -209,6 +274,19 @@ export class NineXnineComponent implements OnInit {
     settingNode.currentState.col = col;
     settingNode.currentState.pos = pos;
     settingNode.currentState.isVisited = true;
+  }
+  getBestChildNode(rootNode:Node):any{
+    this.iterator = 0;
+    this.bestValue = 0;
+    while(this.iterator!=rootNode.children.length)
+    {
+      if(this.bestValue>rootNode.children[this.iterator].nodeWinScore){
+        this.bestValue = rootNode.children[this.iterator].nodeWinScore;
+        this.bestChildNode = rootNode.children[this.iterator];
+      }
+      this.iterator++;
+    }
+    return this.bestChildNode;
   }
   checkIfLeafNode():any{
     
@@ -218,104 +296,103 @@ export class NineXnineComponent implements OnInit {
 
 
 
-
-  isWinBoard(row:number,col:number):boolean{
-    //Horizontal 
-    for(let pos = 0 ; pos < 9 ; pos+=3){
-      if(this.board[row][col][pos]== this.board[row][col][pos+1] && this.board[row][col][pos+1]== this.board[row][col][pos+2] && this.board[row][col][pos]!=Cellenum.EMPTY){
-        /*Add win to corresponsing player*/
-        if(this.currentPlayer==Playerenum.h) this.boardsWonHuman[row][col]=1;
-        else this.boardsWonMachine[row][col]=1;
-        this.boardAvailable[row][col] = false;
-        return true;
-      }
-    }
-
-    //Vertical 
-    for(let pos = 0 ; pos < 3 ; pos++){
-      if(this.board[row][col][pos]== this.board[row][col][pos+3] && this.board[row][col][pos+3]== this.board[row][col][pos+6] && this.board[row][col][pos]!=Cellenum.EMPTY){
-        if(this.currentPlayer==Playerenum.h) this.boardsWonHuman[row][col]=1;
-        else this.boardsWonMachine[row][col]=1;
-        this.boardAvailable[row][col] = false;
-        return true;
-      }
-    }
-
-    //Diagonal
-    if(this.board[row][col][0]== this.board[row][col][4] && this.board[row][col][4]== this.board[row][col][8] && this.board[row][col][0]!=Cellenum.EMPTY){
-      if(this.currentPlayer==Playerenum.h) this.boardsWonHuman[row][col]=1;
-        else this.boardsWonMachine[row][col]=1;
-      this.boardAvailable[row][col] = false;
+/*board[row][col][pos]: pos -> 1 to 9*/
+ /*Function to tell if smaller board at (row,col) is won*/
+ isWinBoard(row:number,col:number,board:Cellenum[][][],boardStatus:number[][],currentPlayer:Playerenum):boolean{
+  //Horizontal
+  for(let pos = 0 ; pos < 9 ; pos+=3){
+    if(board[row][col][pos]== board[row][col][pos+1] && board[row][col][pos+1]== board[row][col][pos+2] && board[row][col][pos]!=Cellenum.EMPTY){
+      /*Add win to corresponsing player*/
+      if(currentPlayer==Playerenum.h)boardStatus[row][col]=-1;
+      else boardStatus[row][col]=1;
       return true;
     }
-    if(this.board[row][col][2]== this.board[row][col][4] && this.board[row][col][4]== this.board[row][col][6] && this.board[row][col][2]!=Cellenum.EMPTY){
-      if(this.currentPlayer==Playerenum.h) this.boardsWonHuman[row][col]=1;
-        else this.boardsWonMachine[row][col]=1;
-      this.boardAvailable[row][col] = false;
-      return true;    
-      
-    }
-
-    return false;
   }
 
-
-  isWinGame(){
-    let tempBoard:number[][];
-    if(this.currentPlayer = Playerenum.h) tempBoard = this.boardsWonHuman;
-    else tempBoard = this.boardsWonMachine;
-
-    //Horizontal
-    for(let row = 0 ; row < 3 ; row ++){
-      if(tempBoard[row][0]==tempBoard[row][1] && tempBoard[row][1]==tempBoard[row][2] && tempBoard[row][0]==1){
-        this.isGameOver = true;
-        return true;
-      }
+  //Vertical
+  for(let pos = 0 ; pos < 3 ; pos++){
+    if(board[row][col][pos]== board[row][col][pos+3] && board[row][col][pos+3]== board[row][col][pos+6] && board[row][col][pos]!=Cellenum.EMPTY){
+      if(currentPlayer==Playerenum.h)boardStatus[row][col]=-1;
+      else boardStatus[row][col]=1;
+      return true;
     }
+  }
 
-    //Vertical 
-    for(let col = 0 ; col < 3 ; col ++){
-      if(tempBoard[0][col]==tempBoard[1][col] && tempBoard[2][col]==tempBoard[1][col] && tempBoard[0][col]==1){
-        this.isGameOver = true;
-        return true;
-      }
-    }
+  //Diagonal
+  if(board[row][col][0]== board[row][col][4] && board[row][col][4]== board[row][col][8] && board[row][col][0]!=Cellenum.EMPTY){
+    if(currentPlayer==Playerenum.h)boardStatus[row][col]=-1;
+    else boardStatus[row][col]=1;
+    return true;
+  }
+  if(board[row][col][2]== board[row][col][4] && board[row][col][4]== board[row][col][6] && board[row][col][2]!=Cellenum.EMPTY){
+    if(currentPlayer==Playerenum.h)boardStatus[row][col]=-1;
+    else boardStatus[row][col]=1;
+    return true;   
+   
+  }
 
-    //Diagonal
-    if(tempBoard[0][0]==tempBoard[1][1] && tempBoard[2][2]==tempBoard[1][1] && tempBoard[0][0]==1){
+  return false;
+}
+
+ isWinGame(boardStatus:number[][],winner:number){
+  //Horizontal
+  for(let row = 0 ; row < 3 ; row ++){
+    if(boardStatus[row][0]==boardStatus[row][1] && boardStatus[row][1]==boardStatus[row][2] && (boardStatus[row][0]==1|| boardStatus[row][0]==-1)){
+      winner = boardStatus[row][0];
       this.isGameOver = true;
       return true;
     }
+  }
 
-    if(tempBoard[0][2]==tempBoard[1][1] && tempBoard[2][0]==tempBoard[1][1] && tempBoard[0][2]==1){
+  //Vertical
+  for(let col = 0 ; col < 3 ; col ++){
+    if(boardStatus[0][col]==boardStatus[1][col] && boardStatus[2][col]==boardStatus[1][col] && boardStatus[0][col]==1){
+      winner = boardStatus[0][col];
       this.isGameOver = true;
       return true;
     }
-
-    return false;
   }
 
-
-  isDrawBoard(row:number,col:number): boolean {
-    for(let pos = 0; pos < 9 ; pos++){
-      if(this.board[row][col][pos]!= Cellenum.EMPTY) return false;
-    }
-    if(!this.isWinBoard(row,col)){
-      this.boardAvailable[row][col] = false;
-      this.boardsWonHuman[row][col] = 2;
-      this.boardsWonMachine[row][col] = 2;
-      return true;
-    }
-    return false;
+  //Diagonal
+  if(boardStatus[0][0]==boardStatus[1][1] && boardStatus[2][2]==boardStatus[1][1] && boardStatus[0][0]==1){
+    winner = boardStatus[0][0]
+    this.isGameOver = true;
+    return true;
   }
 
-  isDrawGame(){
-    for(let row = 0;row < 3 ; row++){
-      for(let col = 0; col < 3;col++){
-        if(this.boardAvailable[row][col]==true) return false;
-      }
-    }
-    return !this.isWinGame();
+  if(boardStatus[0][2]==boardStatus[1][1] && boardStatus[2][0]==boardStatus[1][1] && boardStatus[0][2]==1){
+    winner = boardStatus[0][2]
+    this.isGameOver = true;
+    return true;
   }
 
+  return false;
+}
+
+
+isDrawBoard(row:number,col:number,board:Cellenum[][][],boardStatus:number[][],currentPlayer:Playerenum): boolean {
+  for(let pos = 0; pos < 9 ; pos++){
+    if(board[row][col][pos]!= Cellenum.EMPTY) return false;
+  }
+  if(!this.isWinBoard(row,col,board,boardStatus,currentPlayer)){
+    boardStatus[row][col] = 2;
+    return true;
+  }
+  return false;
+}
+
+isDrawGame(boardStatus:number[][]){
+  for(let row = 0;row < 3 ; row++){
+    for(let col = 0; col < 3;col++){
+      if(boardStatus[row][col]==0) return false;
+    }
+  }
+  return !this.isWinGame(boardStatus,this.winner);
+}
+
+
+
+  
+  
+ 
 }
