@@ -83,6 +83,7 @@ export class NineXnineComponent implements OnInit {
       this.statusMessage =`Player ${this.currentPlayer}'s turn`;
     }
     this.nextCell = this.calculateNextCell(pos);
+    console.log(this.nextCell);
     // TODO - what if next board is full ?
     if(!this.isGameOver)this.moveComputer(this.nextCell[0],this.nextCell[1]);
 }
@@ -119,9 +120,10 @@ export class NineXnineComponent implements OnInit {
       if(this.board[row][col][pos]==Cellenum.EMPTY)
       {
           //Monte Carlo Search Tree Function Comes Here
-          this.board[row][col][pos] = this.currentPlayerMove;
           this.bestMove = this.MCTS(this.board,row,col,pos);
+          console.log(this.bestMove);
           document.getElementById(this.bestMove[0]+"."+this.bestMove[1]+"."+this.bestMove[2]).innerHTML = this.currentPlayerMove;
+          break;
       }
     }
 
@@ -156,13 +158,16 @@ export class NineXnineComponent implements OnInit {
   bestValue: number;
   UCTValue: number;
   iterator: number;
+  count: number;
 //For finding UCT Value
   totalVisit: number;
   nodeVisit:number;
   MCTS(board:Cellenum[][][],row:number,col:number,pos:number){  
-   
-    while(1){
+    this.count = 3;
+    while(this.count>0){
       this.nextCell = this.calculateNextCell(pos);
+      console.log(this.nextCell);
+      console.log(this.rootNode.root)
       this.setNodeState(this.rootNode.root,row,col,pos);
       this.rootNode.root.player = 1;
       for(let i=0;i<9;i++)
@@ -182,6 +187,7 @@ export class NineXnineComponent implements OnInit {
       this.nodeToExplore = this.currNode;
       this.simulationResult = this.MCTSSimulate(this.nodeToExplore);
       this.MCTSUpdate(this.nodeToExplore,this.simulationResult);
+      this.count--;
     }
 
     this.winnerNode = this.getBestChildNode(this.rootNode.root);
