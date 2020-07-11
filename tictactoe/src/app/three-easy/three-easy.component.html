@@ -21,6 +21,9 @@
                 (click) ="newGame()">New Game</button>
         <button class ="btn btn-primary undo"
                 *ngIf="isThreeGameOver==false" (click) ="undo()">Undo</button>
+        <button class ="btn btn-primary hint"
+                *ngIf="isThreeGameOver==false" (click) ="provideHints()">Hint</button>
+    
     </div>
     
     

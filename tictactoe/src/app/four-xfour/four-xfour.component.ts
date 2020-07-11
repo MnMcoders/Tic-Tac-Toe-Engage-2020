@@ -96,6 +96,29 @@ export class FourXfourComponent implements OnInit {
     if(!this.isGameOver && this.opponentData=="vsMachine")this.moveComputer();
   }
 
+  /*HINTS FUNCTION*/
+  provideHints(){
+    let bestNextMove:number[];
+    let bestHumanScore:number= -Infinity;
+    //Best move for Human will have large negative value in minimax
+    for(let row =0; row < 4;row++){
+      for(let col =0;col< 4;col++){
+        if(this.board[row][col] === Cellenum.EMPTY){
+          this.board[row][col] = this.currentPlayerMove;
+          let currHumanScore = this.alphaBetaPruning(this.board,3,-Infinity,Infinity,false);
+          this.board[row][col] = Cellenum.EMPTY;
+          if(currHumanScore > bestHumanScore){
+            bestHumanScore = currHumanScore;
+            bestNextMove = [row,col];
+          }
+        }  
+      }
+    }
+    console.log("BEST MOVE IS:");
+    console.log(bestNextMove);
+  }
+
+
   moveComputer(){
     //First Move of Computer
     if(this.isFirstMove==true)

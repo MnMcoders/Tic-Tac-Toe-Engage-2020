@@ -24,6 +24,7 @@ export class ThreeEasyComponent implements OnInit {
   public statusMessage;
   public index:number;
   public selectedMoves = [];
+  
 
   constructor() { }
 
@@ -99,6 +100,8 @@ export class ThreeEasyComponent implements OnInit {
     }
     if(!this.isThreeGameOver && this.opponentData=="vsMachine")this.moveComputer();
   }
+
+
   // Make a move if possible - for computer 
   moveComputer(){
     if(this.gameData=="Easy")
@@ -324,6 +327,29 @@ export class ThreeEasyComponent implements OnInit {
         }
         return bestScore;
       }
+  }
+
+  //Provide Hints to user 
+  
+  provideHints(){
+      let bestNextMove:number[];
+      let bestHumanScore:number= -Infinity;
+      //Best move for Human will have large negative value in minimax
+      for(let row =0; row < 3;row++){
+        for(let col =0;col<3;col++){
+          if(this.board[row][col] === Cellenum.EMPTY){
+            this.board[row][col] = this.currentPlayerMove;
+            let currHumanScore = this.minimax(this.board,7,false);
+            this.board[row][col] = Cellenum.EMPTY;
+            if(currHumanScore > bestHumanScore){
+              bestHumanScore = currHumanScore;
+              bestNextMove = [row,col];
+            }
+          }  
+        }
+      }
+    console.log("BEST MOVE IS:");
+    console.log(bestNextMove);
   }
 
   //Is the game a 
