@@ -11,12 +11,13 @@ export class FourXfourComponent implements OnInit {
 
   @Input() public playerData;
   @Input() public gameData;
+  @Input() public opponentData;
   
   public currentPlayer:Playerenum;
   private currentPlayerMove:Cellenum;
   private first: number[];
   public board : Cellenum[][];
-  private isGameOver: boolean;
+  public isGameOver: boolean;
   public isFirstMove : boolean; 
   public statusMessage;
   public index:number;
@@ -64,7 +65,7 @@ export class FourXfourComponent implements OnInit {
     }
 
     //Initialize first player if mentioned as else computer
-    if(this.playerData === "machine") this.currentPlayer = Playerenum.c;
+    if(this.opponentData=="vsMachine" && this.playerData === "machine") this.currentPlayer = Playerenum.c;
     if(this.playerData === "human") this.currentPlayer = Playerenum.h;
     //X always starts
     this.currentPlayerMove = Cellenum.X;
@@ -92,7 +93,7 @@ export class FourXfourComponent implements OnInit {
         this.statusMessage =`Player ${this.currentPlayer}'s turn`;
       }
     }
-    if(!this.isGameOver)this.moveComputer();
+    if(!this.isGameOver && this.opponentData=="vsMachine")this.moveComputer();
   }
 
   moveComputer(){

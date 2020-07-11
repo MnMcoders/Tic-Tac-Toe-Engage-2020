@@ -20,7 +20,7 @@
         <button class ="btn btn-primary new-game"
                 (click) ="newGame()">New Game</button>
         <button class ="btn btn-primary undo"
-                (click) ="undo()">Undo</button>
+                *ngIf="isThreeGameOver==false" (click) ="undo()">Undo</button>
     </div>
     
     

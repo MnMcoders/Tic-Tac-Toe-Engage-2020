@@ -11,7 +11,8 @@
                         [row] = "row" 
                         [col] = "col" 
                         [piece] = "board[row][col]" 
-                        (click) = "currentPlayer==='human'?move(row,col):false">
+                        (click) = "(currentPlayer==='human' && opponentData=='vsMachine' && board[row][col]==' ')?move(row,col):false"
+                        (click) = "(opponentData=='vsHuman' && board[row][col]==' ')?move(row,col):false">
             </app-cell>
         </div>
     
@@ -19,6 +20,6 @@
         <button class ="btn btn-primary new-game"
                 (click) ="newGame()">New Game</button>
         <button class ="btn btn-primary undo"
-                (click) ="undo()">Undo</button>
+                *ngIf="isGameOver==false" (click) ="undo()">Undo</button>
     </div>
     

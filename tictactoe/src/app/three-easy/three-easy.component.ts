@@ -19,7 +19,7 @@ export class ThreeEasyComponent implements OnInit {
   private moves: number[];
   private first: number[];
   public board : Cellenum[][];
-  public isGameOver: boolean;
+  public isThreeGameOver: boolean;
   public isFirstMove : boolean; 
   public statusMessage;
   public index:number;
@@ -33,7 +33,7 @@ export class ThreeEasyComponent implements OnInit {
 
   //Getter for isGameOver 
   get gameOver():boolean {
-    return this.isGameOver;
+    return this.isThreeGameOver;
   }
 
   shuffle(array: number[]){
@@ -71,9 +71,9 @@ export class ThreeEasyComponent implements OnInit {
     }
     //First Player is Always X
     this.currentPlayerMove = Cellenum.X; 
-    if(this.playerData=="machine")this.currentPlayer = Playerenum.c;
+    if(this.opponentData=="vsMachine" && this.playerData=="machine")this.currentPlayer = Playerenum.c;
     if(this.playerData=="human")this.currentPlayer = Playerenum.h;
-    this.isGameOver = false;
+    this.isThreeGameOver = false;
     if(this.currentPlayer===Playerenum.c)this.isFirstMove = true;
     if(this.currentPlayer===Playerenum.h)this.isFirstMove = false;
     this.statusMessage = `Player ${this.currentPlayer}'s turn`;
@@ -82,22 +82,22 @@ export class ThreeEasyComponent implements OnInit {
 
   //Make a move if the current is empty - for human
   move(row:number,col:number){
-    if(!this.isGameOver && this.board[row][col]==Cellenum.EMPTY){
+    if(!this.isThreeGameOver && this.board[row][col]==Cellenum.EMPTY){
       this.board[row][col] = this.currentPlayerMove;
       this.selectedMoves.push([row,col]);
       if(this.isDraw()){
         this.statusMessage = 'It\'s a Draw!';
-        this.isGameOver = true;
+        this.isThreeGameOver = true;
       }else if(this.isWin()){
         this.statusMessage = `Player ${this.currentPlayer} won!`;
-        this.isGameOver = true;
+        this.isThreeGameOver = true;
       }else{
         this.currentPlayer = Playerenum.c;
         this.currentPlayerMove = this.currentPlayerMove === Cellenum.X?Cellenum.O:Cellenum.X;
         this.statusMessage =`Player ${this.currentPlayer}'s turn`;
       }
     }
-    if(!this.isGameOver && this.opponentData=="vsMachine")this.moveComputer();
+    if(!this.isThreeGameOver && this.opponentData=="vsMachine")this.moveComputer();
   }
   // Make a move if possible - for computer 
   moveComputer(){
@@ -105,7 +105,7 @@ export class ThreeEasyComponent implements OnInit {
     {
       let r;
       let c;
-      if(!this.isGameOver){
+      if(!this.isThreeGameOver){
         while(this.index < this.moves.length){
           r = Math.floor(this.moves[this.index]/3);
           c = this.moves[this.index]%3;
@@ -190,10 +190,10 @@ export class ThreeEasyComponent implements OnInit {
 
     if(this.isDraw()){
       this.statusMessage = 'It\'s a Draw!';
-      this.isGameOver = true;
+      this.isThreeGameOver = true;
     }else if(this.isWin()){
       this.statusMessage = `Player ${this.currentPlayer} won!`;
-      this.isGameOver = true;
+      this.isThreeGameOver = true;
     }else{
       this.currentPlayer = Playerenum.h;
       this.currentPlayerMove = this.currentPlayerMove === Cellenum.X?Cellenum.O:Cellenum.X;
