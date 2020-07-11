@@ -309,6 +309,20 @@ export class FourXfourComponent implements OnInit {
     ){
       return true;
     }
+    if(
+      this.board[0][1] === this.board[1][2] &&
+      this.board[0][1] === this.board[2][3] &&
+      this.board[0][1]!=Cellenum.EMPTY
+    ){
+      return true;
+    }
+    if(
+      this.board[1][0] === this.board[2][1] &&
+      this.board[2][1] === this.board[3][2] &&
+      this.board[3][2]!=Cellenum.EMPTY
+    ){
+      return true;
+    }
     return false;
   }
 
