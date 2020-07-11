@@ -1,50 +1,78 @@
-export class Node {
-    public parent: Node;
-    public player: number;
-    public nodeWinScore: number;
-    public currentState: State;
-    public numberOfWins : number;
-    public numberOfTimesVisited : number;
-    public children: Node[];
+import { Cellenum } from '../cell/cellenum.enum';
 
-    constructor(parent:Node,player:number,currentState:State,children:Node[]){
-        this.player = player;
+export class Node{
+    state:State;
+    parent:Node;
+    children:Array<Node>;
+    isVisited:boolean;
+    constructor(state:State,parent:Node,children:Array<Node>){
+        this.children=children;
         this.parent = parent;
-        this.currentState = currentState;
+        this.state = state;
+        this.isVisited = false;
+    }
+
+    //Getter and Setter
+    getIsVisited():boolean{
+        return this.isVisited;
+    }
+
+    setIsVisited(){
+        this.isVisited = true;
+    }
+
+    getState():State{
+        return this.state;
+    }
+    setState(state:State){
+        this.state = state;
+    }
+    getParent(){
+        return parent;
+    }
+    setParent(parent:Node){
+        this.parent = parent;
+    }
+    getChildren():Array<Node>{
+        return this.children;
+    }
+    setChildren(children:Array<Node>){
         this.children = children;
-        this.numberOfTimesVisited = 0;
-        this.numberOfWins = 0;
-    }
-
-    setNodeWinScore(value:number){
-        this.nodeWinScore = value;
-    }
-
-    incrementWinScore(){
-        this.numberOfWins++;
-    }
-
-    incrementVisits(){
-        this.numberOfTimesVisited++;
-    }
-
-    setState(row:number,col:number,pos:number){
-        this.currentState = new State(row,col,pos);
     }
 }
-export class Tree{
-   public root: Node; 
-   constructor(root:Node){
-       this.root = root;
-   }
-}
+
+
 export class State{
-    public row: number;
-    public col: number;
-    public pos: number;
-    constructor(row:number,col:number,pos:number){
-        this.col =col;
-        this.row = row;
-        this.pos = pos;
+    move:number[];  //Move to come to this state : row col pos
+    board:Board;
+    playerNo:number; /* -1->Human 1->Machine -> Who will make next move*/
+    playerMove:Cellenum; /* X or O -> Who will make next move*/
+    visitCount:number;
+    winScore:number;
+    isTerminal:boolean;
+    
+
+    constructor(move:number[],board:Board,playerNo:number,playerMove:Cellenum,terminal:boolean){
+        this.move = move;
+        this.board = board;
+        this.playerNo=playerNo;
+        this.playerMove = playerMove;
+        this.visitCount =0;
+        this.winScore =0;
+        this.isTerminal = terminal ;
+        
     }
+
+}
+
+
+export class Board{
+    board:Cellenum[][][];
+    boardStatus:number[][];
+
+    constructor(board:Cellenum[][][],boardStatus:number[][]){
+        this.board = board;
+        this.boardStatus = boardStatus;
+    }
+    
 }

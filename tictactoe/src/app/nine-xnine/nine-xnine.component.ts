@@ -1,8 +1,8 @@
 import { Component, OnInit, Input} from '@angular/core';
 import { Cellenum } from '../cell/cellenum.enum';
 import { Playerenum } from '../cell/playerenum.enum'
-import { Tree, Node, State } from './node';
-import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
+import { Board, Node, State } from './node';
+
 
 
 @Component({
@@ -16,36 +16,13 @@ export class NineXnineComponent implements OnInit {
 
   public currentPlayer:Playerenum;
   public currentPlayerMove:Cellenum;
-  public board : Cellenum[][][];
+  public mainboard : Cellenum[][][];
   public isGameOver: boolean;
   public statusMessage;
-  public boardStatus:number[][]; /* 0 -> Empty ; 1 -> Machine won ; -1 -> Human won ; 2 -> Draw */
+  public mainboardStatus:number[][]; /* 0 -> Empty ; 1 -> Machine won ; -1 -> Human won ; 2 -> Draw */
   public nextCell=[];
   public bestMove=[];
-  public isWinner;
-  public available=[];
-  public tempBoard: Cellenum[][][];
-  public tempBoardStatus: number[][];
-  //MCTS Variables
-  rootNode:Tree;
-  currNode: Node;
-  childNode: Node;
-  selectedChildNode: Node;
-  nodeToExplore: Node;
-  expandChildNode: Node;
-  winnerNode: Node;
-  bestChildNode: Node;
-  nextNode: Node;
-  tempNode: Node;
-  simulationResult: number;
-  bestValue: number;
-  UCTValue: number;
-  iterator: number;
-  count: number;
-//For finding UCT Value
-  totalVisit: number;
-  nodeVisit:number;
-  
+  public isFirstMove = true;
   constructor() { }
 
   ngOnInit(): void {
@@ -53,62 +30,61 @@ export class NineXnineComponent implements OnInit {
   }
 
   newGame(){
-    this.board=[];
-    this.boardStatus=[];
+    this.mainboard=[];
+    this.mainboardStatus=[];
     for(let row=0;row<3;row++)
     {
-      this.board[row]=[];
-      this.boardStatus[row] = [];
+      this.mainboard[row]=[];
+      this.mainboardStatus[row] = [];
       for(let col=0;col<3;col++)
       {
-        this.boardStatus[row][col] = 0;
-        this.board[row][col]=[];
+        this.mainboardStatus[row][col] = 0;
+        this.mainboard[row][col]=[];
         for(let pos=0;pos<9;pos++)
         {
-          this.board[row][col][pos] = Cellenum.EMPTY;
+          this.mainboard[row][col][pos] = Cellenum.EMPTY;
         }
       }
     }
   
     this.currentPlayerMove = Cellenum.X;
-    if(this.playerData=="machine")this.currentPlayer = Playerenum.c;
-    if(this.playerData=="human")this.currentPlayer = Playerenum.h;
-    //this.currentPlayer = Playerenum.c;
+    this.currentPlayer = Playerenum.h;
     this.isGameOver = false;
     this.statusMessage = `Player ${this.currentPlayer}'s turn`;
-    /*Computers First Move at Center of board*/
-    if(this.currentPlayer === Playerenum.c)this.moveComputer(1,1,4);
   }
- 
 
+
+  /* Function for Human's move */
   move(row:number, col:number, pos:number){
-    console.log(row);
-    console.log(col);
-    console.log(pos);
-    if(!this.isGameOver && this.board[row][col][pos]==Cellenum.EMPTY){
-        this.board[row][col][pos] = this.currentPlayerMove;
-        document.getElementById((row+"."+col+"."+pos)).innerHTML = this.currentPlayerMove;
-        console.log(this.currentPlayerMove);
+    if(!this.isFirstMove && (row != this.nextCell[0] || col!= this.nextCell[1])){
+      alert("Invalid Move");
+      return;
     }
-      //TODO - Rectify the errors -- need to include win board and draw board
-    if(this.isDrawBoard(row,col,this.board,this.boardStatus,this.currentPlayer)|| this.isWinBoard(row,col,this.board,this.boardStatus,this.currentPlayer)){
-      if(this.isDrawGame(this.boardStatus)){
+    if(!this.isGameOver && this.mainboard[row][col][pos]==Cellenum.EMPTY){
+        this.isFirstMove = false;
+        this.mainboard[row][col][pos] = this.currentPlayerMove;
+        document.getElementById((row+"."+col+"."+pos)).innerHTML = this.currentPlayerMove;
+    }
+  
+    if(this.isDrawBoard(row,col,this.mainboard,this.mainboardStatus,this.currentPlayer)|| this.isWinBoard(row,col,this.mainboard,this.mainboardStatus,this.currentPlayer)){
+      if(this.isDrawGame(this.mainboardStatus)){
         this.statusMessage = 'It\'s a Draw!';
         this.isGameOver = true;
-      }else if(this.isWinGame(this.boardStatus)){
+      }else if(this.isWinGame(this.mainboardStatus)){
         this.statusMessage = `Player ${this.currentPlayer} won!`;
         this.isGameOver = true;
       }
     }
     else{
-      this.currentPlayer = Playerenum.h;
-      this.currentPlayerMove = this.currentPlayerMove === Cellenum.X?Cellenum.O:Cellenum.X;
+      this.currentPlayer = Playerenum.c;
+      this.currentPlayerMove = Cellenum.O;
       this.statusMessage =`Player ${this.currentPlayer}'s turn`;
     }
-    // TODO - what if next board is full ?
+    
+    // TODO - what if next board is full ? -> ADD THE PREVIOUS MOVE 
     if(!this.isGameOver)this.moveComputer(row,col,pos);
-}
-
+  }
+  
   calculateNextCell(pos:number):any{
     switch(pos)
     {
@@ -134,322 +110,318 @@ export class NineXnineComponent implements OnInit {
     }
   }
 
+  /* Computer's move  - implements MONTE CARLO SEARCH TREE*/
+
   moveComputer(row:number,col:number,pos:number){
-    this.bestMove = [-1,-1,-1];
-    this.nextCell = this.calculateNextCell(pos);
-    this.rootNode = new Tree(new Node(null,1,new State(row,col,pos),[]))
-    this.bestMove = this.MCTS(this.nextCell[0],this.nextCell[1]);
-    console.log(this.bestMove);
-    document.getElementById(this.bestMove[0]+"."+this.bestMove[1]+"."+this.bestMove[2]).innerHTML = this.currentPlayerMove;
-  
+    let bestMove = this.MCTS(this.mainboard,this.mainboardStatus,row,col,pos,Cellenum.O);
+    /* Make the best move */
+    this.mainboard[bestMove[0]][bestMove[1]][bestMove[2]] = this.currentPlayerMove;
+    document.getElementById((bestMove[0]+"."+bestMove[1]+"."+bestMove[2])).innerHTML = this.currentPlayerMove;
+    this.nextCell = this.calculateNextCell(bestMove[2]);
     /* This part of move computer I have changed */
-   if(this.isDrawBoard(row,col,this.board,this.boardStatus,this.currentPlayer)|| this.isWinBoard(row,col,this.board,this.boardStatus,this.currentPlayer)){
-    if(this.isDrawGame(this.boardStatus)){
-      this.statusMessage = 'It\'s a Draw!';
-      this.isGameOver = true;
-    }else if(this.isWinGame(this.boardStatus)){
-      this.statusMessage = `Player ${this.currentPlayer} won!`;
-      this.isGameOver = true;
+    if(this.isDrawBoard(row,col,this.mainboard,this.mainboardStatus,this.currentPlayer)|| this.isWinBoard(row,col,this.mainboard,this.mainboardStatus,this.currentPlayer)){
+      if(this.isDrawGame(this.mainboardStatus)){
+        console.log("Terminal");
+        this.statusMessage = 'It\'s a Draw!';
+        this.isGameOver = true;
+      }else if(this.isWinGame(this.mainboardStatus)){
+        this.statusMessage = `Player ${this.currentPlayer} won!`;
+        this.isGameOver = true;
+      }
     }
-  }
-  else{
-    this.currentPlayer = Playerenum.h;
-    this.currentPlayerMove = this.currentPlayerMove === Cellenum.X?Cellenum.O:Cellenum.X;
-    this.statusMessage =`Player ${this.currentPlayer}'s turn`;
-  }
+    else{
+      this.currentPlayer = Playerenum.h;
+      this.currentPlayerMove = Cellenum.X;
+      this.statusMessage =`Player ${this.currentPlayer}'s turn`;
+    }
  
-}
+  }
 
-  MCTS(row:number,col:number){  
-    this.count = 3;
-    while(this.count>0){
-      for(let i=0;i<9;i++)
-      {
-        if(this.board[row][col][i]==Cellenum.EMPTY){
-            this.childNode = new Node(this.rootNode.root,0,new State(this.nextCell[0],this.nextCell[1],i),[]);
-            this.rootNode.root.children.push(this.childNode);
-        }
+  MCTS(board:Cellenum[][][],boardStatus: number[][],row:number,col:number,pos:number,playerMove:Cellenum):number[]{
+    /*Form the root -> Start With Computer*/ 
+    let initialState = new State([row,col,pos],new Board(board,boardStatus),1,playerMove,false);  
+    let rootNode = new Node(initialState,null,[]); //S0
+    //Get child nodes:
+    console.log(rootNode);
+    /// Done
+    this.expansion(rootNode);
+    //S1 S2 
+    rootNode.isVisited=true;
+    let noOfIterations = 1;
+    let iterations = 0;
+    while(iterations < noOfIterations){
+      //Select a Node : UTF VALUE
+      console.log("root");
+      console.log(rootNode);
+      let nodeToSimulate = this.selection(rootNode);
+      if(nodeToSimulate.isVisited===true){
+         this.expansion(nodeToSimulate);
+         
       }
-      this.currNode = this.MCTSSelectNode(this.rootNode);
-      console.log("Before Expand");
-      console.log(this.currNode);
-      this.MCTSExpandNode();
-      console.log("After Expand");
-      console.log(this.currNode);
-      this.nodeToExplore = this.currNode;
-      this.simulationResult = this.MCTSSimulate(this.nodeToExplore);
-      
-      this.count--;
-    }
-    this.winnerNode = this.getBestChildNode(this.rootNode.root);
-    return [this.winnerNode.currentState.row,this.winnerNode.currentState.col,this.winnerNode.currentState.pos];
-  }
-
-  //MCTS Algo Functions
-  MCTSSelectNode(rootNode:Tree):Node{
-    this.iterator = 0;
-    this.bestValue = -Infinity;
-    while(this.iterator!=rootNode.root.children.length){
-      this.UCTValue = Math.fround(this.getUCTValue(rootNode.root.children[this.iterator]));
-      rootNode.root.children[this.iterator].nodeWinScore = this.UCTValue;
-      if(this.UCTValue>this.bestValue)
-      {
-        this.bestValue = this.UCTValue;
-        this.selectedChildNode = rootNode.root.children[this.iterator];
+      else{
+        console.log("Works");
+         this.simulation(nodeToSimulate);
+         console.log("Simulation Works");
+         
       }
-      this.iterator++;
+      iterations++;
     }
-    console.log("selected");
-    console.log(this.selectedChildNode);
-    return this.selectedChildNode;
-  }
 
-  getUCTValue(child:Node):any{
-    if(child.numberOfTimesVisited==0)return 2147483647;
-    return Math.fround(child.numberOfWins/child.numberOfTimesVisited) + Math.fround((1.41*(Math.sqrt(Math.log(this.totalVisit))))/(child.numberOfTimesVisited))
-  }
-
-
-  MCTSExpandNode():any{
-    console.log(this.currNode);
-    this.nextCell = this.calculateNextCell(this.currNode.currentState.pos);
-    for(let i=0;i<9;i++)
-    {
-      if(this.board[this.nextCell[0]][this.nextCell[1]][i]==Cellenum.EMPTY){
-          this.expandChildNode = new Node(this.currNode,1,new State(this.nextCell[0],this.nextCell[1],i),[]);
-          this.currNode.children.push(this.expandChildNode);
+    //Select Best Move from children
+    let bestWinScore= -Infinity;
+    let bestNextNode:Node;
+    for(let j = 0; j < rootNode.children.length;j++){
+      let currWinScore = rootNode.children[j].state.winScore;
+      if(currWinScore > bestWinScore){
+        currWinScore = bestWinScore;
+        bestNextNode = rootNode.children[j];
       }
     }
-  }
-   
- MCTSSimulate(node:Node):any{
-  this.tempBoard = this.board;
-  this.tempBoardStatus = this.boardStatus;
-  console.log(node);
-  this.tempNode = node.children[0];
-  console.log("HI");
-  console.log(this.tempNode);
-  this.tempNode.incrementVisits();
-  let simulationValue;
-
-  if(this.isTerminalState(this.tempBoard,this.tempBoardStatus)==0){
-    this.nextNode = this.randomPlay();
-    //if(this.nextNode==null)break;
-    this.tempNode = this.nextNode.children[0];
+    return (bestNextNode.state.move);
   }
 
-  if(this.isTerminalState(this.tempBoard,this.tempBoardStatus)==2){
-     simulationValue = 0; //Draw
-  }
-  else{
-  simulationValue =this.isTerminalState(this.tempBoard,this.tempBoardStatus);
-   /* 1 if Machine wins and -1 if human wins*/ 
-  /* Current Node will be the terminal node*/}
-  return this.MCTSUpdate(this.tempNode,simulationValue);
- }
- randomPlay():Node{
-    //Making Availablle Empty Cells Array
-    console.log("yeeee");
-    console.log(this.tempNode);
-    let childTempNode: Node;
-    this.nextCell = this.calculateNextCell(this.tempNode.currentState.pos);
-    console.log(this.nextCell);  this.tempBoardStatus = this.boardStatus;
-    this.tempBoardStatus = this.boardStatus;
-    for(let i=0;i<9;i++)
-    {
-      if(this.tempBoard[this.nextCell[0]][this.nextCell[1]][i]==Cellenum.EMPTY){
-          this.available.push(i);
-      }
-    }
-    if(this.available.length==0)return null;
-    //Selecting Random Child and Making the Move
-    this.shuffle(this.available);
-    let len = this.available.length;
-    if(len==0)
-    {
-      if(this.tempNode.player==0){
-        this.isWinBoard(this.nextCell[0],this.nextCell[1],this.tempBoard,this.tempBoardStatus,Playerenum.h);
-        this.isDrawBoard(this.nextCell[0],this.nextCell[1],this.tempBoard,this.tempBoardStatus,Playerenum.h);
-      }
-      if(this.tempNode.player==1){
-        this.isWinBoard(this.nextCell[0],this.nextCell[1],this.tempBoard,this.tempBoardStatus,Playerenum.c);
-        this.isDrawBoard(this.nextCell[0],this.nextCell[1],this.tempBoard,this.tempBoardStatus,Playerenum.c);
-      }
-      return null;
-    }
-    console.log("I'm Avaialble");
-    console.log(this.available);
-    let p = this.available[0];
-    if(this.tempNode.player==0){
-      this.tempBoard[this.nextCell[0]][this.nextCell[1]][p]==Cellenum.X;
-      childTempNode = new Node(this.tempNode,1,new State(this.nextCell[0],this.nextCell[1],p),[]);
-    }
-    if(this.tempNode.player==1){
-      this.tempBoard[this.nextCell[0]][this.nextCell[1]][p]==Cellenum.O;
-      childTempNode = new Node(this.tempNode,0,new State(this.nextCell[0],this.nextCell[1],p),[]);
-    }
-
-    this.tempNode.children.push(childTempNode);
-    while(this.available.length>0)
-    {
-      this.available.pop();
-    }
-    return this.tempNode;
- }
- shuffle(array: number[]){
-    let currentIndex = array.length, temporaryValue :number , randomIndex : number;
-    while(currentIndex!=0){
-       
-      randomIndex = Math.floor(Math.random() * currentIndex);
-      currentIndex -= 1;
-      // And swap it with the current element.
-      temporaryValue = array[currentIndex];
-      array[currentIndex] = array[randomIndex];
-      array[randomIndex] = temporaryValue;
-    }
-    return array;
-  }
- isTerminalState(board:Cellenum[][][],boardStatus:number[][]):number{
-   if(this.isWinGame(boardStatus)){
-     return 1;
-   }
-   else if(this.isDrawGame(boardStatus)){
-     return 2;
-   }
-   else return 0;
- }
-
-
-  MCTSUpdate(nodeToExplore:Node,simulationResult:number):any{
-    //Add Simulation Result
-    let currentNode = nodeToExplore;
-    while(currentNode.parent!=null){
-      if(this.simulationResult===1)currentNode.numberOfWins+=simulationResult;
-      currentNode = currentNode.parent;
-    }
-  } 
-
-
-  getBestChildNode(rootNode:Node):Node{
-    this.iterator = 0;
-    this.bestValue = -2;
-    while(this.iterator!=rootNode.children.length)
-    {
-      if(this.bestValue<rootNode.children[this.iterator].nodeWinScore){
-        this.bestValue = rootNode.children[this.iterator].nodeWinScore;
-        this.bestChildNode = rootNode.children[this.iterator];
-      }
-      this.iterator++;
-    }
-    return this.bestChildNode;
-  }
-
-  checkIfLeafNode(node:Node):any{
-    if(node.children.length ===0) return true;
+  //Monte Carlo Helper Functions:
+  isLeafNode(node:Node){
+    if(node.children.length === 0) return true;
     return false;
   }
 
+  calculateUTF(node:Node):number{
+    if(node.getState().visitCount ===0)return 2147483647;
+    let val  = Math.fround(node.getState().winScore/node.getState().visitCount) + Math.fround((1.41*(Math.sqrt(Math.log(node.parent.getState().visitCount))))/(node.getState().visitCount))
+    return val;
+  }
+
+  selection(node:Node){
+    let bestUTF = -Infinity;
+    let bestNextNode:Node;
+    console.log("Children");
+    console.log(node.children);
+    for(let i =0; i < node.children.length;i++){                  
+      let currUTF = this.calculateUTF(node.children[i]);
+      if(currUTF > bestUTF){
+        bestUTF = currUTF;
+        bestNextNode = node.children[i];
+      }
+    }
+    if(this.isLeafNode(bestNextNode)===true) return bestNextNode;
+    else return this.selection(bestNextNode);
+  }
 
 
-
-
-/*board[row][col][pos]: pos -> 1 to 9*/
- /*Function to tell if smaller board at (row,col) is won*/
- isWinBoard(row:number,col:number,board:Cellenum[][][],boardStatus:number[][],currentPlayer:Playerenum):boolean{
-  //Horizontal
-  for(let pos = 0 ; pos < 9 ; pos+=3){
-    if(board[row][col][pos]== board[row][col][pos+1] && board[row][col][pos+1]== board[row][col][pos+2] && board[row][col][pos]!=Cellenum.EMPTY){
-      /*Add win to corresponsing player*/
-      if(currentPlayer==Playerenum.h)boardStatus[row][col]=-1;
-      else boardStatus[row][col]=1;
-      return true;
+  expansion(leafNode:Node){
+    let children = this.getAllPossibleStates(leafNode);
+    //Expand Child Nodes:
+    for(let i = 0; i < children.length;i++){
+      let childNode = new Node(children[i],leafNode,[]);
+      leafNode.children.push(childNode);
     }
   }
 
-  //Vertical
-  for(let pos = 0 ; pos < 3 ; pos++){
-    if(board[row][col][pos]== board[row][col][pos+3] && board[row][col][pos+3]== board[row][col][pos+6] && board[row][col][pos]!=Cellenum.EMPTY){
-      if(currentPlayer==Playerenum.h)boardStatus[row][col]=-1;
-      else boardStatus[row][col]=1;
-      return true;
+  simulation(leafNode:Node){
+    leafNode.isVisited = true;
+    let boardStatus = leafNode.state.board.boardStatus;
+    let board = leafNode.state.board.board;
+    console.log("Board and status");
+    console.log(boardStatus);
+    console.log(board);
+    let player = leafNode.state.playerNo;
+    let playerName = player ===0?Playerenum.h:Playerenum.c;
+    let playerMove = leafNode.state.playerMove;
+    let pos = leafNode.state.move[2];
+    let playerWon;
+    let count = 0;
+    while(!this.isWinGame(boardStatus) && !this.isDrawGame(boardStatus)){
+      count++;
+      let randomMove = this.getRandomPlay(board,boardStatus,pos);
+      console.log(randomMove);
+      console.log("get random works");
+      //Board chosen is full
+      if(randomMove[0]==-1){
+        pos = Math.floor((Math.random() * 9) + 1);
+        pos = pos-1;
+      }
+      else{
+          pos = randomMove[2];
+          board[randomMove[0]][randomMove[1]][randomMove[2]] = playerMove;
+          if(this.isWinBoard(randomMove[0],randomMove[1],board,boardStatus,playerName)) {
+            boardStatus[randomMove[0]][randomMove[1]] = player;
+            playerWon = player;
+          }
+          else if(this.isDrawBoard(randomMove[0],randomMove[1],board,boardStatus,playerName)){
+            boardStatus[randomMove[0]][randomMove[1]] =  2;
+            playerWon = 0
+          }
+          player = player===1?-1:1;
+          playerMove = playerMove ===Cellenum.O?Cellenum.X:Cellenum.O;
+        
+          playerName = playerName === Playerenum.c?Playerenum.h:Playerenum.c;
+      }
+
+      if(count==4) break;
+    }
+    console.log("while works");
+
+    this.update(leafNode,playerWon);
+  }
+
+  getRandomPlay(board:Cellenum[][][],boardStatus:number[][],previousPos : number):number[]{
+    let nextMoves = this.calculateNextCell(previousPos);
+    let row = nextMoves[0];
+    let col = nextMoves[1];
+    let pos;
+    if(boardStatus[row][col]!=0) return [-1];
+    //Select one of these random states
+    for(let i =0;i < 9 ;i++){
+      if(board[row][col][i]==Cellenum.EMPTY){
+        pos = i;
+        break;
+      }
+    }
+    return [row,col,pos];
+  }
+
+  update(terminalNode:Node,playerWon:number){
+    while(terminalNode!=null){
+      terminalNode.getState().visitCount++;
+      if(playerWon!=0 || terminalNode.getState().playerNo == playerWon)terminalNode.getState().winScore++;
+      terminalNode = terminalNode.parent;
     }
   }
 
-  //Diagonal
-  if(board[row][col][0]== board[row][col][4] && board[row][col][4]== board[row][col][8] && board[row][col][0]!=Cellenum.EMPTY){
-    if(currentPlayer==Playerenum.h)boardStatus[row][col]=-1;
-    else boardStatus[row][col]=1;
-    return true;
-  }
-  if(board[row][col][2]== board[row][col][4] && board[row][col][4]== board[row][col][6] && board[row][col][2]!=Cellenum.EMPTY){
-    if(currentPlayer==Playerenum.h)boardStatus[row][col]=-1;
-    else boardStatus[row][col]=1;
-    return true;   
-   
-  }
-
-  return false;
-}
-
- isWinGame(boardStatus:number[][]){
-  //Horizontal
-  for(let row = 0 ; row < 3 ; row ++){
-    if(boardStatus[row][0]==boardStatus[row][1] && boardStatus[row][1]==boardStatus[row][2] && (boardStatus[row][0]==1|| boardStatus[row][0]==-1)){
-      this.isWinner = boardStatus[row][0];
-      this.isGameOver = true;
-      return true;
+  /* Get Next State from current Node State */
+  getAllPossibleStates(currentNode:Node):Array<State>{
+    console.log(currentNode);
+    console.log("State");
+    console.log(currentNode.state);
+    let nextPossibleStates:State[]=[];
+    let nextState = this.calculateNextCell(currentNode.state.move[2]);
+    //TODO - Add what to do if board is empty 
+    let row = nextState[0];
+    let col = nextState[1];
+    let nextPlayer = currentNode.state.playerNo===1?-1:1;
+    let nextPlayerMove = currentNode.state.playerMove===Cellenum.X?Cellenum.O:Cellenum.X;
+    let player = nextPlayer===-1?Playerenum.h:Playerenum.c;
+    for(let i = 0 ; i < 9 ; i++){
+        if(currentNode.state.board.board[row][col][i]===Cellenum.EMPTY){
+            let nextBoard = new Board(currentNode.state.board.board,currentNode.state.board.boardStatus);
+            nextBoard.board[row][col][i] = currentNode.state.playerMove;
+            /*Update Board Status if its terminal after this move*/
+            if(this.isWinBoard(row,col,nextBoard.board,nextBoard.boardStatus,player)) {
+              nextBoard.boardStatus[row][col] = currentNode.state.playerNo;
+            }
+            else if(this.isDrawBoard(row,col,nextBoard.board,nextBoard.boardStatus,player)){
+              nextBoard.boardStatus[row][col] = 2;
+            } 
+            
+            let isTerminal = false;
+            if(this.isWinGame(nextBoard.boardStatus)|| this.isDrawGame(nextBoard.boardStatus)){
+              isTerminal = true;
+            }  
+            let state = new State([row,col,i],nextBoard,nextPlayer,nextPlayerMove,false);
+            console.log(state);
+            nextPossibleStates.push(state);
+        }
     }
+    return nextPossibleStates;
   }
-
-  //Vertical
-  for(let col = 0 ; col < 3 ; col ++){
-    if(boardStatus[0][col]==boardStatus[1][col] && boardStatus[2][col]==boardStatus[1][col] && boardStatus[0][col]==1){
-      this.isWinner = boardStatus[0][col];
-      this.isGameOver = true;
-      return true;
-    }
-  }
-
-  //Diagonal
-  if(boardStatus[0][0]==boardStatus[1][1] && boardStatus[2][2]==boardStatus[1][1] && boardStatus[0][0]==1){
-    this.isWinner = boardStatus[0][0]
-    this.isGameOver = true;
-    return true;
-  }
-
-  if(boardStatus[0][2]==boardStatus[1][1] && boardStatus[2][0]==boardStatus[1][1] && boardStatus[0][2]==1){
-    this.isWinner = boardStatus[0][2]
-    this.isGameOver = true;
-    return true;
-  }
-
-  return false;
-}
-
-
-isDrawBoard(row:number,col:number,board:Cellenum[][][],boardStatus:number[][],currentPlayer:Playerenum): boolean {
-  for(let pos = 0; pos < 9 ; pos++){
-    if(board[row][col][pos]!= Cellenum.EMPTY) return false;
-  }
-  if(!this.isWinBoard(row,col,board,boardStatus,currentPlayer)){
-    boardStatus[row][col] = 2;
-    return true;
-  }
-  return false;
-}
-
-isDrawGame(boardStatus:number[][]){
-  for(let row = 0;row < 3 ; row++){
-    for(let col = 0; col < 3;col++){
-      if(boardStatus[row][col]==0) return false;
-    }
-  }
-  return !this.isWinGame(boardStatus);
-}
-
-
 
   
-  
+
  
+
+
+
+  
+
+
+/* TERMINAL FUNCTIONS */
+  isWinBoard(row:number,col:number,board:Cellenum[][][],boardStatus:number[][],currentPlayer:Playerenum):boolean{
+    //Horizontal
+    for(let pos = 0 ; pos < 9 ; pos+=3){
+      if(board[row][col][pos]== board[row][col][pos+1] && board[row][col][pos+1]== board[row][col][pos+2] && board[row][col][pos]!=Cellenum.EMPTY){
+        /*Add win to corresponsing player*/
+        if(currentPlayer==Playerenum.h)boardStatus[row][col]=-1;
+        else boardStatus[row][col]=1;
+        return true;
+      }
+    }
+  
+    //Vertical
+    for(let pos = 0 ; pos < 3 ; pos++){
+      if(board[row][col][pos]== board[row][col][pos+3] && board[row][col][pos+3]== board[row][col][pos+6] && board[row][col][pos]!=Cellenum.EMPTY){
+        if(currentPlayer==Playerenum.h)boardStatus[row][col]=-1;
+        else boardStatus[row][col]=1;
+        return true;
+      }
+    }
+  
+    //Diagonal
+    if(board[row][col][0]== board[row][col][4] && board[row][col][4]== board[row][col][8] && board[row][col][0]!=Cellenum.EMPTY){
+      if(currentPlayer==Playerenum.h)boardStatus[row][col]=-1;
+      else boardStatus[row][col]=1;
+      return true;
+    }
+    if(board[row][col][2]== board[row][col][4] && board[row][col][4]== board[row][col][6] && board[row][col][2]!=Cellenum.EMPTY){
+      if(currentPlayer==Playerenum.h)boardStatus[row][col]=-1;
+      else boardStatus[row][col]=1;
+      return true;   
+     
+    }
+  
+    return false;
+  }
+  
+   isWinGame(boardStatus:number[][]){
+    //Horizontal
+    for(let row = 0 ; row < 3 ; row ++){
+      if(boardStatus[row][0]==boardStatus[row][1] && boardStatus[row][1]==boardStatus[row][2] && (boardStatus[row][0]==1|| boardStatus[row][0]==-1)){
+        this.isGameOver = true;
+        return true;
+      }
+    }
+  
+    //Vertical
+    for(let col = 0 ; col < 3 ; col ++){
+      if(boardStatus[0][col]==boardStatus[1][col] && boardStatus[2][col]==boardStatus[1][col] && boardStatus[0][col]==1){
+        this.isGameOver = true;
+        return true;
+      }
+    }
+  
+    //Diagonal
+    if(boardStatus[0][0]==boardStatus[1][1] && boardStatus[2][2]==boardStatus[1][1] && boardStatus[0][0]==1){
+      this.isGameOver = true;
+      return true;
+    }
+  
+    if(boardStatus[0][2]==boardStatus[1][1] && boardStatus[2][0]==boardStatus[1][1] && boardStatus[0][2]==1){
+      this.isGameOver = true;
+      return true;
+    }
+  
+    return false;
+  }
+  
+  
+  isDrawBoard(row:number,col:number,board:Cellenum[][][],boardStatus:number[][],currentPlayer:Playerenum): boolean {
+    for(let pos = 0; pos < 9 ; pos++){
+      if(board[row][col][pos]!= Cellenum.EMPTY) return false;
+    }
+    if(!this.isWinBoard(row,col,board,boardStatus,currentPlayer)){
+      boardStatus[row][col] = 2;
+      return true;
+    }
+    return false;
+  }
+  
+  isDrawGame(boardStatus:number[][]){
+    for(let row = 0;row < 3 ; row++){
+      for(let col = 0; col < 3;col++){
+        if(boardStatus[row][col]==0) return false;
+      }
+    }
+    return !this.isWinGame(boardStatus);
+  }
+
 }
