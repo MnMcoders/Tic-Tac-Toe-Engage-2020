@@ -20,7 +20,7 @@ export class FourXfourComponent implements OnInit {
   public isFirstMove : boolean; 
   public statusMessage;
   public index:number;
-
+  public selectedMoves = [];
 
   constructor() { }
 
@@ -58,6 +58,11 @@ export class FourXfourComponent implements OnInit {
         this.board[row][col] = Cellenum.EMPTY;
       }
     }
+    while(this.selectedMoves.length)
+    {
+      this.selectedMoves.pop();
+    }
+
     //Initialize first player if mentioned as else computer
     if(this.playerData === "machine") this.currentPlayer = Playerenum.c;
     if(this.playerData === "human") this.currentPlayer = Playerenum.h;
@@ -74,6 +79,7 @@ export class FourXfourComponent implements OnInit {
   move(row:number,col:number){
     if(!this.isGameOver && this.board[row][col]==Cellenum.EMPTY){
       this.board[row][col] = this.currentPlayerMove;
+      this.selectedMoves.push([row,col]);
       if(this.isDraw()){
         this.statusMessage = 'It\'s a Draw!';
         this.isGameOver = true;
@@ -99,27 +105,35 @@ export class FourXfourComponent implements OnInit {
       switch(this.first[2]){
         case 1:
           this.board[0][0] = Cellenum.X;
+          this.selectedMoves.push([0,0]);
           break;
         case 2:
           this.board[0][3] = Cellenum.X;
+          this.selectedMoves.push([0,3]);
           break;
         case 3:
           this.board[1][1] = Cellenum.X;
+          this.selectedMoves.push([1,1]);
           break;
         case 4:
           this.board[1][2] = Cellenum.X;
+          this.selectedMoves.push([1,2]);
           break;
         case 5:
           this.board[2][1] = Cellenum.X;
+          this.selectedMoves.push([2,1]);
           break;
         case 6:
           this.board[2][2] = Cellenum.X;
+          this.selectedMoves.push([2,2]);
           break;
         case 7:
           this.board[3][0] = Cellenum.X;
+          this.selectedMoves.push([3,0]);
           break;
         case 8:
           this.board[3][3] = Cellenum.X;
+          this.selectedMoves.push([3,3]);
           break;
       }
       this.isFirstMove = false;
@@ -144,6 +158,7 @@ export class FourXfourComponent implements OnInit {
         }
       }
       this.board[bestMove[0]][bestMove[1]] = this.currentPlayerMove;
+      this.selectedMoves.push([bestMove[0],bestMove[1]]);
     }
 
     //Results of the move 
@@ -161,6 +176,18 @@ export class FourXfourComponent implements OnInit {
       this.statusMessage =`Player ${this.currentPlayer}'s turn`;
     }
 
+  }
+
+  undo(){
+    let undoLast = [];
+    let undoSecondLast = [];
+    if(this.selectedMoves.length>1)
+    {
+      undoLast = this.selectedMoves.pop();
+      undoSecondLast = this.selectedMoves.pop();
+      this.board[undoLast[0]][undoLast[1]] = Cellenum.EMPTY;
+      this.board[undoSecondLast[0]][undoSecondLast[1]] = Cellenum.EMPTY;
+    }
   }
 
   public isWinner;
@@ -265,6 +292,21 @@ export class FourXfourComponent implements OnInit {
       this.board[0][3]!= Cellenum.EMPTY
     ){
         return true;
+    }
+    //3 Cell Diagonal
+    if(
+      this.board[0][2] === this.board[1][1] &&
+      this.board[0][2] === this.board[2][0] &&
+      this.board[0][2]!=Cellenum.EMPTY
+    ){
+      return true;
+    }
+    if(
+      this.board[1][3] === this.board[2][2] &&
+      this.board[2][2] === this.board[3][1] &&
+      this.board[2][2]!=Cellenum.EMPTY
+    ){
+      return true;
     }
     return false;
   }

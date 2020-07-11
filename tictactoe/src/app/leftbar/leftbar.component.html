@@ -17,7 +17,13 @@
         <button class="type" (click)="onClickGameType('nine')">9x9</button>
     </div>
     
-    <h5>Starter</h5>
+    <h5>Against</h5>
+    <div class="btn-block">
+        <button class="type" (click)="onClickAgainst('vsHuman')">Human v/s Human</button>
+        <button class="type" (click)="onClickAgainst('vsMachine')">Human v/s Machine </button>
+    </div>
+
+    <h5>Starting Player</h5>
     <div class="btn-block player">
         <button (click)="onClickPlayerType('human')">Human</button>
         <button (click)="onClickPlayerType('machine')">Machine</button>

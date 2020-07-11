@@ -1,6 +1,6 @@
 <app-title class="title"></app-title>
-<app-leftbar class="leftbar" (displayEvent)="display=$event" (gameEvent)="check=$event" (playerEvent)="select=$event"></app-leftbar>
-<app-three-easy class="threeCross" *ngIf = "display==true && check!='four' && check!='nine'" [gameData]=check [playerData]=select></app-three-easy>
+<app-leftbar class="leftbar" (displayEvent)="display=$event" (gameEvent)="check=$event" (playerEvent)="select=$event" (opponentEvent)="play=$event"></app-leftbar>
+<app-three-easy class="threeCross" *ngIf = "display==true && check!='four' && check!='nine'" [gameData]=check [playerData]=select [opponentData]=play></app-three-easy>
 <app-four-xfour class="fourCross" *ngIf = "display==true && check=='four'" [gameData]=check [playerData]=select></app-four-xfour>
 <app-nine-xnine *ngIf = "display==true && check=='nine'" [gameData]=check [playerData]=select></app-nine-xnine>
 <router-outlet></router-outlet>

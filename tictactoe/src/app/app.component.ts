@@ -10,4 +10,5 @@ export class AppComponent {
   public check;
   public select;
   public display;
+  public play;
 }

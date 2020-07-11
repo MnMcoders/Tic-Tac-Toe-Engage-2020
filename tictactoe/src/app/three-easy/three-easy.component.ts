@@ -12,6 +12,7 @@ export class ThreeEasyComponent implements OnInit {
 
   @Input() public playerData;
   @Input() public gameData;
+  @Input() public opponentData;
   
   public currentPlayer:Playerenum;
   private currentPlayerMove:Cellenum;
@@ -96,7 +97,7 @@ export class ThreeEasyComponent implements OnInit {
         this.statusMessage =`Player ${this.currentPlayer}'s turn`;
       }
     }
-    if(!this.isGameOver)this.moveComputer();
+    if(!this.isGameOver && this.opponentData=="vsMachine")this.moveComputer();
   }
   // Make a move if possible - for computer 
   moveComputer(){
@@ -202,16 +203,13 @@ export class ThreeEasyComponent implements OnInit {
 
     
   undo(){
-    console.log("HEY YOU");
-    console.log(this.selectedMoves);
     let undoLast = [];
     let undoSecondLast = [];
     if(this.selectedMoves.length>1)
     {
       undoLast = this.selectedMoves.pop();
-      undoSecondLast = this.selectedMoves.pop();
-      console.log(this.selectedMoves);
       this.board[undoLast[0]][undoLast[1]] = Cellenum.EMPTY;
+      undoSecondLast = this.selectedMoves.pop();
       this.board[undoSecondLast[0]][undoSecondLast[1]] = Cellenum.EMPTY;
       if(this.gameData=="Easy")this.index--;
     }

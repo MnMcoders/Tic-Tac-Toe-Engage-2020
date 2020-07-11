@@ -11,7 +11,8 @@
                         [row] = "row" 
                         [col] = "col" 
                         [piece] = "board[row][col]" 
-                        (click) = "currentPlayer==='human'?move(row,col):false">
+                        (click) = "(currentPlayer==='human' && opponentData=='vsMachine' && board[row][col]==' ')?move(row,col):false"
+                        (click) = "(opponentData=='vsHuman' && board[row][col]==' ')?move(row,col):false">
             </app-cell>
         </div>
     

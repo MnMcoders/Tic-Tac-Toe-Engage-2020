@@ -10,11 +10,13 @@ export class LeftbarComponent implements OnInit {
 
   @Output() gameEvent = new EventEmitter<string>();
   @Output() playerEvent = new EventEmitter<string>();
+  @Output() opponentEvent = new EventEmitter<string>();
   @Output() displayEvent = new EventEmitter<boolean>();
 
 
   public gameSelection = false;
   public playerSelection = false;
+  public opponentSelection = false;
 
   constructor() { }
   ngOnInit(): void {
@@ -30,8 +32,13 @@ export class LeftbarComponent implements OnInit {
     this.playerEvent.emit(playerType);
     this.displayEvent.emit(false);
   }
+  onClickAgainst(against:string){
+    this.opponentSelection = true;
+    this.opponentEvent.emit(against);
+    this.displayEvent.emit(false);
+  }
   onClickToPlay(){
-    if(this.gameSelection==true && this.playerSelection==true){
+    if(this.gameSelection==true && this.playerSelection==true && this.opponentSelection==true){
        this.displayEvent.emit(true);
     }
     else if(this.gameSelection==true && this.playerSelection==false){
