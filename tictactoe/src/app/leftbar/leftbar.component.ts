@@ -20,6 +20,7 @@ export class LeftbarComponent implements OnInit {
 
   constructor() { }
   ngOnInit(): void {
+    this.displayEvent.emit(false);
   }
 
   onClickGameType(gameType: string){

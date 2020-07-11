@@ -1,0 +1,19 @@
+.container{
+    border-radius: 30px;
+    width: 600px;
+    height: 680px;
+    background-color: peachpuff;
+    margin-top: 3.5%;
+    margin-left: 45%;
+    text-align: center;
+    padding-top: 10px;
+    opacity: 0.8;
+}
+
+h6{
+    text-align: left;
+    text-align: justify;
+}
+h5{
+    text-align: center;
+}
