@@ -1,13 +1,14 @@
 .container{
     border-radius: 30px;
     width: 600px;
-    height: 760px;
+    height: 90%;
     background-color: powderblue;
     margin-top: 3.5%;
     margin-left: 45%;
-    text-align: center;
-    padding-top: 10px;
+    text-align: justified;
+    margin-bottom: 15px;
     opacity: 0.8;
+    padding: 20px;    
 }
 .image{
     text-align: center;
