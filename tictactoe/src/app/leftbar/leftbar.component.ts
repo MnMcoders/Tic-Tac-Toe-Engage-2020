@@ -1,5 +1,4 @@
 import { Component, OnInit, Output ,EventEmitter} from '@angular/core';
-import { logWarnings } from 'protractor/built/driverProviders';
 
 @Component({
   selector: 'app-leftbar',
@@ -8,17 +7,19 @@ import { logWarnings } from 'protractor/built/driverProviders';
 })
 export class LeftbarComponent implements OnInit {
 
+  
   @Output() gameEvent = new EventEmitter<string>();
   @Output() playerEvent = new EventEmitter<string>();
   @Output() opponentEvent = new EventEmitter<string>();
   @Output() displayEvent = new EventEmitter<boolean>();
 
-
+  /* Declaration of variables */
   public gameSelection = false;
   public playerSelection = false;
   public opponentSelection = false;
 
   constructor() { }
+
   ngOnInit(): void {
     this.displayEvent.emit(false);
   }
@@ -28,16 +29,19 @@ export class LeftbarComponent implements OnInit {
     this.gameEvent.emit(gameType);
     this.displayEvent.emit(false);
   }
+
   onClickPlayerType(playerType: string){
     this.playerSelection = true;
     this.playerEvent.emit(playerType);
     this.displayEvent.emit(false);
   }
+
   onClickAgainst(against:string){
     this.opponentSelection = true;
     this.opponentEvent.emit(against);
     this.displayEvent.emit(false);
   }
+  
   onClickToPlay(){
     if(this.gameSelection==true && this.playerSelection==true && this.opponentSelection==true){
        this.displayEvent.emit(true);

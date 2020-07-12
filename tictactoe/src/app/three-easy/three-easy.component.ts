@@ -10,10 +10,12 @@ import { Playerenum } from '../cell/playerenum.enum'
 
 export class ThreeEasyComponent implements OnInit {
 
-  @Input() public playerData;
-  @Input() public gameData;
-  @Input() public opponentData;
+  /* Declaring parent properties*/
+  @Input() public playerData; 
+  @Input() public gameData;  
+  @Input() public opponentData; 
   
+  /* Declaring variables */
   public currentPlayer:Playerenum;
   private currentPlayerMove:Cellenum;
   private moves: number[];
@@ -24,7 +26,7 @@ export class ThreeEasyComponent implements OnInit {
   public statusMessage;
   public index:number;
   public selectedMoves = [];
-  
+  public isWinner:Cellenum;
 
   constructor() { }
 
@@ -32,26 +34,13 @@ export class ThreeEasyComponent implements OnInit {
     this.newGame();
   }
 
-  //Getter for isGameOver 
+  /*Getter for isGameOver*/ 
   get gameOver():boolean {
     return this.isThreeGameOver;
   }
 
-  shuffle(array: number[]){
-    let currentIndex = array.length, temporaryValue :number , randomIndex : number;
-    while(currentIndex!=0){
-       
-      randomIndex = Math.floor(Math.random() * currentIndex);
-      currentIndex -= 1;
-      // And swap it with the current element.
-      temporaryValue = array[currentIndex];
-      array[currentIndex] = array[randomIndex];
-      array[randomIndex] = temporaryValue;
-    }
-    return array;
-  }
 
-  //Start a new game 
+  /* Function to initialize a new game*/
   newGame(){
     if(this.gameData=="Easy")
     {
@@ -66,11 +55,15 @@ export class ThreeEasyComponent implements OnInit {
         this.board[row][col] = Cellenum.EMPTY;
       }
     }
+
+    /* Remove remainder moves of previous game if any */
     while(this.selectedMoves.length)
     {
       this.selectedMoves.pop();
     }
-    //First Player is Always X
+
+    /*Initializing first player and move*/
+    /*First move is Always X*/
     this.currentPlayerMove = Cellenum.X; 
     if(this.opponentData=="vsMachine" && this.playerData=="machine")this.currentPlayer = Playerenum.c;
     if(this.playerData=="human")this.currentPlayer = Playerenum.h;
@@ -81,11 +74,25 @@ export class ThreeEasyComponent implements OnInit {
     if(this.currentPlayer===Playerenum.c)this.moveComputer();
   }
 
-  //Make a move if the current is empty - for human
+  /* Function to shuffle an array */
+  shuffle(array: number[]){
+    let currentIndex = array.length, temporaryValue :number , randomIndex : number;
+    while(currentIndex!=0){
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex -= 1;
+      temporaryValue = array[currentIndex];
+      array[currentIndex] = array[randomIndex];
+      array[randomIndex] = temporaryValue;
+    }
+    return array;
+  }
+
+  /* Function for human's move */
   move(row:number,col:number){
     if(!this.isThreeGameOver && this.board[row][col]==Cellenum.EMPTY){
       this.board[row][col] = this.currentPlayerMove;
       this.selectedMoves.push([row,col]);
+      /* Terminal Conditions */
       if(this.isDraw()){
         this.statusMessage = 'It\'s a Draw!';
         this.isThreeGameOver = true;
@@ -101,9 +108,10 @@ export class ThreeEasyComponent implements OnInit {
     if(!this.isThreeGameOver && this.opponentData=="vsMachine")this.moveComputer();
   }
 
-
-  // Make a move if possible - for computer 
+  /*Function for Computer's move */
   moveComputer(){
+
+    /* Random selection of next move for level easy */
     if(this.gameData=="Easy")
     {
       let r;
@@ -123,7 +131,8 @@ export class ThreeEasyComponent implements OnInit {
       }
     }
     else
-    {
+    { 
+      /* Move if computer is starting player */
       if(this.isFirstMove==true)
       {
         this.first = [0, 2, 4, 6, 8];
@@ -151,19 +160,18 @@ export class ThreeEasyComponent implements OnInit {
             this.selectedMoves.push([0,0]);
             break;
         }
-
         this.isFirstMove = false;
       }
       else{
         let bestScore = -Infinity;
         let bestMove = [-1,-1];
-        for(let i=0;i<3;i++)
+        for(let row=0;row<3;row++)
         {
-          for(let j=0;j<3;j++)
+          for(let col=0;col<3;col++)
           {
-            if(this.board[i][j]===Cellenum.EMPTY)
+            if(this.board[row][col]===Cellenum.EMPTY)
             {
-              this.board[i][j] = this.currentPlayerMove;
+              this.board[row][col] = this.currentPlayerMove;
               let currScore;
               switch(this.gameData)
               {
@@ -177,11 +185,10 @@ export class ThreeEasyComponent implements OnInit {
                   currScore = this.alphaBetaPruning(this.board,11,-Infinity,Infinity,false);
                   break;
                 }
-              this.board[i][j] = Cellenum.EMPTY;
+              this.board[row][col] = Cellenum.EMPTY;
               if(currScore>bestScore){
                 bestScore = currScore;
-                bestMove = [i, j];
-                //console.log(bestScore);
+                bestMove = [row, col];
               }
             }
           }
@@ -190,7 +197,7 @@ export class ThreeEasyComponent implements OnInit {
         this.selectedMoves.push([bestMove[0],bestMove[1]]);
       }
     }
-
+    /* Terminal Conditions */
     if(this.isDraw()){
       this.statusMessage = 'It\'s a Draw!';
       this.isThreeGameOver = true;
@@ -204,21 +211,27 @@ export class ThreeEasyComponent implements OnInit {
     }
   }
 
-    
+  /* Function to undo a move */  
   undo(){
+    let remove = 1;
+    if(this.opponentData == "vsHuman") remove = 0;
     let undoLast = [];
     let undoSecondLast = [];
-    if(this.selectedMoves.length>1)
+    if(this.selectedMoves.length> remove)
     {
       undoLast = this.selectedMoves.pop();
       this.board[undoLast[0]][undoLast[1]] = Cellenum.EMPTY;
-      undoSecondLast = this.selectedMoves.pop();
-      this.board[undoSecondLast[0]][undoSecondLast[1]] = Cellenum.EMPTY;
+      if(remove ==1){
+        undoSecondLast = this.selectedMoves.pop();
+        this.board[undoSecondLast[0]][undoSecondLast[1]] = Cellenum.EMPTY;
+      }
       if(this.gameData=="Easy")this.index--;
+      if(remove === 0) this.currentPlayerMove = this.currentPlayerMove === Cellenum.X?Cellenum.O:Cellenum.X;
     }
   }
 
-  public isWinner;
+
+  /* Function implementing Minimax Algorithm */
   minimax(board:Cellenum[][],depth:number,isMaximizing:boolean){  
       if(depth==0)
       {
@@ -228,22 +241,20 @@ export class ThreeEasyComponent implements OnInit {
       if(this.isDraw())return 0;
       if(this.isWin())
       {
-        //console.log(this.isWinner);
         if(this.isWinner===this.currentPlayerMove)return 1;
         else return -1;
       }
-
       if(isMaximizing){
         let bestScore = -Infinity;
-        for(let i=0;i<3;i++)
+        for(let row=0;row<3;row++)
         {
-          for(let j=0;j<3;j++)
+          for(let col=0;col<3;col++)
           {
-            if(board[i][j]===Cellenum.EMPTY)
+            if(board[row][col]===Cellenum.EMPTY)
             {
-              board[i][j] = this.currentPlayerMove;
+              board[row][col] = this.currentPlayerMove;
               let currScore = this.minimax(board,depth-1,false);
-              board[i][j] = Cellenum.EMPTY;
+              board[row][col] = Cellenum.EMPTY;
               bestScore = Math.max(currScore,bestScore);
             }
           }
@@ -253,17 +264,17 @@ export class ThreeEasyComponent implements OnInit {
       else
       {
         let bestScore = Infinity;
-        for(let i=0;i<3;i++)
+        for(let row=0;row<3;row++)
         {
-          for(let j=0;j<3;j++)
+          for(let col=0;col<3;col++)
           {
-            if(board[i][j]===Cellenum.EMPTY)
+            if(board[row][col]===Cellenum.EMPTY)
             {
               if(this.currentPlayerMove===Cellenum.X)
-              board[i][j] = Cellenum.O;
-              else board[i][j] = Cellenum.X;
+              board[row][col] = Cellenum.O;
+              else board[row][col] = Cellenum.X;
               let currScore = this.minimax(board,depth-1,true);
-              board[i][j] = Cellenum.EMPTY;
+              board[row][col] = Cellenum.EMPTY;
               bestScore = Math.min(currScore,bestScore);
             }
           }
@@ -272,6 +283,8 @@ export class ThreeEasyComponent implements OnInit {
       }
   }
 
+
+  /* Minimax with Alpha beta pruning */
   alphaBetaPruning(board:Cellenum[][],depth:number,alpha:number,beta:number,isMaximizing:boolean){
     if(depth==0)
       {
@@ -281,22 +294,21 @@ export class ThreeEasyComponent implements OnInit {
     if(this.isDraw())return 0;
       if(this.isWin())
       {
-        //console.log(this.isWinner);
         if(this.isWinner===this.currentPlayerMove)return 1;
         else return -1;
       }
 
       if(isMaximizing){
         let bestScore = -Infinity;
-        for(let i=0;i<3;i++)
+        for(let row=0;row<3;row++)
         {
-          for(let j=0;j<3;j++)
+          for(let col=0;col<3;col++)
           {
-            if(board[i][j]===Cellenum.EMPTY)
+            if(board[row][col]===Cellenum.EMPTY)
             {
-              board[i][j] = this.currentPlayerMove;
+              board[row][col] = this.currentPlayerMove;
               let currScore = this.alphaBetaPruning(board,depth-1,alpha,beta,false);
-              board[i][j] = Cellenum.EMPTY;
+              board[row][col] = Cellenum.EMPTY;
               bestScore = Math.max(currScore,bestScore);
               alpha = Math.max(alpha,bestScore);
               if(beta<=alpha)break;
@@ -308,17 +320,17 @@ export class ThreeEasyComponent implements OnInit {
       else
       {
         let bestScore = Infinity;
-        for(let i=0;i<3;i++)
+        for(let row=0;row<3;row++)
         {
-          for(let j=0;j<3;j++)
+          for(let col=0;col<3;col++)
           {
-            if(board[i][j]===Cellenum.EMPTY)
+            if(board[row][col]===Cellenum.EMPTY)
             {
               if(this.currentPlayerMove===Cellenum.X)
-              board[i][j] = Cellenum.O;
-              else board[i][j] = Cellenum.X;
+              board[row][col] = Cellenum.O;
+              else board[row][col] = Cellenum.X;
               let currScore = this.alphaBetaPruning(board,depth-1,alpha,beta,true);
-              board[i][j] = Cellenum.EMPTY;
+              board[row][col] = Cellenum.EMPTY;
               bestScore = Math.min(currScore,bestScore);
               beta = Math.min(beta,bestScore);
               if(beta<=alpha)break;
@@ -329,12 +341,11 @@ export class ThreeEasyComponent implements OnInit {
       }
   }
 
-  //Provide Hints to user 
   
+  /* Function to provide Hints to the user */
   provideHints(){
       let bestNextMove:number[];
       let bestHumanScore:number= -Infinity;
-      //Best move for Human will have large negative value in minimax
       for(let row =0; row < 3;row++){
         for(let col =0;col<3;col++){
           if(this.board[row][col] === Cellenum.EMPTY){
@@ -352,7 +363,8 @@ export class ThreeEasyComponent implements OnInit {
     console.log(bestNextMove);
   }
 
-  //Is the game a 
+  /*TERMINAL FUNCTIONS */
+
   isDraw(): boolean {
     for(const columns of this.board){
       for(const cols of columns){
@@ -406,5 +418,6 @@ export class ThreeEasyComponent implements OnInit {
     }
     return false;
   }
+
 }
 

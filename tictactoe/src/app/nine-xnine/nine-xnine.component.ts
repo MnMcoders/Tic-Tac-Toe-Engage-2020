@@ -11,9 +11,12 @@ import { Board, Node, State } from './node';
   styleUrls: ['./nine-xnine.component.css']
 })
 export class NineXnineComponent implements OnInit {
+  
+  /* Declaring parent properties*/
   @Input() public playerData;
   @Input() public gameData;
 
+  /* Declaring variables */
   public currentPlayer:Playerenum;
   public currentPlayerMove:Cellenum;
   public mainboard : Cellenum[][][];
@@ -23,6 +26,7 @@ export class NineXnineComponent implements OnInit {
   public nextCell=[];
   public bestMove=[];
   public isFirstMove = true;
+
   constructor() { }
 
   ngOnInit(): void {
@@ -46,7 +50,6 @@ export class NineXnineComponent implements OnInit {
         }
       }
     }
-  
     this.currentPlayerMove = Cellenum.X;
     this.currentPlayer = Playerenum.h;
     this.isGameOver = false;

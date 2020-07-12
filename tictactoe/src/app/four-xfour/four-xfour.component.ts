@@ -9,10 +9,13 @@ import { Cellenum } from '../cell/cellenum.enum';
 })
 export class FourXfourComponent implements OnInit {
 
+
+  /* Declaring parent properties*/
   @Input() public playerData;
   @Input() public gameData;
   @Input() public opponentData;
-  
+
+  /* Declaring variables */
   public currentPlayer:Playerenum;
   private currentPlayerMove:Cellenum;
   private first: number[];
@@ -22,6 +25,7 @@ export class FourXfourComponent implements OnInit {
   public statusMessage;
   public index:number;
   public selectedMoves = [];
+  public isWinner:Cellenum;
 
   constructor() { }
 
@@ -29,29 +33,13 @@ export class FourXfourComponent implements OnInit {
     this.newGame();
   }
 
-  //Getter for isGameOver
+  /*Getter for isGameOver*/ 
   get gameOver():boolean {
     return this.isGameOver;
   }
 
-  //Function to shuffle an array 
-  shuffle(array: number[]){
-    let currentIndex = array.length, temporaryValue :number , randomIndex : number;
-    while(currentIndex!=0){
-       
-      randomIndex = Math.floor(Math.random() * currentIndex);
-      currentIndex -= 1;
-      // And swap it with the current element.
-      temporaryValue = array[currentIndex];
-      array[currentIndex] = array[randomIndex];
-      array[randomIndex] = temporaryValue;
-    }
-    return array;
-  }
-
-  //Start a new game
+  /* Function to initialize a new game*/
   newGame(){
-    //Initialize the board 
     this.board = [];
     for(let row = 0;row < 4;row++){
       this.board[row] =[];
@@ -59,15 +47,15 @@ export class FourXfourComponent implements OnInit {
         this.board[row][col] = Cellenum.EMPTY;
       }
     }
+    /* Remove remainder moves of previous game if any */
     while(this.selectedMoves.length)
     {
       this.selectedMoves.pop();
     }
-
-    //Initialize first player if mentioned as else computer
+    /*Initializing first player and move*/
+    /*First move is Always X*/
     if(this.opponentData=="vsMachine" && this.playerData === "machine") this.currentPlayer = Playerenum.c;
     if(this.playerData === "human") this.currentPlayer = Playerenum.h;
-    //X always starts
     this.currentPlayerMove = Cellenum.X;
     this.isGameOver = false;
     if(this.currentPlayer===Playerenum.c)this.isFirstMove = true;
@@ -76,11 +64,27 @@ export class FourXfourComponent implements OnInit {
     if(this.currentPlayer===Playerenum.c)this.moveComputer();
   }
 
-  //To render human's move
+
+  /* Function to shuffle an array */
+  shuffle(array: number[]){
+    let currentIndex = array.length, temporaryValue :number , randomIndex : number;
+    while(currentIndex!=0){
+       
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex -= 1;
+      temporaryValue = array[currentIndex];
+      array[currentIndex] = array[randomIndex];
+      array[randomIndex] = temporaryValue;
+    }
+    return array;
+  }
+
+  /* Function for human's move */
   move(row:number,col:number){
     if(!this.isGameOver && this.board[row][col]==Cellenum.EMPTY){
       this.board[row][col] = this.currentPlayerMove;
       this.selectedMoves.push([row,col]);
+      /* Terminal Conditions */
       if(this.isDraw()){
         this.statusMessage = 'It\'s a Draw!';
         this.isGameOver = true;
@@ -96,31 +100,9 @@ export class FourXfourComponent implements OnInit {
     if(!this.isGameOver && this.opponentData=="vsMachine")this.moveComputer();
   }
 
-  /*HINTS FUNCTION*/
-  provideHints(){
-    let bestNextMove:number[];
-    let bestHumanScore:number= -Infinity;
-    //Best move for Human will have large negative value in minimax
-    for(let row =0; row < 4;row++){
-      for(let col =0;col< 4;col++){
-        if(this.board[row][col] === Cellenum.EMPTY){
-          this.board[row][col] = this.currentPlayerMove;
-          let currHumanScore = this.alphaBetaPruning(this.board,3,-Infinity,Infinity,false);
-          this.board[row][col] = Cellenum.EMPTY;
-          if(currHumanScore > bestHumanScore){
-            bestHumanScore = currHumanScore;
-            bestNextMove = [row,col];
-          }
-        }  
-      }
-    }
-    console.log("BEST MOVE IS:");
-    console.log(bestNextMove);
-  }
-
-
+  /*Function for Computer's move */
   moveComputer(){
-    //First Move of Computer
+    /* Move if computer is starting player */
     if(this.isFirstMove==true)
     {
       this.first = [1,2,3,4,5,6,7,8];
@@ -172,7 +154,6 @@ export class FourXfourComponent implements OnInit {
                 this.board[row][col] = this.currentPlayerMove;
                 let currScore;
                 currScore = this.alphaBetaPruning(this.board,3,-Infinity,Infinity,false);
-                //Undo the move 
                 this.board[row][col] = Cellenum.EMPTY;
                 if(currScore > bestScore){
                   bestScore = currScore;
@@ -185,7 +166,7 @@ export class FourXfourComponent implements OnInit {
       this.selectedMoves.push([bestMove[0],bestMove[1]]);
     }
 
-    //Results of the move 
+    /* Terminal Conditions */
     if(this.isDraw()){
       this.statusMessage = 'It\'s a Draw';
       this.isGameOver = true;
@@ -202,20 +183,47 @@ export class FourXfourComponent implements OnInit {
 
   }
 
+  /* Function to undo a move */  
   undo(){
+    let remove = 1;
+    if(this.opponentData == "vsHuman") remove = 0;
     let undoLast = [];
     let undoSecondLast = [];
-    if(this.selectedMoves.length>1)
+    if(this.selectedMoves.length> remove)
     {
       undoLast = this.selectedMoves.pop();
-      undoSecondLast = this.selectedMoves.pop();
       this.board[undoLast[0]][undoLast[1]] = Cellenum.EMPTY;
-      this.board[undoSecondLast[0]][undoSecondLast[1]] = Cellenum.EMPTY;
+      if(remove ==1){
+        undoSecondLast = this.selectedMoves.pop();
+        this.board[undoSecondLast[0]][undoSecondLast[1]] = Cellenum.EMPTY;
+      }
+      if(remove === 0) this.currentPlayerMove = this.currentPlayerMove === Cellenum.X?Cellenum.O:Cellenum.X;
     }
   }
 
-  public isWinner;
-  /* Minimax with Alpa beta pruning - Maximizing player -> Computer */
+  /* Function to provide Hints to the user */
+  provideHints(){
+    let bestNextMove:number[];
+    let bestHumanScore:number= -Infinity;
+    for(let row =0; row < 4;row++){
+      for(let col =0;col< 4;col++){
+        if(this.board[row][col] === Cellenum.EMPTY){
+          this.board[row][col] = this.currentPlayerMove;
+          let currHumanScore = this.alphaBetaPruning(this.board,3,-Infinity,Infinity,false);
+          this.board[row][col] = Cellenum.EMPTY;
+          if(currHumanScore > bestHumanScore){
+            bestHumanScore = currHumanScore;
+            bestNextMove = [row,col];
+          }
+        }  
+      }
+    }
+    console.log("BEST MOVE IS:");
+    console.log(bestNextMove);
+  }
+
+  
+  /* Minimax with Alpa beta pruning */
   alphaBetaPruning(board:Cellenum[][],depth:number,alpha:number,beta:number,isMaximizing:boolean){
     if(depth==0)
       {
@@ -228,7 +236,6 @@ export class FourXfourComponent implements OnInit {
         if(this.isWinner===this.currentPlayerMove)return 1;
         else return -1;
       }
-      /* Maximizing Player -> always X */
       if(isMaximizing){
         let bestScore = -Infinity;
         for(let row=0;row<4;row++)
@@ -248,7 +255,6 @@ export class FourXfourComponent implements OnInit {
         }
         return bestScore;
       }
-      /*Minimizing Player -> always O*/
       else
       {
         let bestScore = Infinity;
@@ -271,7 +277,7 @@ export class FourXfourComponent implements OnInit {
       }
   }
 
-  /* Decision Functions */
+  /* TERMINAL FUNCTIONS */
   isDraw(): boolean {
     for(const columns of this.board){
       for(const cols of columns){
@@ -317,7 +323,7 @@ export class FourXfourComponent implements OnInit {
     ){
         return true;
     }
-    //3 Cell Diagonal
+    /* Sub Diagonals (3 cells) */
     if(
       this.board[0][2] === this.board[1][1] &&
       this.board[0][2] === this.board[2][0] &&

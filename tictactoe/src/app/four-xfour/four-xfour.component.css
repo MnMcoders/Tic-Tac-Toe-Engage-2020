@@ -32,13 +32,11 @@
     
 }
 .hint{
-    margin-top: 10px;
-    background-color: cornflowerblue;
     border-radius: 10px;
     border-color: black;
     padding: 5px;
     font-weight: bolder;
-    
+    margin-bottom: 10px;   
 }
 
 button:hover{
