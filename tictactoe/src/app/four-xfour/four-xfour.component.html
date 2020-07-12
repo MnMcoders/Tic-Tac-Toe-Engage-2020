@@ -5,6 +5,9 @@
         <h2>{{"Hello " + playerData}}</h2>
         <h2>{{"Hey, It's " + gameData}}</h2> -->
         <!-- checking -->
+
+        <div class ="status text-center p-4">{{statusMessage}}{{". Hello " + playerData + ". "}}{{"Hey, It's " + gameData + "."}}</div>  
+ 
         <div class ="board" *ngFor ="let row of [0,1,2,3]">
             <app-cell *ngFor ="let col of [0,1,2,3]" 
                         [size] = "3"

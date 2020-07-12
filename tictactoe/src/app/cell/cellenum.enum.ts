@@ -1,5 +1,6 @@
 export enum Cellenum {
     EMPTY = ' ',
     X = 'X',
-    O = 'O'
+    O = 'O',
+    W = '☻'
 }

@@ -384,6 +384,14 @@ export class ThreeEasyComponent implements OnInit {
         this.board[row][0]!= Cellenum.EMPTY
       ){
         this.isWinner = this.board[row][0];
+        // Try this out.
+        //document.write(this.board[row][0].fontcolor( "blue" ));
+        //Cellenum.W.fontcolor("blue");
+        this.board[row][0] = Cellenum.W;
+        this.board[row][1] = Cellenum.W;
+        this.board[row][2] = Cellenum.W;
+    
+
         return true;
       }
     } 
@@ -395,6 +403,9 @@ export class ThreeEasyComponent implements OnInit {
         this.board[0][col]!= Cellenum.EMPTY
       ){
         this.isWinner = this.board[1][col];
+        this.board[0][col] = Cellenum.W;
+        this.board[1][col] = Cellenum.W;
+        this.board[2][col] = Cellenum.W;
         return true;
       }
     }  
@@ -406,6 +417,9 @@ export class ThreeEasyComponent implements OnInit {
       this.board[0][0]!= Cellenum.EMPTY
     ){
       this.isWinner = this.board[0][0];
+      this.board[0][0] = Cellenum.W;
+      this.board[1][1] = Cellenum.W;
+      this.board[2][2] = Cellenum.W;
       return true;
     }
     if(
@@ -414,6 +428,9 @@ export class ThreeEasyComponent implements OnInit {
       this.board[0][2]!= Cellenum.EMPTY
     ){
         this.isWinner = this.board[0][2];
+        this.board[0][2] = Cellenum.W;
+        this.board[1][1] = Cellenum.W;
+        this.board[2][0] = Cellenum.W;
         return true;
     }
     return false;

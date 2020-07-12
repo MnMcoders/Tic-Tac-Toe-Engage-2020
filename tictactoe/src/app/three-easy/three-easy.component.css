@@ -14,6 +14,13 @@
 
 }
 
+.status{
+    font-size: medium;
+    font-weight: bold;
+    color: beige;
+    margin-bottom: 15px;
+}
+
 .new-game{
     margin-top: 10px;
     background-color: cornflowerblue;
@@ -44,7 +51,14 @@
 
 button:hover{
     background-color:purple;
+}
+
+
+@media only screen and (min-width: 1200px) {
+    .board{
+        font-size: 15px;
     }
+}
 
 @media screen and (max-width: 1024px) {
     .board{

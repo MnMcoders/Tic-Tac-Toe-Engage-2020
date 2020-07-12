@@ -288,71 +288,106 @@ export class FourXfourComponent implements OnInit {
   }
 
   isWin():boolean{
-    /*Horizontal*/
-    for(const rows of this.board){
-      if(rows[0]===rows[1] && rows[1]===rows[2] && rows[2]===rows[3] && rows[0]!=Cellenum.EMPTY){
-        return true;
-      }
-    }
-    /*Vertical*/
-    for(let col = 0 ; col < 4 ;col++){
+    /*Horizontal*/ 
+    for(let row = 0 ; row <4 ;row++){
       if(
-        this.board[0][col] === this.board[1][col] &&
-        this.board[1][col] === this.board[2][col] &&
-        this.board[2][col] === this.board[3][col] &&
-        this.board[0][col]!= Cellenum.EMPTY
+        this.board[row][0] === this.board[row][1] &&
+        this.board[row][1] === this.board[row][2] &&
+        this.board[row][2] === this.board[row][3] &&
+        this.board[row][0]!= Cellenum.EMPTY
       ){
+        // Try this out.
+        //document.write(this.board[row][0].fontcolor( "blue" ));
+        //Cellenum.W.fontcolor("blue");
+        this.board[row][0] = Cellenum.W;
+        this.board[row][1] = Cellenum.W;
+        this.board[row][2] = Cellenum.W;
+        this.board[row][3] = Cellenum.W;
         return true;
       }
-    }  
-
-    /*Diagonal*/ 
-    if(
-      this.board[0][0] === this.board[1][1] &&
-      this.board[1][1] === this.board[2][2] &&
-      this.board[2][2] === this.board[3][3] &&
-      this.board[0][0]!= Cellenum.EMPTY
-    ){
-      return true;
-    }
-    if(
-      this.board[0][3] === this.board[1][2] &&
-      this.board[1][2] === this.board[2][1] &&
-      this.board[2][1] === this.board[3][0] &&
-      this.board[0][3]!= Cellenum.EMPTY
-    ){
-        return true;
-    }
-    /* Sub Diagonals (3 cells) */
-    if(
-      this.board[0][2] === this.board[1][1] &&
-      this.board[0][2] === this.board[2][0] &&
-      this.board[0][2]!=Cellenum.EMPTY
-    ){
-      return true;
-    }
-    if(
-      this.board[1][3] === this.board[2][2] &&
-      this.board[2][2] === this.board[3][1] &&
-      this.board[2][2]!=Cellenum.EMPTY
-    ){
-      return true;
-    }
-    if(
-      this.board[0][1] === this.board[1][2] &&
-      this.board[0][1] === this.board[2][3] &&
-      this.board[0][1]!=Cellenum.EMPTY
-    ){
-      return true;
-    }
-    if(
-      this.board[1][0] === this.board[2][1] &&
-      this.board[2][1] === this.board[3][2] &&
-      this.board[3][2]!=Cellenum.EMPTY
-    ){
-      return true;
-    }
-    return false;
+    } 
+/*Vertical*/
+for(let col = 0 ; col < 4 ;col++){
+  if(
+    this.board[0][col] === this.board[1][col] &&
+    this.board[1][col] === this.board[2][col] &&
+    this.board[2][col] === this.board[3][col] &&
+    this.board[0][col]!= Cellenum.EMPTY
+  ){
+    this.board[0][col] = Cellenum.W;
+    this.board[1][col] = Cellenum.W;
+    this.board[2][col] = Cellenum.W;
+    this.board[3][col] = Cellenum.W;
+    return true;
   }
+}  
 
+/*Diagonal*/ 
+if(
+  this.board[0][0] === this.board[1][1] &&
+  this.board[1][1] === this.board[2][2] &&
+  this.board[2][2] === this.board[3][3] &&
+  this.board[0][0]!= Cellenum.EMPTY
+){
+  this.board[0][0] = Cellenum.W;
+  this.board[1][1] = Cellenum.W;
+  this.board[2][2] = Cellenum.W;
+  this.board[3][3] = Cellenum.W;      
+  return true;
+}
+if(
+  this.board[0][3] === this.board[1][2] &&
+  this.board[1][2] === this.board[2][1] &&
+  this.board[2][1] === this.board[3][0] &&
+  this.board[0][3]!= Cellenum.EMPTY
+){
+  this.board[0][3] = Cellenum.W;
+  this.board[1][2] = Cellenum.W;
+  this.board[2][1] = Cellenum.W;
+  this.board[3][0] = Cellenum.W;       
+    return true;
+}
+//3 Cell Diagonal
+if(
+  this.board[0][2] === this.board[1][1] &&
+  this.board[0][2] === this.board[2][0] &&
+  this.board[0][2]!=Cellenum.EMPTY
+){
+  this.board[0][2] = Cellenum.W;
+  this.board[1][1] = Cellenum.W;
+  this.board[2][0] = Cellenum.W; 
+  return true;
+}
+if(
+  this.board[1][3] === this.board[2][2] &&
+  this.board[2][2] === this.board[3][1] &&
+  this.board[2][2]!=Cellenum.EMPTY
+){
+  this.board[2][2] = Cellenum.W;
+  this.board[1][3] = Cellenum.W;
+  this.board[3][1] = Cellenum.W;
+  return true;
+}
+if(
+  this.board[0][1] === this.board[1][2] &&
+  this.board[0][1] === this.board[2][3] &&
+  this.board[0][1]!=Cellenum.EMPTY
+){
+  this.board[0][1] = Cellenum.W;
+  this.board[1][2] = Cellenum.W;
+  this.board[2][3] = Cellenum.W;
+  return true;
+}
+if(
+  this.board[1][0] === this.board[2][1] &&
+  this.board[2][1] === this.board[3][2] &&
+  this.board[3][2]!=Cellenum.EMPTY
+){
+  this.board[1][0] = Cellenum.W;
+  this.board[2][1] = Cellenum.W;
+  this.board[3][2] = Cellenum.W;
+  return true;
+}
+return false;
+}
 }
