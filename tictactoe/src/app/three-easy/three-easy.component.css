@@ -21,47 +21,40 @@
     margin-bottom: 15px;
 }
 
-.new-game{
+.new-game,.undo,.hint{
     margin-top: 10px;
-    background-color: cornflowerblue;
-    border-radius: 10px;
+    background-color:rgb(101, 101, 180);
+    border-radius: 8px;
     border-color: black;
     padding: 5px;
     font-weight: bolder;
-    
-}
-.undo{
-    margin-top: 10px;
-    background-color: cornflowerblue;
-    border-radius: 10px;
-    border-color: black;
-    padding: 5px;
-    font-weight: bolder;
-    
-}
-.hint{
-    margin-top: 10px;
-    background-color: cornflowerblue;
-    border-radius: 10px;
-    border-color: black;
-    padding: 5px;
-    font-weight: bolder;
+    font-size: 10px;
     
 }
 
 button:hover{
-    background-color:purple;
+    background-color:rgb(126, 191, 207);
 }
 
+.btn{
+    margin:1%;
 
-@media only screen and (min-width: 1200px) {
+}
+
+@media only screen and (min-width: 1024px) {
     .board{
         font-size: 15px;
+    }
+    .btn{
+        font-size: 12px;
     }
 }
 
 @media screen and (max-width: 1024px) {
     .board{
+        font-size: 8px;
+    }
+    .btn{
         font-size: 8px;
     }
 } 
@@ -70,9 +63,15 @@ button:hover{
     .board{
         font-size: 6px;
     }
+    .btn{
+        font-size: 6px;
+    }
 } 
 @media screen and (max-width: 480px) {
     .board{
+        font-size: 6px;
+    }
+    .btn{
         font-size: 6px;
     }
 } 

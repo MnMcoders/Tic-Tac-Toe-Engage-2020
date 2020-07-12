@@ -13,14 +13,13 @@
 
 @media screen and (min-width: 1024px) {
   .cell {
-    width: 150px;
-    height: 150px;
+    width: 160px;
+    height: 160px;
     
   }
 }  
 
-
-@media screen and (max-width: 1024px) {
+@media screen and (max-width: 1023px) {
   .cell {
     width: 80px;
     height: 80px;
@@ -29,8 +28,8 @@
 }  
 @media screen and (max-width: 768px) {
     .cell {
-      width: 50px;
-      height: 50px;
+      width: 80px;
+      height: 80px;
     }
   } 
 
