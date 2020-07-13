@@ -5,7 +5,7 @@ import { Component, OnInit, Output ,EventEmitter} from '@angular/core';
   templateUrl: './leftbar.component.html',
   styleUrls: ['./leftbar.component.css']
 })
-export class LeftbarComponent implements OnInit {
+export class LeftbarComponent implements OnInit{
 
   
   @Output() gameEvent = new EventEmitter<string>();

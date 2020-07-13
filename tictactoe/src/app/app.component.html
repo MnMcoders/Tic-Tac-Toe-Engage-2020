@@ -1,6 +1,6 @@
 <app-title class="title"></app-title>
 <app-leftbar class="leftbar" (displayEvent)="display=$event" (gameEvent)="check=$event" (playerEvent)="select=$event" (opponentEvent)="play=$event"></app-leftbar>
-<app-rules *ngIf="display==false"></app-rules>
+<app-rules class ="rules" *ngIf="display==false"></app-rules>
 <app-three-easy class="threeCross" *ngIf = "display==true && check!='four' && check!='nine'" [gameData]=check [playerData]=select [opponentData]=play></app-three-easy>
 <app-four-xfour class="fourCross" *ngIf = "display==true && check=='four'" [gameData]=check [playerData]=select [opponentData]=play></app-four-xfour>
 <app-nine-xnine *ngIf = "display==true && check=='nine'" [gameData]=check [playerData]=select></app-nine-xnine>

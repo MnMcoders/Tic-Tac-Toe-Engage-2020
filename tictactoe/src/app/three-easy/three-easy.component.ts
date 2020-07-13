@@ -1,6 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Cellenum } from '../cell/cellenum.enum';
 import { Playerenum } from '../cell/playerenum.enum'
+import { NgStyle } from '@angular/common';
 
 @Component({
   selector: 'app-three-easy',
@@ -342,26 +343,26 @@ export class ThreeEasyComponent implements OnInit {
   }
 
   
-  /* Function to provide Hints to the user */
-  provideHints(){
-      let bestNextMove:number[];
-      let bestHumanScore:number= -Infinity;
-      for(let row =0; row < 3;row++){
-        for(let col =0;col<3;col++){
-          if(this.board[row][col] === Cellenum.EMPTY){
-            this.board[row][col] = this.currentPlayerMove;
-            let currHumanScore = this.minimax(this.board,7,false);
-            this.board[row][col] = Cellenum.EMPTY;
-            if(currHumanScore > bestHumanScore){
-              bestHumanScore = currHumanScore;
-              bestNextMove = [row,col];
-            }
-          }  
-        }
-      }
-    console.log("BEST MOVE IS:");
-    console.log(bestNextMove);
-  }
+   /* Function to provide Hints to the user */
+   provideHints(){
+       let bestNextMove:number[];
+       let bestHumanScore:number= -Infinity;
+       for(let row =0; row < 3;row++){
+         for(let col =0;col<3;col++){
+           if(this.board[row][col] === Cellenum.EMPTY){
+             this.board[row][col] = this.currentPlayerMove;
+             let currHumanScore = this.minimax(this.board,7,false);
+             this.board[row][col] = Cellenum.EMPTY;
+             if(currHumanScore > bestHumanScore){
+               bestHumanScore = currHumanScore;
+               bestNextMove = [row,col];
+              }
+           }  
+         }
+       }
+     console.log("BEST MOVE IS:");
+     console.log(bestNextMove);
+ }
 
   /*TERMINAL FUNCTIONS */
 

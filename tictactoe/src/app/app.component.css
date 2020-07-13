@@ -3,11 +3,10 @@ h2{
 }
 .leftbar{
     position: absolute;
-    margin: 0.2% 0px 0px 20%;
+    margin: 0.2% 0 0 20%;
     max-width: 25%;
     align-content: center;
     max-height: fit-content;
-
 }
 
 .threeCross{
@@ -17,5 +16,5 @@ h2{
 }
 .fourCross{
     position: absolute;
-    margin: 1% 0px 0px 45%;
+    margin: 1% 0px 0px 47%;
 }
