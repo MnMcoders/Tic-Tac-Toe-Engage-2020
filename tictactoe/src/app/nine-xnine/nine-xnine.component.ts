@@ -176,7 +176,7 @@ export class NineXnineComponent implements OnInit {
     for(let j = 0; j < rootNode.children.length;j++){
       let currWinScore = rootNode.children[j].state.winScore;
       if(currWinScore > bestWinScore){
-        currWinScore = bestWinScore;
+        bestWinScore = currWinScore;
         bestNextNode = rootNode.children[j];
       }
     }
@@ -223,57 +223,50 @@ export class NineXnineComponent implements OnInit {
 
   simulation(leafNode:Node){
     leafNode.isVisited = true;
-    let boardStatus = leafNode.state.board.boardStatus;
-    let board = leafNode.state.board.board;
-    console.log("Board and status");
-    console.log(boardStatus);
-    console.log(board);
+    let boardStatus = JSON.parse(JSON.stringify(leafNode.state.board.boardStatus));
+    let board = JSON.parse(JSON.stringify(leafNode.state.board.board));
     let player = leafNode.state.playerNo;
-    let playerName = player ===0?Playerenum.h:Playerenum.c;
+    let playerName = player ===-1?Playerenum.h:Playerenum.c;
     let playerMove = leafNode.state.playerMove;
     let pos = leafNode.state.move[2];
     let playerWon;
-    let count = 0;
     while(!this.isWinGame(boardStatus) && !this.isDrawGame(boardStatus)){
-      count++;
       let randomMove = this.getRandomPlay(board,boardStatus,pos);
-      console.log(randomMove);
-      console.log("get random works");
       //Board chosen is full
-      if(randomMove[0]==-1){
-        pos = Math.floor((Math.random() * 9) + 1);
-        pos = pos-1;
+      pos = randomMove[2];
+      board[randomMove[0]][randomMove[1]][randomMove[2]] = playerMove;
+      if(this.isWinBoard(randomMove[0],randomMove[1],board,boardStatus,playerName)) {
+        boardStatus[randomMove[0]][randomMove[1]] = player;
+        playerWon = player;
       }
-      else{
-          pos = randomMove[2];
-          board[randomMove[0]][randomMove[1]][randomMove[2]] = playerMove;
-          if(this.isWinBoard(randomMove[0],randomMove[1],board,boardStatus,playerName)) {
-            boardStatus[randomMove[0]][randomMove[1]] = player;
-            playerWon = player;
-          }
-          else if(this.isDrawBoard(randomMove[0],randomMove[1],board,boardStatus,playerName)){
-            boardStatus[randomMove[0]][randomMove[1]] =  2;
-            playerWon = 0
-          }
-          player = player===1?-1:1;
-          playerMove = playerMove ===Cellenum.O?Cellenum.X:Cellenum.O;
-        
-          playerName = playerName === Playerenum.c?Playerenum.h:Playerenum.c;
+      else if(this.isDrawBoard(randomMove[0],randomMove[1],board,boardStatus,playerName)){
+        boardStatus[randomMove[0]][randomMove[1]] =  2;
+        playerWon = 0
       }
-
-      if(count==4) break;
+      player = player===1?-1:1;
+      playerMove = playerMove ===Cellenum.O?Cellenum.X:Cellenum.O;
+    
+      playerName = playerName === Playerenum.c?Playerenum.h:Playerenum.c;
+      
     }
     console.log("while works");
 
     this.update(leafNode,playerWon);
   }
 
+
   getRandomPlay(board:Cellenum[][][],boardStatus:number[][],previousPos : number):number[]{
     let nextMoves = this.calculateNextCell(previousPos);
     let row = nextMoves[0];
     let col = nextMoves[1];
     let pos;
-    if(boardStatus[row][col]!=0) return [-1];
+    //Board is full
+    while(boardStatus[row][col]!=0){
+      row = (row+1)%3;
+      col = (col+1)%3;
+      console.log(row);
+      console.log(col);
+    }
     //Select one of these random states
     for(let i =0;i < 9 ;i++){
       if(board[row][col][i]==Cellenum.EMPTY){
@@ -306,9 +299,11 @@ export class NineXnineComponent implements OnInit {
     let nextPlayerMove = currentNode.state.playerMove===Cellenum.X?Cellenum.O:Cellenum.X;
     let player = nextPlayer===-1?Playerenum.h:Playerenum.c;
     for(let i = 0 ; i < 9 ; i++){
+        const resetBoard = JSON.parse(JSON.stringify(currentNode.state.board));
         if(currentNode.state.board.board[row][col][i]===Cellenum.EMPTY){
             let nextBoard = new Board(currentNode.state.board.board,currentNode.state.board.boardStatus);
             nextBoard.board[row][col][i] = currentNode.state.playerMove;
+            currentNode.state.board = resetBoard;
             /*Update Board Status if its terminal after this move*/
             if(this.isWinBoard(row,col,nextBoard.board,nextBoard.boardStatus,player)) {
               nextBoard.boardStatus[row][col] = currentNode.state.playerNo;
