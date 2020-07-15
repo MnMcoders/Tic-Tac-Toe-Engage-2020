@@ -59,9 +59,15 @@ export class NineXnineComponent implements OnInit {
 
   /* Function for Human's move */
   move(row:number, col:number, pos:number){
-    if(!this.isFirstMove && (row != this.nextCell[0] || col!= this.nextCell[1])){
-      alert("Invalid Move");
-      return;
+    if(this.mainboardStatus[row][col]!=0){
+        alert("Select any other board!");
+        return;
+    }
+    else if(!this.isFirstMove && (row != this.nextCell[0] || col!= this.nextCell[1])){
+      if(this.nextCell[0]!=-1 && this.nextCell[1]!=-1){
+        alert("Invalid Move");
+        return;
+      }
     }
     if(!this.isGameOver && this.mainboard[row][col][pos]==Cellenum.EMPTY){
         this.isFirstMove = false;
@@ -76,6 +82,11 @@ export class NineXnineComponent implements OnInit {
       }else if(this.isWinGame(this.mainboardStatus)){
         this.statusMessage = `Player ${this.currentPlayer} won!`;
         this.isGameOver = true;
+      }
+      else{
+        this.currentPlayer = Playerenum.c;
+        this.currentPlayerMove = Cellenum.O;
+        this.statusMessage =`Player ${this.currentPlayer}'s turn`;
       }
     }
     else{
@@ -116,11 +127,34 @@ export class NineXnineComponent implements OnInit {
   /* Computer's move  - implements MONTE CARLO SEARCH TREE*/
 
   moveComputer(row:number,col:number,pos:number){
+    if(this.mainboardStatus[row][col]!=0){
+        this.nextCell = this.calculateNextCell(pos);
+        row = this.nextCell[0];
+        col = this.nextCell[1];
+        if(this.mainboardStatus[row][col]!=0)
+        {
+          row = -1;
+          col = -1;
+          for(let i=0;i<3;i++){
+            for(let j=0;j<3;j++){
+              if(this.mainboardStatus[i][j]==0){
+                row = i;
+                col = j;
+                break;
+              }
+            }
+            if(row!=-1 && col!=-1)break;
+          }
+        }
+    }
     let bestMove = this.MCTS(this.mainboard,this.mainboardStatus,row,col,pos,Cellenum.O);
     /* Make the best move */
     this.mainboard[bestMove[0]][bestMove[1]][bestMove[2]] = this.currentPlayerMove;
     document.getElementById((bestMove[0]+"."+bestMove[1]+"."+bestMove[2])).innerHTML = this.currentPlayerMove;
     this.nextCell = this.calculateNextCell(bestMove[2]);
+    if(this.mainboardStatus[this.nextCell[0]][this.nextCell[1]]!=0){
+      this.nextCell = [-1,-1]
+    }
     /* This part of move computer I have changed */
     if(this.isDrawBoard(row,col,this.mainboard,this.mainboardStatus,this.currentPlayer)|| this.isWinBoard(row,col,this.mainboard,this.mainboardStatus,this.currentPlayer)){
       if(this.isDrawGame(this.mainboardStatus)){
@@ -388,7 +422,6 @@ export class NineXnineComponent implements OnInit {
     //Horizontal
     for(let row = 0 ; row < 3 ; row ++){
       if(boardStatus[row][0]==boardStatus[row][1] && boardStatus[row][1]==boardStatus[row][2] && (boardStatus[row][0]==1|| boardStatus[row][0]==-1)){
-        this.isGameOver = true;
         return true;
       }
     }
@@ -396,19 +429,16 @@ export class NineXnineComponent implements OnInit {
     //Vertical
     for(let col = 0 ; col < 3 ; col ++){
       if(boardStatus[0][col]==boardStatus[1][col] && boardStatus[2][col]==boardStatus[1][col] && boardStatus[0][col]==1){
-        this.isGameOver = true;
         return true;
       }
     }
   
     //Diagonal
     if(boardStatus[0][0]==boardStatus[1][1] && boardStatus[2][2]==boardStatus[1][1] && boardStatus[0][0]==1){
-      this.isGameOver = true;
       return true;
     }
   
     if(boardStatus[0][2]==boardStatus[1][1] && boardStatus[2][0]==boardStatus[1][1] && boardStatus[0][2]==1){
-      this.isGameOver = true;
       return true;
     }
   
