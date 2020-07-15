@@ -233,6 +233,7 @@ export class NineXnineComponent implements OnInit {
     while(!this.isWinGame(boardStatus) && !this.isDrawGame(boardStatus)){
       let randomMove = this.getRandomPlay(board,boardStatus,pos);
       //Board chosen is full
+      if(randomMove[0]==-1)break;
       pos = randomMove[2];
       board[randomMove[0]][randomMove[1]][randomMove[2]] = playerMove;
       if(this.isWinBoard(randomMove[0],randomMove[1],board,boardStatus,playerName)) {
@@ -256,16 +257,29 @@ export class NineXnineComponent implements OnInit {
 
 
   getRandomPlay(board:Cellenum[][][],boardStatus:number[][],previousPos : number):number[]{
+    console.log(previousPos);
     let nextMoves = this.calculateNextCell(previousPos);
     let row = nextMoves[0];
     let col = nextMoves[1];
     let pos;
     //Board is full
-    while(boardStatus[row][col]!=0){
-      row = (row+1)%3;
-      col = (col+1)%3;
-      console.log(row);
-      console.log(col);
+    let rowCopy = row;
+    let colCopy = col;
+    if(boardStatus[row][col]!=0){
+      for(let i=0;i<3;i++)
+      {
+        for(let j=0;j<3;j++)
+        {
+          if(boardStatus[i][j]==0)
+          {
+            row = i;
+            col = j;
+            break;
+          }
+        }
+        if(boardStatus[row][col]==0)break;
+      }
+      if(row==rowCopy && col==colCopy)return [-1];
     }
     //Select one of these random states
     for(let i =0;i < 9 ;i++){
