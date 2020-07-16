@@ -24,8 +24,13 @@ export class FourXfourComponent implements OnInit {
   public isFirstMove : boolean; 
   public statusMessage;
   public index:number;
-  public selectedMoves = [];
+  public selectedMoves;
   public isWinner:Cellenum;
+  public isColorChanged;
+  public hint:number[];
+  public winningCells : number[][];
+
+  
 
   constructor() { }
 
@@ -40,7 +45,20 @@ export class FourXfourComponent implements OnInit {
 
   /* Function to initialize a new game*/
   newGame(){
+    this.hint = [];
+    this.winningCells = [];
+    this.selectedMoves = [];
     this.board = [];
+
+    if(this.isColorChanged){
+      for(let row =0; row < 4;row++){
+        for(let col =0;col<4;col++){
+          document.getElementById(row+"."+col).style.backgroundColor="";
+        }
+      }
+      this.isColorChanged = false;
+    }
+    
     for(let row = 0;row < 4;row++){
       this.board[row] =[];
       for(let col = 0;col < 4;col++){
@@ -81,6 +99,11 @@ export class FourXfourComponent implements OnInit {
 
   /* Function for human's move */
   move(row:number,col:number){
+    if(this.isColorChanged){
+      document.getElementById(this.hint[0]+"."+this.hint[1]).style.backgroundColor="";
+      this.isColorChanged = false; 
+      this.hint=[];
+    }
     if(!this.isGameOver && this.board[row][col]==Cellenum.EMPTY){
       this.board[row][col] = this.currentPlayerMove;
       this.selectedMoves.push([row,col]);
@@ -91,6 +114,7 @@ export class FourXfourComponent implements OnInit {
       }else if(this.isWin()){
         this.statusMessage = `Player ${this.currentPlayer} won!`;
         this.isGameOver = true;
+        this.addColour(this.winningCells);
       }else{
         this.currentPlayer = Playerenum.c;
         this.currentPlayerMove = this.currentPlayerMove === Cellenum.X?Cellenum.O:Cellenum.X;
@@ -99,6 +123,15 @@ export class FourXfourComponent implements OnInit {
     }
     if(!this.isGameOver && this.opponentData=="vsMachine")this.moveComputer();
   }
+
+  /* Adds color to the necessary cells after a player wins */
+  addColour(winningCells:number[][]){
+    for(let i = 0 ; i < winningCells.length;i++){
+      document.getElementById(winningCells[i][0]+"."+winningCells[i][1]).style.backgroundColor="green"; 
+    }
+    this.isColorChanged = true;
+}
+
 
   /*Function for Computer's move */
   moveComputer(){
@@ -172,6 +205,7 @@ export class FourXfourComponent implements OnInit {
       this.isGameOver = true;
     }
     else if(this.isWin()){
+      this.addColour(this.winningCells);
       this.statusMessage = `Player ${this.currentPlayer} won!`;
       this.isGameOver = true;
     }
@@ -218,8 +252,10 @@ export class FourXfourComponent implements OnInit {
         }  
       }
     }
-    console.log("BEST MOVE IS:");
-    console.log(bestNextMove);
+    document.getElementById(bestNextMove[0]+"."+bestNextMove[1]).style.backgroundColor="yellow"; 
+    this.isColorChanged = true;
+    this.hint[0] = bestNextMove[0];
+    this.hint[1] = bestNextMove[1];
   }
 
   
@@ -233,6 +269,7 @@ export class FourXfourComponent implements OnInit {
     if(this.isDraw())return 0;
       if(this.isWin())
       {
+        this.winningCells = [];
         if(this.isWinner===this.currentPlayerMove)return 1;
         else return -1;
       }
@@ -296,13 +333,11 @@ export class FourXfourComponent implements OnInit {
         this.board[row][2] === this.board[row][3] &&
         this.board[row][0]!= Cellenum.EMPTY
       ){
-        // Try this out.
-        //document.write(this.board[row][0].fontcolor( "blue" ));
-        //Cellenum.W.fontcolor("blue");
-        this.board[row][0] = Cellenum.W;
-        this.board[row][1] = Cellenum.W;
-        this.board[row][2] = Cellenum.W;
-        this.board[row][3] = Cellenum.W;
+        this.isWinner = this.board[row][0];
+        this.winningCells[0] = [row,0];
+        this.winningCells[1] = [row,1];
+        this.winningCells[2] = [row,2];
+        this.winningCells[3] = [row,3];
         return true;
       }
     } 
@@ -314,10 +349,11 @@ for(let col = 0 ; col < 4 ;col++){
     this.board[2][col] === this.board[3][col] &&
     this.board[0][col]!= Cellenum.EMPTY
   ){
-    this.board[0][col] = Cellenum.W;
-    this.board[1][col] = Cellenum.W;
-    this.board[2][col] = Cellenum.W;
-    this.board[3][col] = Cellenum.W;
+    this.isWinner = this.board[0][col];
+    this.winningCells[0] = [0,col];
+    this.winningCells[1] = [1,col];
+    this.winningCells[2] = [2,col];
+    this.winningCells[3] = [3,col];
     return true;
   }
 }  
@@ -329,10 +365,11 @@ if(
   this.board[2][2] === this.board[3][3] &&
   this.board[0][0]!= Cellenum.EMPTY
 ){
-  this.board[0][0] = Cellenum.W;
-  this.board[1][1] = Cellenum.W;
-  this.board[2][2] = Cellenum.W;
-  this.board[3][3] = Cellenum.W;      
+  this.isWinner = this.board[0][0];
+  this.winningCells[0] = [0,0];
+  this.winningCells[1] = [1,1];
+  this.winningCells[2] = [2,2];
+  this.winningCells[3] = [3,3];    
   return true;
 }
 if(
@@ -340,12 +377,13 @@ if(
   this.board[1][2] === this.board[2][1] &&
   this.board[2][1] === this.board[3][0] &&
   this.board[0][3]!= Cellenum.EMPTY
-){
-  this.board[0][3] = Cellenum.W;
-  this.board[1][2] = Cellenum.W;
-  this.board[2][1] = Cellenum.W;
-  this.board[3][0] = Cellenum.W;       
-    return true;
+){   
+  this.isWinner = this.board[0][3];
+  this.winningCells[0] = [0,3];
+  this.winningCells[1] = [1,2];
+  this.winningCells[2] = [2,1];
+  this.winningCells[3] = [3,0];    
+  return true;
 }
 //3 Cell Diagonal
 if(
@@ -353,9 +391,10 @@ if(
   this.board[0][2] === this.board[2][0] &&
   this.board[0][2]!=Cellenum.EMPTY
 ){
-  this.board[0][2] = Cellenum.W;
-  this.board[1][1] = Cellenum.W;
-  this.board[2][0] = Cellenum.W; 
+  this.isWinner = this.board[0][2];
+  this.winningCells[0] = [0,2];
+  this.winningCells[1] = [1,1];
+  this.winningCells[2] = [2,0];
   return true;
 }
 if(
@@ -363,9 +402,10 @@ if(
   this.board[2][2] === this.board[3][1] &&
   this.board[2][2]!=Cellenum.EMPTY
 ){
-  this.board[2][2] = Cellenum.W;
-  this.board[1][3] = Cellenum.W;
-  this.board[3][1] = Cellenum.W;
+  this.isWinner = this.board[1][3];
+  this.winningCells[0] = [1,3];
+  this.winningCells[1] = [2,2];
+  this.winningCells[2] = [3,1];
   return true;
 }
 if(
@@ -373,9 +413,10 @@ if(
   this.board[0][1] === this.board[2][3] &&
   this.board[0][1]!=Cellenum.EMPTY
 ){
-  this.board[0][1] = Cellenum.W;
-  this.board[1][2] = Cellenum.W;
-  this.board[2][3] = Cellenum.W;
+  this.isWinner = this.board[0][1];
+  this.winningCells[0] = [0,1];
+  this.winningCells[1] = [1,2];
+  this.winningCells[2] = [2,3];
   return true;
 }
 if(
@@ -383,9 +424,11 @@ if(
   this.board[2][1] === this.board[3][2] &&
   this.board[3][2]!=Cellenum.EMPTY
 ){
-  this.board[1][0] = Cellenum.W;
-  this.board[2][1] = Cellenum.W;
-  this.board[3][2] = Cellenum.W;
+  this.isWinner = this.board[1][0];
+  this.winningCells[0] = [1,0];
+  this.winningCells[1] = [2,1];
+  this.winningCells[2] = [3,2];
+  
   return true;
 }
 return false;

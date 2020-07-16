@@ -10,6 +10,7 @@
  
         <div class ="board" *ngFor ="let row of [0,1,2,3]">
             <app-cell *ngFor ="let col of [0,1,2,3]" 
+                        id = "{{row}}.{{col}}"
                         [size] = "3"
                         [row] = "row" 
                         [col] = "col" 

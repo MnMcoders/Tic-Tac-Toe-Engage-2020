@@ -1,8 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Cellenum } from '../cell/cellenum.enum';
 import { Playerenum } from '../cell/playerenum.enum'
-import { NgStyle } from '@angular/common';
-import { CellComponent } from '../cell/cell.component';
 
 @Component({
   selector: 'app-three-easy',
@@ -27,10 +25,11 @@ export class ThreeEasyComponent implements OnInit {
   public isFirstMove : boolean; 
   public statusMessage;
   public index:number;
-  public selectedMoves = [];
+  public selectedMoves;
   public isWinner:Cellenum;
   public isColorChanged;
-  public hint:number[] = [];
+  public hint:number[];
+  public winningCells : number[][];
 
   constructor() { }
 
@@ -46,12 +45,16 @@ export class ThreeEasyComponent implements OnInit {
 
   /* Function to initialize a new game*/
   newGame(){
+    this.hint = [];
+    this.winningCells = [];
+    this.selectedMoves = [];
     if(this.isColorChanged){
       for(let row =0; row < 3;row++){
         for(let col =0;col<3;col++){
           document.getElementById(row+"."+col).style.backgroundColor="";
         }
       }
+      this.isColorChanged = false;
     }
     if(this.gameData=="Easy")
     {
@@ -101,7 +104,9 @@ export class ThreeEasyComponent implements OnInit {
   /* Function for human's move */
   move(row:number,col:number){
     if(this.isColorChanged){
-      document.getElementById(this.hint[0]+"."+this.hint[1]).style.backgroundColor=""; 
+      document.getElementById(this.hint[0]+"."+this.hint[1]).style.backgroundColor="";
+      this.isColorChanged = false; 
+      this.hint=[];
     }
     if(!this.isThreeGameOver && this.board[row][col]==Cellenum.EMPTY){
       this.board[row][col] = this.currentPlayerMove;
@@ -111,6 +116,7 @@ export class ThreeEasyComponent implements OnInit {
         this.statusMessage = 'It\'s a Draw!';
         this.isThreeGameOver = true;
       }else if(this.isWin()){
+        this.addColour(this.winningCells);
         this.statusMessage = `Player ${this.currentPlayer} won!`; 
         this.isThreeGameOver = true;
       }else{
@@ -218,11 +224,26 @@ export class ThreeEasyComponent implements OnInit {
     }else if(this.isWin()){
       this.statusMessage = `Player ${this.currentPlayer} won!`;
       this.isThreeGameOver = true;
+      this.addColour(this.winningCells);
     }else{
       this.currentPlayer = Playerenum.h;
       this.currentPlayerMove = this.currentPlayerMove === Cellenum.X?Cellenum.O:Cellenum.X;
       this.statusMessage =`Player ${this.currentPlayer}'s turn`;
     }
+  }
+
+  /* Adds color to the necessary cells after a player wins */
+  addColour(winningCells:number[][]){
+      let row1 = winningCells[0][0];
+      let col1 = winningCells[0][1];
+      let row2 = winningCells[1][0];
+      let col2 = winningCells[1][1];
+      let row3 = winningCells[2][0];
+      let col3 = winningCells[2][1];
+      document.getElementById(row1+"."+col1).style.backgroundColor="green"; 
+      document.getElementById(row2+"."+col2).style.backgroundColor="green"; 
+      document.getElementById(row3+"."+col3).style.backgroundColor="green"; 
+      this.isColorChanged = true;
   }
 
   /* Function to undo a move */  
@@ -252,9 +273,13 @@ export class ThreeEasyComponent implements OnInit {
         if(isMaximizing)return 1;
         else return -1; 
       }
-      if(this.isDraw())return 0;
+      if(this.isDraw()){
+        this.winningCells = [];
+        return 0;
+      }
       if(this.isWin())
       {
+        this.winningCells = [];
         if(this.isWinner===this.currentPlayerMove)return 1;
         else return -1;
       }
@@ -305,9 +330,12 @@ export class ThreeEasyComponent implements OnInit {
         if(isMaximizing)return 1;
         else return -1; 
       } 
-    if(this.isDraw())return 0;
+    if(this.isDraw()){
+      this.winningCells = [];
+      return 0;
+    }
       if(this.isWin())
-      {
+      { this.winningCells = [];
         if(this.isWinner===this.currentPlayerMove)return 1;
         else return -1;
       }
@@ -400,10 +428,9 @@ export class ThreeEasyComponent implements OnInit {
         this.board[row][0]!= Cellenum.EMPTY
       ){
         this.isWinner = this.board[row][0];
-        document.getElementById(row+"."+0).style.backgroundColor="green";
-        document.getElementById(row+"."+1).style.backgroundColor="green";
-        document.getElementById(row+"."+2).style.backgroundColor="green";
-        this.isColorChanged=true;
+        this.winningCells[0] = [row,0];
+        this.winningCells[1] = [row,1];
+        this.winningCells[2] = [row,2];
         return true;
       }
     } 
@@ -416,10 +443,9 @@ export class ThreeEasyComponent implements OnInit {
         this.board[0][col]!= Cellenum.EMPTY
       ){
         this.isWinner = this.board[1][col];
-        document.getElementById(0+"."+col).style.backgroundColor="green";
-        document.getElementById(1+"."+col).style.backgroundColor="green";
-        document.getElementById(2+"."+col).style.backgroundColor="green";
-        this.isColorChanged=true;
+        this.winningCells[0] = [0,col];
+        this.winningCells[1] = [1,col];
+        this.winningCells[2] = [2,col];
         return true;
       }
     }  
@@ -431,10 +457,9 @@ export class ThreeEasyComponent implements OnInit {
       this.board[0][0]!= Cellenum.EMPTY
     ){
       this.isWinner = this.board[0][0];
-      document.getElementById(0+"."+0).style.backgroundColor="green";
-      document.getElementById(1+"."+1).style.backgroundColor="green";
-      document.getElementById(2+"."+2).style.backgroundColor="green";
-      this.isColorChanged=true;
+      this.winningCells[0] = [0,0];
+      this.winningCells[1] = [1,1];
+      this.winningCells[2] = [2,2];
       return true;
     }
     if(
@@ -443,11 +468,10 @@ export class ThreeEasyComponent implements OnInit {
       this.board[0][2]!= Cellenum.EMPTY
     ){
          this.isWinner = this.board[0][2];
-        document.getElementById(0+"."+2).style.backgroundColor="green";
-        document.getElementById(1+"."+1).style.backgroundColor="green";
-        document.getElementById(2+"."+0).style.backgroundColor="green";
-        this.isColorChanged=true;
-        return true;
+         this.winningCells[0] = [0,2];
+         this.winningCells[1] = [1,1];
+         this.winningCells[2] = [2,0];
+         return true;
     }
     return false;
   }
