@@ -56,6 +56,18 @@ export class NineXnineComponent implements OnInit {
     this.statusMessage = `Player ${this.currentPlayer}'s turn`;
   }
 
+  /* Function to shuffle an array */
+  shuffle(array: number[]){
+    let currentIndex = array.length, temporaryValue :number , randomIndex : number;
+    while(currentIndex!=0){
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex -= 1;
+      temporaryValue = array[currentIndex];
+      array[currentIndex] = array[randomIndex];
+      array[randomIndex] = temporaryValue;
+    }
+    return array;
+  }
 
   /* Function for Human's move */
   move(row:number, col:number, pos:number){
@@ -83,19 +95,12 @@ export class NineXnineComponent implements OnInit {
         this.statusMessage = `Player ${this.currentPlayer} won!`;
         this.isGameOver = true;
       }
-      else{
-        this.currentPlayer = Playerenum.c;
-        this.currentPlayerMove = Cellenum.O;
-        this.statusMessage =`Player ${this.currentPlayer}'s turn`;
-      }
-    }
-    else{
-      this.currentPlayer = Playerenum.c;
-      this.currentPlayerMove = Cellenum.O;
-      this.statusMessage =`Player ${this.currentPlayer}'s turn`;
     }
     
-    // TODO - what if next board is full ? -> ADD THE PREVIOUS MOVE 
+    this.currentPlayer = Playerenum.c;
+    this.currentPlayerMove = Cellenum.O;
+    this.statusMessage =`Player ${this.currentPlayer}'s turn`;
+    
     if(!this.isGameOver)this.moveComputer(row,col,pos);
   }
   
@@ -123,87 +128,75 @@ export class NineXnineComponent implements OnInit {
                                                   
     }
   }
+  /* To select a small board if the board directed to is in terminal state */
+  selectRandomBoard():number[]{
+    let row = (Math.floor((Math.random() * 3) + 1))-1;
+    let col = (Math.floor((Math.random() * 3) + 1))-1;
+    while(this.mainboardStatus[row][col]!=0){
+      row = (Math.floor((Math.random() * 3) + 1))-1;
+      col = (Math.floor((Math.random() * 3) + 1))-1;
+    }
+    return [row,col];
+  }
 
   /* Computer's move  - implements MONTE CARLO SEARCH TREE*/
-
-  moveComputer(row:number,col:number,pos:number){
+  moveComputer(row:number,col:number,pos:number){ 
     if(this.mainboardStatus[row][col]!=0){
         this.nextCell = this.calculateNextCell(pos);
         row = this.nextCell[0];
         col = this.nextCell[1];
-        if(this.mainboardStatus[row][col]!=0)
+        if(this.mainboardStatus[row][col]!=0)  
         {
-          row = -1;
-          col = -1;
-          for(let i=0;i<3;i++){
-            for(let j=0;j<3;j++){
-              if(this.mainboardStatus[i][j]==0){
-                row = i;
-                col = j;
-                break;
-              }
-            }
-            if(row!=-1 && col!=-1)break;
-          }
+          let next = this.selectRandomBoard();
+          row = next[0];
+          col = next[1];
         }
     }
     let bestMove = this.MCTS(this.mainboard,this.mainboardStatus,row,col,pos,Cellenum.O);
+
     /* Make the best move */
     this.mainboard[bestMove[0]][bestMove[1]][bestMove[2]] = this.currentPlayerMove;
     document.getElementById((bestMove[0]+"."+bestMove[1]+"."+bestMove[2])).innerHTML = this.currentPlayerMove;
+
     this.nextCell = this.calculateNextCell(bestMove[2]);
     if(this.mainboardStatus[this.nextCell[0]][this.nextCell[1]]!=0){
       this.nextCell = [-1,-1]
     }
-    /* This part of move computer I have changed */
+
     if(this.isDrawBoard(row,col,this.mainboard,this.mainboardStatus,this.currentPlayer)|| this.isWinBoard(row,col,this.mainboard,this.mainboardStatus,this.currentPlayer)){
       if(this.isDrawGame(this.mainboardStatus)){
-        console.log("Terminal");
         this.statusMessage = 'It\'s a Draw!';
         this.isGameOver = true;
       }else if(this.isWinGame(this.mainboardStatus)){
         this.statusMessage = `Player ${this.currentPlayer} won!`;
         this.isGameOver = true;
-      }else{
-        this.currentPlayer = Playerenum.h;
-        this.currentPlayerMove = Cellenum.X;
-        this.statusMessage =`Player ${this.currentPlayer}'s turn`;
       }
     }
-    else{
-      this.currentPlayer = Playerenum.h;
-      this.currentPlayerMove = Cellenum.X;
-      this.statusMessage =`Player ${this.currentPlayer}'s turn`;
-    }
- 
+    
+    this.currentPlayer = Playerenum.h;
+    this.currentPlayerMove = Cellenum.X;
+    this.statusMessage =`Player ${this.currentPlayer}'s turn`;
+    
   }
 
   MCTS(board:Cellenum[][][],boardStatus: number[][],row:number,col:number,pos:number,playerMove:Cellenum):number[]{
     /*Form the root -> Start With Computer*/ 
     let initialState = new State([row,col,pos],new Board(board,boardStatus),1,playerMove,false);  
-    let rootNode = new Node(initialState,null,[]); //S0
+    let rootNode = new Node(initialState,null,[]); 
     //Get child nodes:
-    console.log(rootNode);
-    /// Done
     this.expansion(rootNode);
-    //S1 S2 
     rootNode.isVisited=true;
     let noOfIterations = 1;
     let iterations = 0;
     while(iterations < noOfIterations){
       //Select a Node : UTF VALUE
-      console.log("root");
-      console.log(rootNode);
       let nodeToSimulate = this.selection(rootNode);
       if(nodeToSimulate.isVisited===true){
          this.expansion(nodeToSimulate);
          
       }
       else{
-        console.log("Works");
          this.simulation(nodeToSimulate);
-         console.log("Simulation Works");
-         
       }
       iterations++;
     }
@@ -236,8 +229,6 @@ export class NineXnineComponent implements OnInit {
   selection(node:Node){
     let bestUTF = -Infinity;
     let bestNextNode:Node;
-    console.log("Children");
-    console.log(node.children);
     for(let i =0; i < node.children.length;i++){                  
       let currUTF = this.calculateUTF(node.children[i]);
       if(currUTF > bestUTF){
@@ -288,39 +279,23 @@ export class NineXnineComponent implements OnInit {
       playerName = playerName === Playerenum.c?Playerenum.h:Playerenum.c;
       
     }
-    console.log("while works");
-
     this.update(leafNode,playerWon);
   }
 
 
   getRandomPlay(board:Cellenum[][][],boardStatus:number[][],previousPos : number):number[]{
-    console.log(previousPos);
     let nextMoves = this.calculateNextCell(previousPos);
     let row = nextMoves[0];
     let col = nextMoves[1];
-    let pos;
     //Board is full
-    let rowCopy = row;
-    let colCopy = col;
     if(boardStatus[row][col]!=0){
-      for(let i=0;i<3;i++)
-      {
-        for(let j=0;j<3;j++)
-        {
-          if(boardStatus[i][j]==0)
-          {
-            row = i;
-            col = j;
-            break;
-          }
-        }
-        if(boardStatus[row][col]==0)break;
-      }
-      if(row==rowCopy && col==colCopy)return [-1];
+        let next = this.selectRandomBoard();
+        row = next[0];
+        col = next[1];
     }
     //Select one of these random states
-    for(let i =0;i < 9 ;i++){
+    let pos = 0;
+    for(let i = 0 ; i < 9 ; i++){
       if(board[row][col][i]==Cellenum.EMPTY){
         pos = i;
         break;
@@ -339,30 +314,16 @@ export class NineXnineComponent implements OnInit {
 
   /* Get Next State from current Node State */
   getAllPossibleStates(currentNode:Node):Array<State>{
-    console.log(currentNode);
-    console.log("State");
-    console.log(currentNode.state);
     let nextPossibleStates:State[]=[];
     let nextState = this.calculateNextCell(currentNode.state.move[2]);
     let row = nextState[0];
     let col = nextState[1];
     //If the next Board is not empty, picking random next Board
     if(currentNode.state.board.boardStatus[nextState[0]][nextState[1]]!=0){
-      row = -1;
-      col = -1;
-      for(let i=0;i<3;i++){
-        for(let j=0;j<3;j++){
-          if(currentNode.state.board.boardStatus[i][j]==0)
-          {
-            row = i;
-            col = j;
-            break;
-          }
-        }
-        if(row!=-1 && col!=-1)break;
-      }
+      let next = this.selectRandomBoard();
+      row = next[0];
+      col = next[1];
     }
-    //TODO - Add what to do if board is empty 
     let nextPlayer = currentNode.state.playerNo===1?-1:1;
     let nextPlayerMove = currentNode.state.playerMove===Cellenum.X?Cellenum.O:Cellenum.X;
     let player = nextPlayer===-1?Playerenum.h:Playerenum.c;
@@ -385,7 +346,6 @@ export class NineXnineComponent implements OnInit {
               isTerminal = true;
             }  
             let state = new State([row,col,i],nextBoard,nextPlayer,nextPlayerMove,false);
-            console.log(state);
             nextPossibleStates.push(state);
         }
     }
