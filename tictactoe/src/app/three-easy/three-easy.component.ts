@@ -46,6 +46,13 @@ export class ThreeEasyComponent implements OnInit {
 
   /* Function to initialize a new game*/
   newGame(){
+    if(this.isColorChanged){
+      for(let row =0; row < 3;row++){
+        for(let col =0;col<3;col++){
+          document.getElementById(row+"."+col).style.backgroundColor="";
+        }
+      }
+    }
     if(this.gameData=="Easy")
     {
       this.index = 0;
@@ -94,7 +101,7 @@ export class ThreeEasyComponent implements OnInit {
   /* Function for human's move */
   move(row:number,col:number){
     if(this.isColorChanged){
-      document.getElementById(this.hint[0]+"."+this.hint[1]).style.backgroundColor="";
+      document.getElementById(this.hint[0]+"."+this.hint[1]).style.backgroundColor=""; 
     }
     if(!this.isThreeGameOver && this.board[row][col]==Cellenum.EMPTY){
       this.board[row][col] = this.currentPlayerMove;
@@ -104,7 +111,7 @@ export class ThreeEasyComponent implements OnInit {
         this.statusMessage = 'It\'s a Draw!';
         this.isThreeGameOver = true;
       }else if(this.isWin()){
-        this.statusMessage = `Player ${this.currentPlayer} won!`;
+        this.statusMessage = `Player ${this.currentPlayer} won!`; 
         this.isThreeGameOver = true;
       }else{
         this.currentPlayer = Playerenum.c;
@@ -366,7 +373,7 @@ export class ThreeEasyComponent implements OnInit {
            }  
          }
        }
-     document.getElementById(bestNextMove[0]+"."+bestNextMove[1]).style.backgroundColor="green"; 
+     document.getElementById(bestNextMove[0]+"."+bestNextMove[1]).style.backgroundColor="yellow"; 
      this.isColorChanged = true;
      this.hint[0] = bestNextMove[0];
      this.hint[1] = bestNextMove[1];
@@ -393,17 +400,14 @@ export class ThreeEasyComponent implements OnInit {
         this.board[row][0]!= Cellenum.EMPTY
       ){
         this.isWinner = this.board[row][0];
-        // Try this out.
-        //document.write(this.board[row][0].fontcolor( "blue" ));
-        //Cellenum.W.fontcolor("blue");
-        this.board[row][0] = Cellenum.W;
-        this.board[row][1] = Cellenum.W;
-        this.board[row][2] = Cellenum.W;
-    
-
+        document.getElementById(row+"."+0).style.backgroundColor="green";
+        document.getElementById(row+"."+1).style.backgroundColor="green";
+        document.getElementById(row+"."+2).style.backgroundColor="green";
+        this.isColorChanged=true;
         return true;
       }
     } 
+
     //Vertical 
     for(let col = 0 ; col <3 ;col++){
       if(
@@ -412,9 +416,10 @@ export class ThreeEasyComponent implements OnInit {
         this.board[0][col]!= Cellenum.EMPTY
       ){
         this.isWinner = this.board[1][col];
-        this.board[0][col] = Cellenum.W;
-        this.board[1][col] = Cellenum.W;
-        this.board[2][col] = Cellenum.W;
+        document.getElementById(0+"."+col).style.backgroundColor="green";
+        document.getElementById(1+"."+col).style.backgroundColor="green";
+        document.getElementById(2+"."+col).style.backgroundColor="green";
+        this.isColorChanged=true;
         return true;
       }
     }  
@@ -426,9 +431,10 @@ export class ThreeEasyComponent implements OnInit {
       this.board[0][0]!= Cellenum.EMPTY
     ){
       this.isWinner = this.board[0][0];
-      this.board[0][0] = Cellenum.W;
-      this.board[1][1] = Cellenum.W;
-      this.board[2][2] = Cellenum.W;
+      document.getElementById(0+"."+0).style.backgroundColor="green";
+      document.getElementById(1+"."+1).style.backgroundColor="green";
+      document.getElementById(2+"."+2).style.backgroundColor="green";
+      this.isColorChanged=true;
       return true;
     }
     if(
@@ -436,10 +442,11 @@ export class ThreeEasyComponent implements OnInit {
       this.board[1][1] === this.board[2][0] &&
       this.board[0][2]!= Cellenum.EMPTY
     ){
-        this.isWinner = this.board[0][2];
-        this.board[0][2] = Cellenum.W;
-        this.board[1][1] = Cellenum.W;
-        this.board[2][0] = Cellenum.W;
+         this.isWinner = this.board[0][2];
+        document.getElementById(0+"."+2).style.backgroundColor="green";
+        document.getElementById(1+"."+1).style.backgroundColor="green";
+        document.getElementById(2+"."+0).style.backgroundColor="green";
+        this.isColorChanged=true;
         return true;
     }
     return false;
