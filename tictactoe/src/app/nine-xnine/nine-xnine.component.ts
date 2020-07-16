@@ -164,6 +164,10 @@ export class NineXnineComponent implements OnInit {
       }else if(this.isWinGame(this.mainboardStatus)){
         this.statusMessage = `Player ${this.currentPlayer} won!`;
         this.isGameOver = true;
+      }else{
+        this.currentPlayer = Playerenum.h;
+        this.currentPlayerMove = Cellenum.X;
+        this.statusMessage =`Player ${this.currentPlayer}'s turn`;
       }
     }
     else{
@@ -340,9 +344,25 @@ export class NineXnineComponent implements OnInit {
     console.log(currentNode.state);
     let nextPossibleStates:State[]=[];
     let nextState = this.calculateNextCell(currentNode.state.move[2]);
-    //TODO - Add what to do if board is empty 
     let row = nextState[0];
     let col = nextState[1];
+    //If the next Board is not empty, picking random next Board
+    if(currentNode.state.board.boardStatus[nextState[0]][nextState[1]]!=0){
+      row = -1;
+      col = -1;
+      for(let i=0;i<3;i++){
+        for(let j=0;j<3;j++){
+          if(currentNode.state.board.boardStatus[i][j]==0)
+          {
+            row = i;
+            col = j;
+            break;
+          }
+        }
+        if(row!=-1 && col!=-1)break;
+      }
+    }
+    //TODO - Add what to do if board is empty 
     let nextPlayer = currentNode.state.playerNo===1?-1:1;
     let nextPlayerMove = currentNode.state.playerMove===Cellenum.X?Cellenum.O:Cellenum.X;
     let player = nextPlayer===-1?Playerenum.h:Playerenum.c;
