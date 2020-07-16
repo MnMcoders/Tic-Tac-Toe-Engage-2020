@@ -1,5 +1,4 @@
 <div class="container">
-   
     <!--    
         <div class ="status text-center p-4">{{statusMessage}}</div> 
         <h2>{{"Hello " + playerData}}</h2>
@@ -9,6 +8,7 @@
 
         <div class ="board" *ngFor ="let row of [0,1,2]">
             <app-cell  *ngFor ="let col of [0,1,2]" 
+                        id = "{{row}}.{{col}}"
                         [size] = "2"
                         [row] = "row" 
                         [col] = "col" 
@@ -25,30 +25,5 @@
                 *ngIf="isThreeGameOver==false" (click) ="undo()">Undo</button>
         <button class ="btn btn-primary hint"
                 *ngIf="isThreeGameOver==false" (click) ="provideHints()">Hint</button>
-    
     </div>
     
-   <!-- <script class="try">
-         /* Function to provide Hints to the user */
-  function provideHints(){
-    //   let bestNextMove:number[];
-    //   let bestHumanScore:number= -Infinity;
-      for(let row =0; row < 3;row++){
-        for(let col =0;col<3;col++){
-          if(this.board[row][col] === Cellenum.EMPTY){
-            this.board[row][col] = this.currentPlayerMove;
-            let currHumanScore = this.minimax(this.board,7,false);
-            this.board[row][col] = Cellenum.EMPTY;
-            if(currHumanScore > bestHumanScore){
-              bestHumanScore = currHumanScore;
-               row.
-               col;
-             }
-          }  
-        }
-      }
-    console.log("BEST MOVE IS:");
-    console.log(bestNextMove);
-}
-   </script> 
-    -->

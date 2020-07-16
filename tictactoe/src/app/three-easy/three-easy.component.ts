@@ -2,6 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { Cellenum } from '../cell/cellenum.enum';
 import { Playerenum } from '../cell/playerenum.enum'
 import { NgStyle } from '@angular/common';
+import { CellComponent } from '../cell/cell.component';
 
 @Component({
   selector: 'app-three-easy',
@@ -28,6 +29,8 @@ export class ThreeEasyComponent implements OnInit {
   public index:number;
   public selectedMoves = [];
   public isWinner:Cellenum;
+  public isColorChanged;
+  public hint:number[] = [];
 
   constructor() { }
 
@@ -90,6 +93,9 @@ export class ThreeEasyComponent implements OnInit {
 
   /* Function for human's move */
   move(row:number,col:number){
+    if(this.isColorChanged){
+      document.getElementById(this.hint[0]+"."+this.hint[1]).style.backgroundColor="";
+    }
     if(!this.isThreeGameOver && this.board[row][col]==Cellenum.EMPTY){
       this.board[row][col] = this.currentPlayerMove;
       this.selectedMoves.push([row,col]);
@@ -360,8 +366,10 @@ export class ThreeEasyComponent implements OnInit {
            }  
          }
        }
-     console.log("BEST MOVE IS:");
-     console.log(bestNextMove);
+     document.getElementById(bestNextMove[0]+"."+bestNextMove[1]).style.backgroundColor="green"; 
+     this.isColorChanged = true;
+     this.hint[0] = bestNextMove[0];
+     this.hint[1] = bestNextMove[1];
  }
 
   /*TERMINAL FUNCTIONS */
