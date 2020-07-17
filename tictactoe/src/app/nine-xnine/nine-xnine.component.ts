@@ -129,10 +129,10 @@ export class NineXnineComponent implements OnInit {
     }
   }
   /* To select a small board if the board directed to is in terminal state */
-  selectRandomBoard():number[]{
+  selectRandomBoard(boardStatus:number[][]):number[]{
     let row = (Math.floor((Math.random() * 3) + 1))-1;
     let col = (Math.floor((Math.random() * 3) + 1))-1;
-    while(this.mainboardStatus[row][col]!=0){
+    while(boardStatus[row][col]!=0){
       row = (Math.floor((Math.random() * 3) + 1))-1;
       col = (Math.floor((Math.random() * 3) + 1))-1;
     }
@@ -147,7 +147,7 @@ export class NineXnineComponent implements OnInit {
         col = this.nextCell[1];
         if(this.mainboardStatus[row][col]!=0)  
         {
-          let next = this.selectRandomBoard();
+          let next = this.selectRandomBoard(this.mainboardStatus);
           row = next[0];
           col = next[1];
         }
@@ -186,7 +186,7 @@ export class NineXnineComponent implements OnInit {
     //Get child nodes:
     this.expansion(rootNode);
     rootNode.isVisited=true;
-    let noOfIterations = 1;
+    let noOfIterations = 2;
     let iterations = 0;
     while(iterations < noOfIterations){
       //Select a Node : UTF VALUE
@@ -289,7 +289,7 @@ export class NineXnineComponent implements OnInit {
     let col = nextMoves[1];
     //Board is full
     if(boardStatus[row][col]!=0){
-        let next = this.selectRandomBoard();
+        let next = this.selectRandomBoard(boardStatus);
         row = next[0];
         col = next[1];
     }
@@ -319,9 +319,8 @@ export class NineXnineComponent implements OnInit {
     while(terminalNode!=null){
       terminalNode.getState().visitCount++;
       terminalNode.getState().playerNo == playerWon
-      if(playerWon==1)terminalNode.getState().winScore++;
+      if(playerWon==1|| playerWon ==0)terminalNode.getState().winScore++;
       else if(playerWon==-1)terminalNode.getState().winScore--;
-      else terminalNode.getState().winScore==0;
       terminalNode = terminalNode.parent;
     }
   }
@@ -334,7 +333,7 @@ export class NineXnineComponent implements OnInit {
     let col = nextState[1];
     //If the next Board is not empty, picking random next Board
     if(currentNode.state.board.boardStatus[nextState[0]][nextState[1]]!=0){
-      let next = this.selectRandomBoard();
+      let next = this.selectRandomBoard(currentNode.state.board.boardStatus);
       row = next[0];
       col = next[1];
     }
