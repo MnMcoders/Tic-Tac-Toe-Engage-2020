@@ -88,6 +88,7 @@ export class NineXnineComponent implements OnInit {
     }
   
     if(this.isDrawBoard(row,col,this.mainboard,this.mainboardStatus,this.currentPlayer)|| this.isWinBoard(row,col,this.mainboard,this.mainboardStatus,this.currentPlayer)){
+      console.log("In Player Terminal");
       if(this.isDrawGame(this.mainboardStatus)){
         this.statusMessage = 'It\'s a Draw!';
         this.isGameOver = true;
@@ -160,12 +161,9 @@ export class NineXnineComponent implements OnInit {
     this.mainboard[bestMove[0]][bestMove[1]][bestMove[2]] = this.currentPlayerMove;
     document.getElementById((bestMove[0]+"."+bestMove[1]+"."+bestMove[2])).innerHTML = this.currentPlayerMove;
 
-    this.nextCell = this.calculateNextCell(bestMove[2]);
-    if(this.mainboardStatus[this.nextCell[0]][this.nextCell[1]]!=0){
-      this.nextCell = [-1,-1]
-    }
 
-    if(this.isDrawBoard(row,col,this.mainboard,this.mainboardStatus,this.currentPlayer)|| this.isWinBoard(row,col,this.mainboard,this.mainboardStatus,this.currentPlayer)){
+    if(this.isDrawBoard(bestMove[0],bestMove[1],this.mainboard,this.mainboardStatus,this.currentPlayer)|| this.isWinBoard(bestMove[0],bestMove[1],this.mainboard,this.mainboardStatus,this.currentPlayer)){
+      console.log("In Computer Terminal");
       if(this.isDrawGame(this.mainboardStatus)){
         this.statusMessage = 'It\'s a Draw!';
         this.isGameOver = true;
@@ -173,6 +171,12 @@ export class NineXnineComponent implements OnInit {
         this.statusMessage = `Player ${this.currentPlayer} won!`;
         this.isGameOver = true;
       }
+    }
+
+    //Find the board for human's next move;
+    this.nextCell = this.calculateNextCell(bestMove[2]);
+    if(this.mainboardStatus[this.nextCell[0]][this.nextCell[1]]!=0){
+      this.nextCell = [-1,-1]
     }
     
     this.currentPlayer = Playerenum.h;
@@ -382,7 +386,7 @@ export class NineXnineComponent implements OnInit {
     for(let pos = 0 ; pos < 9 ; pos+=3){
       if(board[row][col][pos]== board[row][col][pos+1] && board[row][col][pos+1]== board[row][col][pos+2] && board[row][col][pos]!=Cellenum.EMPTY){
         /*Add win to corresponsing player*/
-        if(currentPlayer==Playerenum.h)boardStatus[row][col]=-1;
+        if(currentPlayer===Playerenum.h)boardStatus[row][col]=-1;
         else boardStatus[row][col]=1;
         return true;
       }
@@ -391,7 +395,7 @@ export class NineXnineComponent implements OnInit {
     //Vertical
     for(let pos = 0 ; pos < 3 ; pos++){
       if(board[row][col][pos]== board[row][col][pos+3] && board[row][col][pos+3]== board[row][col][pos+6] && board[row][col][pos]!=Cellenum.EMPTY){
-        if(currentPlayer==Playerenum.h)boardStatus[row][col]=-1;
+        if(currentPlayer===Playerenum.h)boardStatus[row][col]=-1;
         else boardStatus[row][col]=1;
         return true;
       }
@@ -399,12 +403,12 @@ export class NineXnineComponent implements OnInit {
   
     //Diagonal
     if(board[row][col][0]== board[row][col][4] && board[row][col][4]== board[row][col][8] && board[row][col][0]!=Cellenum.EMPTY){
-      if(currentPlayer==Playerenum.h)boardStatus[row][col]=-1;
+      if(currentPlayer===Playerenum.h)boardStatus[row][col]=-1;
       else boardStatus[row][col]=1;
       return true;
     }
     if(board[row][col][2]== board[row][col][4] && board[row][col][4]== board[row][col][6] && board[row][col][2]!=Cellenum.EMPTY){
-      if(currentPlayer==Playerenum.h)boardStatus[row][col]=-1;
+      if(currentPlayer===Playerenum.h)boardStatus[row][col]=-1;
       else boardStatus[row][col]=1;
       return true;   
      
