@@ -15,6 +15,7 @@ export class NineXnineComponent implements OnInit {
   /* Declaring parent properties*/
   @Input() public playerData;
   @Input() public gameData;
+  
 
   /* Declaring variables */
   public currentPlayer:Playerenum;
@@ -163,7 +164,6 @@ export class NineXnineComponent implements OnInit {
 
 
     if(this.isDrawBoard(bestMove[0],bestMove[1],this.mainboard,this.mainboardStatus,this.currentPlayer)|| this.isWinBoard(bestMove[0],bestMove[1],this.mainboard,this.mainboardStatus,this.currentPlayer)){
-      console.log("In Computer Terminal");
       if(this.isDrawGame(this.mainboardStatus)){
         this.statusMessage = 'It\'s a Draw!';
         this.isGameOver = true;
@@ -192,7 +192,7 @@ export class NineXnineComponent implements OnInit {
     //Get child nodes:
     this.expansion(rootNode);
     rootNode.isVisited=true;
-    let noOfIterations = 2;
+    let noOfIterations = 100;
     let iterations = 0;
     while(iterations < noOfIterations){
       //Select a Node : UTF VALUE
@@ -228,7 +228,7 @@ export class NineXnineComponent implements OnInit {
 
   calculateUTF(node:Node):number{
     if(node.getState().visitCount ===0)return 2147483647;
-    let val  = Math.fround(node.getState().winScore/node.getState().visitCount) + Math.fround((1.41*(Math.sqrt(Math.log(node.parent.getState().visitCount))))/(node.getState().visitCount))
+    let val  = Math.fround((node.getState().winScore)/(node.getState().visitCount)) + Math.fround((1.41*(Math.sqrt(Math.log(node.parent.getState().visitCount)/(node.getState().visitCount)))));
     return val;
   }
 
@@ -307,7 +307,6 @@ export class NineXnineComponent implements OnInit {
         break;
       }
     }
-
     /*let posArray = [];
     for(let i=0;i<9;i++)
     {

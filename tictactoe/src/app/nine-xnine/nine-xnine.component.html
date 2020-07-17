@@ -1,3 +1,5 @@
+<div class ="status text-center p-4">{{statusMessage}}{{". Hello " + playerData + ". "}}{{"Hey, It's " + gameData + "."}}</div>  
+
 <div>
 <div class="bigtable">
     <div class ="row" *ngFor="let row of [0,1,2]">
@@ -25,5 +27,5 @@
     </div>
 </div>
 <button class ="btn btn-primary new-game"
-        (click) ="newGame()">New Game</button>
+        (click)="newGame()">New Game</button>
 </div>
