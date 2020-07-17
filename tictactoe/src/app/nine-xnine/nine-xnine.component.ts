@@ -206,7 +206,7 @@ export class NineXnineComponent implements OnInit {
     let bestNextNode:Node;
     for(let j = 0; j < rootNode.children.length;j++){
       let currWinScore = rootNode.children[j].state.winScore;
-      if(currWinScore > bestWinScore){
+      if(currWinScore >=bestWinScore){
         bestWinScore = currWinScore;
         bestNextNode = rootNode.children[j];
       }
@@ -294,20 +294,34 @@ export class NineXnineComponent implements OnInit {
         col = next[1];
     }
     //Select one of these random states
-    let pos = 0;
+   let pos = 0;
     for(let i = 0 ; i < 9 ; i++){
       if(board[row][col][i]==Cellenum.EMPTY){
         pos = i;
         break;
       }
     }
+
+    /*let posArray = [];
+    for(let i=0;i<9;i++)
+    {
+      if(board[row][col][i]==Cellenum.EMPTY)
+      {
+        posArray.push(i);
+      }
+    }
+    this.shuffle(posArray);
+    let pos = posArray[0];*/
     return [row,col,pos];
   }
 
   update(terminalNode:Node,playerWon:number){
     while(terminalNode!=null){
       terminalNode.getState().visitCount++;
-      if(playerWon!=0 || terminalNode.getState().playerNo == playerWon)terminalNode.getState().winScore++;
+      terminalNode.getState().playerNo == playerWon
+      if(playerWon==1)terminalNode.getState().winScore++;
+      else if(playerWon==-1)terminalNode.getState().winScore--;
+      else terminalNode.getState().winScore==0;
       terminalNode = terminalNode.parent;
     }
   }
