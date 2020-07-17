@@ -152,7 +152,9 @@ export class NineXnineComponent implements OnInit {
           col = next[1];
         }
     }
-    let bestMove = this.MCTS(this.mainboard,this.mainboardStatus,row,col,pos,Cellenum.O);
+    let mainboardCopy = JSON.parse(JSON.stringify(this.mainboard));
+    let mainboardStatusCopy = JSON.parse(JSON.stringify(this.mainboardStatus));
+    let bestMove = this.MCTS(mainboardCopy,mainboardStatusCopy,row,col,pos,Cellenum.O);
 
     /* Make the best move */
     this.mainboard[bestMove[0]][bestMove[1]][bestMove[2]] = this.currentPlayerMove;
@@ -411,7 +413,7 @@ export class NineXnineComponent implements OnInit {
     return false;
   }
   
-   isWinGame(boardStatus:number[][]){
+  isWinGame(boardStatus:number[][]){
     //Horizontal
     for(let row = 0 ; row < 3 ; row ++){
       if(boardStatus[row][0]==boardStatus[row][1] && boardStatus[row][1]==boardStatus[row][2] && (boardStatus[row][0]==1|| boardStatus[row][0]==-1)){
@@ -421,17 +423,17 @@ export class NineXnineComponent implements OnInit {
   
     //Vertical
     for(let col = 0 ; col < 3 ; col ++){
-      if(boardStatus[0][col]==boardStatus[1][col] && boardStatus[2][col]==boardStatus[1][col] && boardStatus[0][col]==1){
+      if(boardStatus[0][col]==boardStatus[1][col] && boardStatus[2][col]==boardStatus[1][col] && (boardStatus[0][col]==1|| boardStatus[0][col]==-1)){
         return true;
       }
     }
   
     //Diagonal
-    if(boardStatus[0][0]==boardStatus[1][1] && boardStatus[2][2]==boardStatus[1][1] && boardStatus[0][0]==1){
+    if(boardStatus[0][0]==boardStatus[1][1] && boardStatus[2][2]==boardStatus[1][1] && ((boardStatus[0][0]==1|| boardStatus[0][0]==-1))){
       return true;
     }
   
-    if(boardStatus[0][2]==boardStatus[1][1] && boardStatus[2][0]==boardStatus[1][1] && boardStatus[0][2]==1){
+    if(boardStatus[0][2]==boardStatus[1][1] && boardStatus[2][0]==boardStatus[1][1] && (boardStatus[1][1]==1|| boardStatus[1][1]==-1)){
       return true;
     }
   
@@ -441,7 +443,7 @@ export class NineXnineComponent implements OnInit {
   
   isDrawBoard(row:number,col:number,board:Cellenum[][][],boardStatus:number[][],currentPlayer:Playerenum): boolean {
     for(let pos = 0; pos < 9 ; pos++){
-      if(board[row][col][pos]!= Cellenum.EMPTY) return false;
+      if(board[row][col][pos]== Cellenum.EMPTY) return false;
     }
     if(!this.isWinBoard(row,col,board,boardStatus,currentPlayer)){
       boardStatus[row][col] = 2;
