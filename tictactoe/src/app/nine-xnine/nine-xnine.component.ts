@@ -15,6 +15,7 @@ export class NineXnineComponent implements OnInit {
   /* Declaring parent properties*/
   @Input() public playerData;
   @Input() public gameData;
+  @Input() public opponentData;
   
 
   /* Declaring variables */
@@ -99,11 +100,19 @@ export class NineXnineComponent implements OnInit {
       }
     }
     
-    this.currentPlayer = Playerenum.c;
-    this.currentPlayerMove = Cellenum.O;
-    this.statusMessage =`Player ${this.currentPlayer}'s turn`;
-    
-    if(!this.isGameOver)this.moveComputer(row,col,pos);
+    if(this.opponentData =="vsMachine"){
+      this.currentPlayer = Playerenum.c;
+      this.currentPlayerMove = Cellenum.O;
+      this.statusMessage =`Player ${this.currentPlayer}'s turn`;
+    }
+    if(!this.isGameOver && this.opponentData =="vsMachine")this.moveComputer(row,col,pos);
+    if(this.opponentData === "vsHuman"){
+      this.currentPlayerMove = this.currentPlayerMove === Cellenum.O?Cellenum.X:Cellenum.O;
+      this.nextCell = this.calculateNextCell(pos);
+      if(this.mainboardStatus[this.nextCell[0]][this.nextCell[1]]!=0){
+        this.nextCell = [-1,-1];
+      }
+    }
   }
   
   calculateNextCell(pos:number):any{
