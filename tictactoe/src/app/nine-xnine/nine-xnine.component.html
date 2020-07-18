@@ -1,26 +1,31 @@
+<div class ="status text-center p-4">{{statusMessage}}{{". Hello " + playerData + ". "}}{{"Hey, It's " + gameData + "."}}</div>  
+
+<div>
 <div class="bigtable">
     <div class ="row" *ngFor="let row of [0,1,2]">
         <div class="col-md-4" *ngFor="let col of [0,1,2]">
             <table class="smallBoard">
                 <tr>
-                    <td class="cell" id="{{row}}.{{col}}.0" (click)="move(row,col,0)"></td>
-                    <td class="cell" id="{{row}}.{{col}}.1" (click)="move(row,col,1)"></td>
-                    <td class="cell" id="{{row}}.{{col}}.2" (click)="move(row,col,2)"></td>
+                    <td class="cell" id="{{row}}.{{col}}.0" (click)="(isGameOver==false && mainboard[row][col][0]==' ')?move(row,col,0):false"></td>
+                    <td class="cell" id="{{row}}.{{col}}.1" (click)="(isGameOver==false && mainboard[row][col][1]==' ')?move(row,col,1):false"></td>
+                    <td class="cell" id="{{row}}.{{col}}.2" (click)="(isGameOver==false && mainboard[row][col][2]==' ')?move(row,col,2):false"></td>
                 </tr>
     
                 <tr>
-                    <td class="cell" id="{{row}}.{{col}}.3" (click)="move(row,col,3)"></td>
-                    <td class="cell" id="{{row}}.{{col}}.4" (click)="move(row,col,4)"></td>
-                    <td class="cell" id="{{row}}.{{col}}.5" (click)="move(row,col,5)"></td>
+                    <td class="cell" id="{{row}}.{{col}}.3" (click)="(isGameOver==false && mainboard[row][col][3]==' ')?move(row,col,3):false"></td>
+                    <td class="cell" id="{{row}}.{{col}}.4" (click)="(isGameOver==false && mainboard[row][col][4]==' ')?move(row,col,4):false"></td>
+                    <td class="cell" id="{{row}}.{{col}}.5" (click)="(isGameOver==false && mainboard[row][col][5]==' ')?move(row,col,5):false"></td>
                 </tr>
     
                 <tr>
-                    <td class="cell" id="{{row}}.{{col}}.6" (click)="move(row,col,6)"></td>
-                    <td class="cell" id="{{row}}.{{col}}.7" (click)="move(row,col,7)"></td>
-                    <td class="cell" id="{{row}}.{{col}}.8" (click)="move(row,col,8)"></td>
+                    <td class="cell" id="{{row}}.{{col}}.6" (click)="(isGameOver==false && mainboard[row][col][6]==' ')?move(row,col,6):false"></td>
+                    <td class="cell" id="{{row}}.{{col}}.7" (click)="(isGameOver==false && mainboard[row][col][7]==' ')?move(row,col,7):false"></td>
+                    <td class="cell" id="{{row}}.{{col}}.8" (click)="(isGameOver==false && mainboard[row][col][8]==' ')?move(row,col,8):false"></td>
                 </tr>
             </table>
         </div>
     </div>
 </div>
-
+<button class ="btn btn-primary new-game"
+        (click)="newGame()">New Game</button>
+</div>

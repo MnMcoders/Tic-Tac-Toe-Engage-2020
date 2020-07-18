@@ -15,6 +15,7 @@ export class NineXnineComponent implements OnInit {
   /* Declaring parent properties*/
   @Input() public playerData;
   @Input() public gameData;
+  
 
   /* Declaring variables */
   public currentPlayer:Playerenum;
@@ -88,6 +89,7 @@ export class NineXnineComponent implements OnInit {
     }
   
     if(this.isDrawBoard(row,col,this.mainboard,this.mainboardStatus,this.currentPlayer)|| this.isWinBoard(row,col,this.mainboard,this.mainboardStatus,this.currentPlayer)){
+      console.log("In Player Terminal");
       if(this.isDrawGame(this.mainboardStatus)){
         this.statusMessage = 'It\'s a Draw!';
         this.isGameOver = true;
@@ -129,10 +131,10 @@ export class NineXnineComponent implements OnInit {
     }
   }
   /* To select a small board if the board directed to is in terminal state */
-  selectRandomBoard():number[]{
+  selectRandomBoard(boardStatus:number[][]):number[]{
     let row = (Math.floor((Math.random() * 3) + 1))-1;
     let col = (Math.floor((Math.random() * 3) + 1))-1;
-    while(this.mainboardStatus[row][col]!=0){
+    while(boardStatus[row][col]!=0){
       row = (Math.floor((Math.random() * 3) + 1))-1;
       col = (Math.floor((Math.random() * 3) + 1))-1;
     }
@@ -147,23 +149,21 @@ export class NineXnineComponent implements OnInit {
         col = this.nextCell[1];
         if(this.mainboardStatus[row][col]!=0)  
         {
-          let next = this.selectRandomBoard();
+          let next = this.selectRandomBoard(this.mainboardStatus);
           row = next[0];
           col = next[1];
         }
     }
-    let bestMove = this.MCTS(this.mainboard,this.mainboardStatus,row,col,pos,Cellenum.O);
+    let mainboardCopy = JSON.parse(JSON.stringify(this.mainboard));
+    let mainboardStatusCopy = JSON.parse(JSON.stringify(this.mainboardStatus));
+    let bestMove = this.MCTS(mainboardCopy,mainboardStatusCopy,row,col,pos,Cellenum.O);
 
     /* Make the best move */
     this.mainboard[bestMove[0]][bestMove[1]][bestMove[2]] = this.currentPlayerMove;
     document.getElementById((bestMove[0]+"."+bestMove[1]+"."+bestMove[2])).innerHTML = this.currentPlayerMove;
 
-    this.nextCell = this.calculateNextCell(bestMove[2]);
-    if(this.mainboardStatus[this.nextCell[0]][this.nextCell[1]]!=0){
-      this.nextCell = [-1,-1]
-    }
 
-    if(this.isDrawBoard(row,col,this.mainboard,this.mainboardStatus,this.currentPlayer)|| this.isWinBoard(row,col,this.mainboard,this.mainboardStatus,this.currentPlayer)){
+    if(this.isDrawBoard(bestMove[0],bestMove[1],this.mainboard,this.mainboardStatus,this.currentPlayer)|| this.isWinBoard(bestMove[0],bestMove[1],this.mainboard,this.mainboardStatus,this.currentPlayer)){
       if(this.isDrawGame(this.mainboardStatus)){
         this.statusMessage = 'It\'s a Draw!';
         this.isGameOver = true;
@@ -171,6 +171,12 @@ export class NineXnineComponent implements OnInit {
         this.statusMessage = `Player ${this.currentPlayer} won!`;
         this.isGameOver = true;
       }
+    }
+
+    //Find the board for human's next move;
+    this.nextCell = this.calculateNextCell(bestMove[2]);
+    if(this.mainboardStatus[this.nextCell[0]][this.nextCell[1]]!=0){
+      this.nextCell = [-1,-1]
     }
     
     this.currentPlayer = Playerenum.h;
@@ -186,7 +192,7 @@ export class NineXnineComponent implements OnInit {
     //Get child nodes:
     this.expansion(rootNode);
     rootNode.isVisited=true;
-    let noOfIterations = 1;
+    let noOfIterations = 100;
     let iterations = 0;
     while(iterations < noOfIterations){
       //Select a Node : UTF VALUE
@@ -206,7 +212,7 @@ export class NineXnineComponent implements OnInit {
     let bestNextNode:Node;
     for(let j = 0; j < rootNode.children.length;j++){
       let currWinScore = rootNode.children[j].state.winScore;
-      if(currWinScore > bestWinScore){
+      if(currWinScore >=bestWinScore){
         bestWinScore = currWinScore;
         bestNextNode = rootNode.children[j];
       }
@@ -222,7 +228,7 @@ export class NineXnineComponent implements OnInit {
 
   calculateUTF(node:Node):number{
     if(node.getState().visitCount ===0)return 2147483647;
-    let val  = Math.fround(node.getState().winScore/node.getState().visitCount) + Math.fround((1.41*(Math.sqrt(Math.log(node.parent.getState().visitCount))))/(node.getState().visitCount))
+    let val  = Math.fround((node.getState().winScore)/(node.getState().visitCount)) + Math.fround((1.41*(Math.sqrt(Math.log(node.parent.getState().visitCount)/(node.getState().visitCount)))));
     return val;
   }
 
@@ -289,25 +295,37 @@ export class NineXnineComponent implements OnInit {
     let col = nextMoves[1];
     //Board is full
     if(boardStatus[row][col]!=0){
-        let next = this.selectRandomBoard();
+        let next = this.selectRandomBoard(boardStatus);
         row = next[0];
         col = next[1];
     }
     //Select one of these random states
-    let pos = 0;
+   let pos = 0;
     for(let i = 0 ; i < 9 ; i++){
       if(board[row][col][i]==Cellenum.EMPTY){
         pos = i;
         break;
       }
     }
+    /*let posArray = [];
+    for(let i=0;i<9;i++)
+    {
+      if(board[row][col][i]==Cellenum.EMPTY)
+      {
+        posArray.push(i);
+      }
+    }
+    this.shuffle(posArray);
+    let pos = posArray[0];*/
     return [row,col,pos];
   }
 
   update(terminalNode:Node,playerWon:number){
     while(terminalNode!=null){
       terminalNode.getState().visitCount++;
-      if(playerWon!=0 || terminalNode.getState().playerNo == playerWon)terminalNode.getState().winScore++;
+      terminalNode.getState().playerNo == playerWon
+      if(playerWon==1|| playerWon ==0)terminalNode.getState().winScore++;
+      else if(playerWon==-1)terminalNode.getState().winScore--;
       terminalNode = terminalNode.parent;
     }
   }
@@ -320,7 +338,7 @@ export class NineXnineComponent implements OnInit {
     let col = nextState[1];
     //If the next Board is not empty, picking random next Board
     if(currentNode.state.board.boardStatus[nextState[0]][nextState[1]]!=0){
-      let next = this.selectRandomBoard();
+      let next = this.selectRandomBoard(currentNode.state.board.boardStatus);
       row = next[0];
       col = next[1];
     }
@@ -367,7 +385,7 @@ export class NineXnineComponent implements OnInit {
     for(let pos = 0 ; pos < 9 ; pos+=3){
       if(board[row][col][pos]== board[row][col][pos+1] && board[row][col][pos+1]== board[row][col][pos+2] && board[row][col][pos]!=Cellenum.EMPTY){
         /*Add win to corresponsing player*/
-        if(currentPlayer==Playerenum.h)boardStatus[row][col]=-1;
+        if(currentPlayer===Playerenum.h)boardStatus[row][col]=-1;
         else boardStatus[row][col]=1;
         return true;
       }
@@ -376,7 +394,7 @@ export class NineXnineComponent implements OnInit {
     //Vertical
     for(let pos = 0 ; pos < 3 ; pos++){
       if(board[row][col][pos]== board[row][col][pos+3] && board[row][col][pos+3]== board[row][col][pos+6] && board[row][col][pos]!=Cellenum.EMPTY){
-        if(currentPlayer==Playerenum.h)boardStatus[row][col]=-1;
+        if(currentPlayer===Playerenum.h)boardStatus[row][col]=-1;
         else boardStatus[row][col]=1;
         return true;
       }
@@ -384,12 +402,12 @@ export class NineXnineComponent implements OnInit {
   
     //Diagonal
     if(board[row][col][0]== board[row][col][4] && board[row][col][4]== board[row][col][8] && board[row][col][0]!=Cellenum.EMPTY){
-      if(currentPlayer==Playerenum.h)boardStatus[row][col]=-1;
+      if(currentPlayer===Playerenum.h)boardStatus[row][col]=-1;
       else boardStatus[row][col]=1;
       return true;
     }
     if(board[row][col][2]== board[row][col][4] && board[row][col][4]== board[row][col][6] && board[row][col][2]!=Cellenum.EMPTY){
-      if(currentPlayer==Playerenum.h)boardStatus[row][col]=-1;
+      if(currentPlayer===Playerenum.h)boardStatus[row][col]=-1;
       else boardStatus[row][col]=1;
       return true;   
      
@@ -398,7 +416,7 @@ export class NineXnineComponent implements OnInit {
     return false;
   }
   
-   isWinGame(boardStatus:number[][]){
+  isWinGame(boardStatus:number[][]){
     //Horizontal
     for(let row = 0 ; row < 3 ; row ++){
       if(boardStatus[row][0]==boardStatus[row][1] && boardStatus[row][1]==boardStatus[row][2] && (boardStatus[row][0]==1|| boardStatus[row][0]==-1)){
@@ -408,17 +426,17 @@ export class NineXnineComponent implements OnInit {
   
     //Vertical
     for(let col = 0 ; col < 3 ; col ++){
-      if(boardStatus[0][col]==boardStatus[1][col] && boardStatus[2][col]==boardStatus[1][col] && boardStatus[0][col]==1){
+      if(boardStatus[0][col]==boardStatus[1][col] && boardStatus[2][col]==boardStatus[1][col] && (boardStatus[0][col]==1|| boardStatus[0][col]==-1)){
         return true;
       }
     }
   
     //Diagonal
-    if(boardStatus[0][0]==boardStatus[1][1] && boardStatus[2][2]==boardStatus[1][1] && boardStatus[0][0]==1){
+    if(boardStatus[0][0]==boardStatus[1][1] && boardStatus[2][2]==boardStatus[1][1] && ((boardStatus[0][0]==1|| boardStatus[0][0]==-1))){
       return true;
     }
   
-    if(boardStatus[0][2]==boardStatus[1][1] && boardStatus[2][0]==boardStatus[1][1] && boardStatus[0][2]==1){
+    if(boardStatus[0][2]==boardStatus[1][1] && boardStatus[2][0]==boardStatus[1][1] && (boardStatus[1][1]==1|| boardStatus[1][1]==-1)){
       return true;
     }
   
@@ -428,7 +446,7 @@ export class NineXnineComponent implements OnInit {
   
   isDrawBoard(row:number,col:number,board:Cellenum[][][],boardStatus:number[][],currentPlayer:Playerenum): boolean {
     for(let pos = 0; pos < 9 ; pos++){
-      if(board[row][col][pos]!= Cellenum.EMPTY) return false;
+      if(board[row][col][pos]== Cellenum.EMPTY) return false;
     }
     if(!this.isWinBoard(row,col,board,boardStatus,currentPlayer)){
       boardStatus[row][col] = 2;
