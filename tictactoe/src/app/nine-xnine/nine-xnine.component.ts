@@ -4,7 +4,6 @@ import { Playerenum } from '../cell/playerenum.enum'
 import { Board, Node, State } from './node';
 
 
-
 @Component({
   selector: 'app-nine-xnine',
   templateUrl: './nine-xnine.component.html',
@@ -28,7 +27,8 @@ export class NineXnineComponent implements OnInit {
   public nextCell=[];
   public bestMove=[];
   public isFirstMove = true;
-
+  public lastComputerMove = [];
+  public inSimulation : boolean;
   constructor() { }
 
   ngOnInit(): void {
@@ -52,10 +52,12 @@ export class NineXnineComponent implements OnInit {
         }
       }
     }
+    this.inSimulation = false;
     this.currentPlayerMove = Cellenum.X;
     this.currentPlayer = Playerenum.h;
     this.isGameOver = false;
     this.statusMessage = `Player ${this.currentPlayer}'s turn`;
+    this.lastComputerMove = [-1,-1];
   }
 
   /* Function to shuffle an array */
@@ -87,6 +89,14 @@ export class NineXnineComponent implements OnInit {
         this.isFirstMove = false;
         this.mainboard[row][col][pos] = this.currentPlayerMove;
         document.getElementById((row+"."+col+"."+pos)).innerHTML = this.currentPlayerMove;
+        for(let i=0;i<9;i++)
+        {
+          document.getElementById((row+"."+col+"."+i)).style.backgroundColor = "";
+        }
+        if(this.lastComputerMove[0]!=-1 && this.lastComputerMove[1]!=-1 && this.mainboardStatus[this.lastComputerMove[0]][this.lastComputerMove[1]]==0)
+        {
+          document.getElementById((this.lastComputerMove[0]+"."+this.lastComputerMove[1]+"."+this.lastComputerMove[2])).style.backgroundColor = "";
+        }
     }
   
     if(this.isDrawBoard(row,col,this.mainboard,this.mainboardStatus,this.currentPlayer)|| this.isWinBoard(row,col,this.mainboard,this.mainboardStatus,this.currentPlayer)){
@@ -100,7 +110,7 @@ export class NineXnineComponent implements OnInit {
       }
     }
     
-    if(this.opponentData =="vsMachine"){
+    if(this.opponentData === "vsMachine"){
       this.currentPlayer = Playerenum.c;
       this.currentPlayerMove = Cellenum.O;
       this.statusMessage =`Player ${this.currentPlayer}'s turn`;
@@ -167,10 +177,12 @@ export class NineXnineComponent implements OnInit {
     let mainboardStatusCopy = JSON.parse(JSON.stringify(this.mainboardStatus));
     let bestMove = this.MCTS(mainboardCopy,mainboardStatusCopy,row,col,pos,Cellenum.O);
 
+    this.inSimulation = false;
     /* Make the best move */
     this.mainboard[bestMove[0]][bestMove[1]][bestMove[2]] = this.currentPlayerMove;
     document.getElementById((bestMove[0]+"."+bestMove[1]+"."+bestMove[2])).innerHTML = this.currentPlayerMove;
-
+    document.getElementById((bestMove[0]+"."+bestMove[1]+"."+bestMove[2])).style.backgroundColor = "yellow";
+    this.lastComputerMove = bestMove;
 
     if(this.isDrawBoard(bestMove[0],bestMove[1],this.mainboard,this.mainboardStatus,this.currentPlayer)|| this.isWinBoard(bestMove[0],bestMove[1],this.mainboard,this.mainboardStatus,this.currentPlayer)){
       if(this.isDrawGame(this.mainboardStatus)){
@@ -185,7 +197,17 @@ export class NineXnineComponent implements OnInit {
     //Find the board for human's next move;
     this.nextCell = this.calculateNextCell(bestMove[2]);
     if(this.mainboardStatus[this.nextCell[0]][this.nextCell[1]]!=0){
-      this.nextCell = [-1,-1]
+      this.nextCell = [-1,-1];
+    }
+    else
+    {
+      if(this.isWinGame(this.mainboardStatus)==false)
+      {
+        for(let i=0;i<9;i++)
+        {
+          document.getElementById((this.nextCell[0]+"."+this.nextCell[1]+"."+i)).style.backgroundColor = "violet";
+        }
+      }
     }
     
     this.currentPlayer = Playerenum.h;
@@ -195,6 +217,7 @@ export class NineXnineComponent implements OnInit {
   }
 
   MCTS(board:Cellenum[][][],boardStatus: number[][],row:number,col:number,pos:number,playerMove:Cellenum):number[]{
+    this.inSimulation = true;
     /*Form the root -> Start With Computer*/ 
     let initialState = new State([row,col,pos],new Board(board,boardStatus),1,playerMove,false);  
     let rootNode = new Node(initialState,null,[]); 
@@ -394,8 +417,24 @@ export class NineXnineComponent implements OnInit {
     for(let pos = 0 ; pos < 9 ; pos+=3){
       if(board[row][col][pos]== board[row][col][pos+1] && board[row][col][pos+1]== board[row][col][pos+2] && board[row][col][pos]!=Cellenum.EMPTY){
         /*Add win to corresponsing player*/
-        if(currentPlayer===Playerenum.h)boardStatus[row][col]=-1;
-        else boardStatus[row][col]=1;
+        if(currentPlayer===Playerenum.h)
+        {
+          boardStatus[row][col]=-1;
+          if(this.inSimulation==false){
+            for(let i=0;i<9;i++){
+              document.getElementById((row+"."+col+"."+i)).style.backgroundColor = "pink";
+            }
+          }
+        }
+        else
+        {
+            boardStatus[row][col]=1;
+            if(this.inSimulation==false){
+              for(let i=0;i<9;i++){
+                document.getElementById((row+"."+col+"."+i)).style.backgroundColor = "lightblue";
+              }
+            }
+        }
         return true;
       }
     }
@@ -403,21 +442,69 @@ export class NineXnineComponent implements OnInit {
     //Vertical
     for(let pos = 0 ; pos < 3 ; pos++){
       if(board[row][col][pos]== board[row][col][pos+3] && board[row][col][pos+3]== board[row][col][pos+6] && board[row][col][pos]!=Cellenum.EMPTY){
-        if(currentPlayer===Playerenum.h)boardStatus[row][col]=-1;
-        else boardStatus[row][col]=1;
+        if(currentPlayer===Playerenum.h)
+        {
+          boardStatus[row][col]=-1;
+          if(this.inSimulation==false){
+            for(let i=0;i<9;i++){
+              document.getElementById((row+"."+col+"."+i)).style.backgroundColor = "pink";
+            }
+          }
+        }
+        else
+        {
+          boardStatus[row][col]=1;
+          if(this.inSimulation==false){
+            for(let i=0;i<9;i++){
+              document.getElementById((row+"."+col+"."+i)).style.backgroundColor = "lightblue";
+            }
+          }
+        }
         return true;
       }
     }
   
     //Diagonal
     if(board[row][col][0]== board[row][col][4] && board[row][col][4]== board[row][col][8] && board[row][col][0]!=Cellenum.EMPTY){
-      if(currentPlayer===Playerenum.h)boardStatus[row][col]=-1;
-      else boardStatus[row][col]=1;
+      if(currentPlayer===Playerenum.h)
+        {
+          boardStatus[row][col]=-1;
+          if(this.inSimulation==false){
+            for(let i=0;i<9;i++){
+              document.getElementById((row+"."+col+"."+i)).style.backgroundColor = "pink";
+            }
+          }
+        }
+      else
+      {
+        boardStatus[row][col]=1;
+        if(this.inSimulation==false){
+          for(let i=0;i<9;i++){
+            document.getElementById((row+"."+col+"."+i)).style.backgroundColor = "lightblue";
+          }
+        }
+      }
       return true;
     }
     if(board[row][col][2]== board[row][col][4] && board[row][col][4]== board[row][col][6] && board[row][col][2]!=Cellenum.EMPTY){
-      if(currentPlayer===Playerenum.h)boardStatus[row][col]=-1;
-      else boardStatus[row][col]=1;
+      if(currentPlayer===Playerenum.h)
+        {
+          boardStatus[row][col]=-1;
+          if(this.inSimulation==false){
+            for(let i=0;i<9;i++){
+              document.getElementById((row+"."+col+"."+i)).style.backgroundColor = "pink";
+            }
+          }
+        }
+        else
+        {
+          boardStatus[row][col]=1;
+          if(this.inSimulation==false){
+            for(let i=0;i<9;i++){
+              document.getElementById((row+"."+col+"."+i)).style.backgroundColor = "lightblue";
+            }
+          }
+        }
       return true;   
      
     }
@@ -429,6 +516,14 @@ export class NineXnineComponent implements OnInit {
     //Horizontal
     for(let row = 0 ; row < 3 ; row ++){
       if(boardStatus[row][0]==boardStatus[row][1] && boardStatus[row][1]==boardStatus[row][2] && (boardStatus[row][0]==1|| boardStatus[row][0]==-1)){
+        if(this.inSimulation==false)
+        {
+          for(let j=0;j<9;j++){
+              document.getElementById((row+"."+0+"."+j)).style.backgroundColor = "lightgreen";
+              document.getElementById((row+"."+1+"."+j)).style.backgroundColor = "lightgreen";
+              document.getElementById((row+"."+2+"."+j)).style.backgroundColor = "lightgreen";
+            }
+        }
         return true;
       }
     }
@@ -436,16 +531,40 @@ export class NineXnineComponent implements OnInit {
     //Vertical
     for(let col = 0 ; col < 3 ; col ++){
       if(boardStatus[0][col]==boardStatus[1][col] && boardStatus[2][col]==boardStatus[1][col] && (boardStatus[0][col]==1|| boardStatus[0][col]==-1)){
+        if(this.inSimulation==false)
+        {
+          for(let j=0;j<9;j++){
+              document.getElementById((0+"."+col+"."+j)).style.backgroundColor = "lightgreen";
+              document.getElementById((1+"."+col+"."+j)).style.backgroundColor = "lightgreen";
+              document.getElementById((2+"."+col+"."+j)).style.backgroundColor = "lightgreen";
+            }
+        }
         return true;
       }
     }
   
     //Diagonal
     if(boardStatus[0][0]==boardStatus[1][1] && boardStatus[2][2]==boardStatus[1][1] && ((boardStatus[0][0]==1|| boardStatus[0][0]==-1))){
+      if(this.inSimulation==false)
+        {
+          for(let j=0;j<9;j++){
+              document.getElementById((0+"."+0+"."+j)).style.backgroundColor = "lightgreen";
+              document.getElementById((1+"."+1+"."+j)).style.backgroundColor = "lightgreen";
+              document.getElementById((2+"."+2+"."+j)).style.backgroundColor = "lightgreen";
+            }
+        }
       return true;
     }
   
     if(boardStatus[0][2]==boardStatus[1][1] && boardStatus[2][0]==boardStatus[1][1] && (boardStatus[1][1]==1|| boardStatus[1][1]==-1)){
+      if(this.inSimulation==false)
+        {
+            for(let j=0;j<9;j++){
+              document.getElementById((0+"."+2+"."+j)).style.backgroundColor = "lightgreen";
+              document.getElementById((2+"."+0+"."+j)).style.backgroundColor = "lightgreen";
+              document.getElementById((1+"."+1+"."+j)).style.backgroundColor = "lightgreen";
+            }
+        }
       return true;
     }
   
