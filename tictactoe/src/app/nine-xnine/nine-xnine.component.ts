@@ -93,13 +93,15 @@ export class NineXnineComponent implements OnInit {
         {
           document.getElementById((row+"."+col+"."+i)).style.backgroundColor = "";
         }
+        if(this.opponentData === "vsHuman")document.getElementById((row+"."+col+"."+pos)).style.backgroundColor = "yellow";
+
         if(this.lastComputerMove[0]!=-1 && this.lastComputerMove[1]!=-1 && this.mainboardStatus[this.lastComputerMove[0]][this.lastComputerMove[1]]==0)
         {
           document.getElementById((this.lastComputerMove[0]+"."+this.lastComputerMove[1]+"."+this.lastComputerMove[2])).style.backgroundColor = "";
         }
     }
   
-    if(this.isDrawBoard(row,col,this.mainboard,this.mainboardStatus,this.currentPlayer)|| this.isWinBoard(row,col,this.mainboard,this.mainboardStatus,this.currentPlayer)){
+    if(this.isDrawBoard(row,col,this.mainboard,this.mainboardStatus,this.currentPlayer) || this.isWinBoard(row,col,this.mainboard,this.mainboardStatus,this.currentPlayer)){
       console.log("In Player Terminal");
       if(this.isDrawGame(this.mainboardStatus)){
         this.statusMessage = 'It\'s a Draw!';
@@ -114,13 +116,27 @@ export class NineXnineComponent implements OnInit {
       this.currentPlayer = Playerenum.c;
       this.currentPlayerMove = Cellenum.O;
       this.statusMessage =`Player ${this.currentPlayer}'s turn`;
+      if(!this.isGameOver)this.moveComputer(row,col,pos);
     }
-    if(!this.isGameOver && this.opponentData =="vsMachine")this.moveComputer(row,col,pos);
+    
     if(this.opponentData === "vsHuman"){
+      this.currentPlayer = this.currentPlayer === Playerenum.h?Playerenum.c:Playerenum.h;
       this.currentPlayerMove = this.currentPlayerMove === Cellenum.O?Cellenum.X:Cellenum.O;
       this.nextCell = this.calculateNextCell(pos);
+      
+      this.lastComputerMove = [row,col,pos];
       if(this.mainboardStatus[this.nextCell[0]][this.nextCell[1]]!=0){
         this.nextCell = [-1,-1];
+      }
+      else
+      {
+        if(this.isWinGame(this.mainboardStatus)==false)
+        {
+          for(let i=0;i<9;i++)
+          {
+            document.getElementById((this.nextCell[0]+"."+this.nextCell[1]+"."+i)).style.backgroundColor = "violet";
+          }
+        }
       }
     }
   }
