@@ -4,17 +4,31 @@ table{
     border-collapse: collapse;
     position: relative;
 }
-
-table.smallBoard td:hover {
-    background-color: grey;
+table.smallBoard {
+    background-color: white;
+    opacity:0.9;
 }
+table.smallBoard td:hover {
+    background-color:rgb(105, 105, 182)
+}
+
 
 td{
     border: 2px solid #333;
     height: 40px;
     width: 40px;
     vertical-align: middle;
+    font-weight: bold;
 }
+/* 
+@media screen and (max-width: 768px) {
+    .board{
+        font-size: 6px;
+    }
+    .btn{
+        font-size: 6px;
+    }
+}  */
 
 table tr:first-child td{
     border-top: 0;
@@ -40,12 +54,14 @@ table tr td:last-child{
     margin: 5%;
     margin-left: 45%;
    /* margin-top: -20%;*/   
-    background-color: antiquewhite;
+    background-color: black;
+    opacity:0.7;
 }
 
 .col-md-4{
     padding: 1rem;
     text-align: center;
+    background-color: black;
     border: #333 solid 2px;
     height:fit-content;
     justify-content: space-evenly;
