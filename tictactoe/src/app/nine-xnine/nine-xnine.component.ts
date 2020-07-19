@@ -167,13 +167,24 @@ export class NineXnineComponent implements OnInit {
   }
   /* To select a small board if the board directed to is in terminal state */
   selectRandomBoard(boardStatus:number[][]):number[]{
-    let row = (Math.floor((Math.random() * 3) + 1))-1;
+    /*let row = (Math.floor((Math.random() * 3) + 1))-1;
     let col = (Math.floor((Math.random() * 3) + 1))-1;
     while(boardStatus[row][col]!=0){
       row = (Math.floor((Math.random() * 3) + 1))-1;
       col = (Math.floor((Math.random() * 3) + 1))-1;
+    }*/
+    let nextBoardArray = [0,1,2,3,4,5,6,7,8];
+    this.shuffle(nextBoardArray);
+    let index = 0;
+    let randomNextBoard = this.calculateNextCell(nextBoardArray[index]);
+
+    while(boardStatus[randomNextBoard[0]][randomNextBoard[1]]!=0)
+    {
+      index++;
+      index%=9;
+      randomNextBoard = this.calculateNextCell(nextBoardArray[index]);
     }
-    return [row,col];
+    return [randomNextBoard[0],randomNextBoard[1]];
   }
 
   /* Computer's move  - implements MONTE CARLO SEARCH TREE*/
@@ -240,7 +251,7 @@ export class NineXnineComponent implements OnInit {
     //Get child nodes:
     this.expansion(rootNode);
     rootNode.isVisited=true;
-    let noOfIterations = 100;
+    let noOfIterations = 1000;
     let iterations = 0;
     while(iterations < noOfIterations){
       //Select a Node : UTF VALUE
@@ -372,8 +383,9 @@ export class NineXnineComponent implements OnInit {
     while(terminalNode!=null){
       terminalNode.getState().visitCount++;
       terminalNode.getState().playerNo == playerWon
-      if(playerWon==1|| playerWon ==0)terminalNode.getState().winScore++;
-      else if(playerWon==-1)terminalNode.getState().winScore--;
+      if(playerWon==1)terminalNode.getState().winScore+=2;
+      //else if(playerWon==0)terminalNode.getState().winScore=1;
+      else if(playerWon==-1)terminalNode.getState().winScore-=2;
       terminalNode = terminalNode.parent;
     }
   }
