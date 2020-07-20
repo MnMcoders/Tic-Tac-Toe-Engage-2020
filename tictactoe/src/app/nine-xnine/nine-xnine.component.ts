@@ -113,7 +113,7 @@ export class NineXnineComponent implements OnInit {
         }
         if(this.opponentData === "vsHuman")document.getElementById((row+"."+col+"."+pos)).style.backgroundColor = "yellow";
 
-        if(this.lastComputerMove[0]!=-1 && this.lastComputerMove[1]!=-1 && this.mainboardStatus[this.lastComputerMove[0]][this.lastComputerMove[1]]==0)
+        if(this.lastComputerMove[0]!=-1 && this.lastComputerMove[1]!=-1 && (this.mainboardStatus[this.lastComputerMove[0]][this.lastComputerMove[1]]==0 || this.mainboardStatus[this.lastComputerMove[0]][this.lastComputerMove[1]]==2))
         {
           document.getElementById((this.lastComputerMove[0]+"."+this.lastComputerMove[1]+"."+this.lastComputerMove[2])).style.backgroundColor = "";
         }
@@ -161,6 +161,7 @@ export class NineXnineComponent implements OnInit {
     }
   }
   
+  /* Find the next small board */
   calculateNextCell(pos:number):any{
     switch(pos)
     {
@@ -187,13 +188,6 @@ export class NineXnineComponent implements OnInit {
   }
   /* To select a small board if the board directed to is in terminal state */
   selectRandomBoard(boardStatus:number[][]):number[]{
-    /*let row = (Math.floor((Math.random() * 3) + 1))-1;
-    let col = (Math.floor((Math.random() * 3) + 1))-1;
-    while(boardStatus[row][col]!=0){
-      row = (Math.floor((Math.random() * 3) + 1))-1;
-      col = (Math.floor((Math.random() * 3) + 1))-1;
-    }*/
-
     let nextBoardArray = [];
     for(let i=0;i<3;i++)
     {
@@ -201,31 +195,29 @@ export class NineXnineComponent implements OnInit {
       {
         if(boardStatus[i][j]==0)
         {
-          //let id = this.selectBoard([i,j]);
-          if(i==0 && j==0)
-          nextBoardArray.push(0);
-          else if(i==0 && j==1)
-          nextBoardArray.push(1);
-          else if(i==0 && j==2)
-          nextBoardArray.push(2);
-          else if(i==1 && j==0)
-          nextBoardArray.push(3);
-          else if(i==1 && j==1)
-          nextBoardArray.push(4);
-          else if(i==1 && j==2)
-          nextBoardArray.push(5);
-          else if(i==2 && j==0)
-          nextBoardArray.push(6);
-          else if(i==2 && j==1)
-          nextBoardArray.push(7);
-          else if(i==2 && j==2)
-          nextBoardArray.push(8);
-
+            if(i==0 && j==0)
+            nextBoardArray.push(0);
+            else if(i==0 && j==1)
+            nextBoardArray.push(1);
+            else if(i==0 && j==2)
+            nextBoardArray.push(2);
+            else if(i==1 && j==0)
+            nextBoardArray.push(3);
+            else if(i==1 && j==1)
+            nextBoardArray.push(4);
+            else if(i==1 && j==2)
+            nextBoardArray.push(5);
+            else if(i==2 && j==0)
+            nextBoardArray.push(6);
+            else if(i==2 && j==1)
+            nextBoardArray.push(7);
+            else if(i==2 && j==2)
+            nextBoardArray.push(8);
+          
         }
       }
     }
     if(nextBoardArray.length==0)return [-1,-1];
-   // let nextBoardArray = [0,1,2,3,4,5,6,7,8];
     this.shuffle(nextBoardArray);
     let index = 0;
     let randomNextBoard = this.calculateNextCell(nextBoardArray[index]);
@@ -265,10 +257,12 @@ export class NineXnineComponent implements OnInit {
 
     if(this.isDrawBoard(bestMove[0],bestMove[1],this.mainboard,this.mainboardStatus,this.currentPlayer)|| this.isWinBoard(bestMove[0],bestMove[1],this.mainboard,this.mainboardStatus,this.currentPlayer)){
       if(this.isDrawGame(this.mainboardStatus)){
+        console.log("draw")
         this.statusMessage = 'It\'s a Draw!';
         this.isGameOver = true;
       }else if(this.isWinGame(this.mainboardStatus)){
-        this.statusMessage = `Player ${this.currentPlayer} won!`;
+        console.log("win");
+        this.statusMessage = `${this.playerinStatus} Won!`;
         this.isGameOver = true;
       }
     }
@@ -307,7 +301,7 @@ export class NineXnineComponent implements OnInit {
     let noOfIterations = 1000;
     let iterations = 0;
     let startTime = Date.now();
-    while((Date.now()-startTime)<1000){
+    while((Date.now()-startTime)< 800){
       //Select a Node : UTF VALUE
       let nodeToSimulate = this.selection(rootNode);
       if(nodeToSimulate.isVisited===true){
@@ -355,13 +349,14 @@ export class NineXnineComponent implements OnInit {
         bestNextNode = node.children[i];
       }
     }
-    if(this.isLeafNode(bestNextNode)===true) return bestNextNode;
+    if(this.isLeafNode(bestNextNode)) return bestNextNode;
     else return this.selection(bestNextNode);
   }
 
 
   expansion(leafNode:Node){
     let children = this.getAllPossibleStates(leafNode);
+    if(children.length==0) return;
     //Expand Child Nodes:
     for(let i = 0; i < children.length;i++){
       let childNode = new Node(children[i],leafNode,[]);
@@ -377,7 +372,7 @@ export class NineXnineComponent implements OnInit {
     let playerName = player ===-1?Playerenum.h:Playerenum.c;
     let playerMove = leafNode.state.playerMove;
     let pos = leafNode.state.move[2];
-    let playerWon;
+    let playerWon = -3;
     while(!this.isWinGame(boardStatus) && !this.isDrawGame(boardStatus)){
       let randomMove = this.getRandomPlay(board,boardStatus,pos);
       //Board chosen is full
@@ -386,11 +381,9 @@ export class NineXnineComponent implements OnInit {
       board[randomMove[0]][randomMove[1]][randomMove[2]] = playerMove;
       if(this.isWinBoard(randomMove[0],randomMove[1],board,boardStatus,playerName)) {
         boardStatus[randomMove[0]][randomMove[1]] = player;
-        playerWon = player;
       }
       else if(this.isDrawBoard(randomMove[0],randomMove[1],board,boardStatus,playerName)){
         boardStatus[randomMove[0]][randomMove[1]] =  2;
-        playerWon = 0
       }
       player = player===1?-1:1;
       playerMove = playerMove ===Cellenum.O?Cellenum.X:Cellenum.O;
@@ -398,7 +391,53 @@ export class NineXnineComponent implements OnInit {
       playerName = playerName === Playerenum.c?Playerenum.h:Playerenum.c;
       
     }
+    playerWon = this.checkWinner(boardStatus);
     this.update(leafNode,playerWon);
+  }
+
+  checkWinner(boardStatus:number[][]):number{
+      let playerWon = 0;
+      for(let row = 0 ; row <3 ;row++){
+        if(
+          boardStatus[row][0] === boardStatus[row][1] &&
+          boardStatus[row][1] === boardStatus[row][2] &&
+          boardStatus[row][0]!= 2
+        ){
+          playerWon = boardStatus[row][0];
+          return playerWon;
+        }
+      } 
+  
+      //Vertical 
+      for(let col = 0 ; col <3 ;col++){
+        if(
+          boardStatus[0][col] === boardStatus[1][col] &&
+          boardStatus[1][col] === boardStatus[2][col] &&
+          boardStatus[0][col]!= 2
+        ){
+          playerWon = boardStatus[0][col];
+          return playerWon;
+        }
+      }  
+  
+      //diagonals 
+      if(
+        boardStatus[0][0] === boardStatus[1][1] &&
+        boardStatus[1][1] === boardStatus[2][2] &&
+        boardStatus[0][0]!= 2
+      ){
+        playerWon = boardStatus[0][0];
+        return playerWon;
+      }
+      if(
+        boardStatus[0][2] === boardStatus[1][1] &&
+        boardStatus[1][1] === boardStatus[2][0] &&
+        boardStatus[0][2]!= 2
+      ){
+        playerWon = boardStatus[0][2];
+        return playerWon;
+      }
+      return playerWon;
   }
 
 
@@ -421,16 +460,6 @@ export class NineXnineComponent implements OnInit {
         break;
       }
     }
-    /*let posArray = [];
-    for(let i=0;i<9;i++)
-    {
-      if(board[row][col][i]==Cellenum.EMPTY)
-      {
-        posArray.push(i);
-      }
-    }
-    this.shuffle(posArray);
-    let pos = posArray[0];*/
     return [row,col,pos];
   }
 
@@ -438,9 +467,9 @@ export class NineXnineComponent implements OnInit {
     while(terminalNode!=null){
       terminalNode.getState().visitCount++;
       terminalNode.getState().playerNo == playerWon
-      if(playerWon==1)terminalNode.getState().winScore+=2;
-      //else if(playerWon==0)terminalNode.getState().winScore=1;
-      else if(playerWon==-1)terminalNode.getState().winScore-=2;
+      if(playerWon==1)terminalNode.getState().winScore+=1000;
+      else if(playerWon==0)terminalNode.getState().winScore+=50;
+      else if(playerWon==-1)terminalNode.getState().winScore-=1000;
       terminalNode = terminalNode.parent;
     }
   }
@@ -485,15 +514,6 @@ export class NineXnineComponent implements OnInit {
     }
     return nextPossibleStates;
   }
-
-  
-
- 
-
-
-
-  
-
 
 /* TERMINAL FUNCTIONS */
   isWinBoard(row:number,col:number,board:Cellenum[][][],boardStatus:number[][],currentPlayer:Playerenum):boolean{
@@ -601,7 +621,7 @@ export class NineXnineComponent implements OnInit {
     for(let row = 0 ; row < 3 ; row ++){
       if(boardStatus[row][0]==boardStatus[row][1] && boardStatus[row][1]==boardStatus[row][2] && (boardStatus[row][0]==1|| boardStatus[row][0]==-1)){
         if(this.inSimulation==false)
-        {
+        { 
           for(let j=0;j<9;j++){
               document.getElementById((row+"."+0+"."+j)).style.backgroundColor = "lightgreen";
               document.getElementById((row+"."+1+"."+j)).style.backgroundColor = "lightgreen";
@@ -673,7 +693,13 @@ export class NineXnineComponent implements OnInit {
         if(boardStatus[row][col]==0) return false;
       }
     }
-    return !this.isWinGame(boardStatus);
+    if(!this.isWinGame(boardStatus)){
+      if(!this.inSimulation){
+        this.statusMessage = 'It\'s a Draw!';
+      }
+      return true;
+    }
+    else return false;
   }
 
 }
