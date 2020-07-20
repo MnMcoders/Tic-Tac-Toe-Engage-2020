@@ -26,9 +26,10 @@ export class NineXnineComponent implements OnInit {
   public mainboardStatus:number[][]; /* 0 -> Empty ; 1 -> Machine won ; -1 -> Human won ; 2 -> Draw */
   public nextCell=[];
   public bestMove=[];
-  public isFirstMove = true;
+  public isFirstMove;
   public lastComputerMove = [];
   public inSimulation : boolean;
+  public playerinStatus:string;
   constructor() { }
 
   ngOnInit(): void {
@@ -52,12 +53,29 @@ export class NineXnineComponent implements OnInit {
         }
       }
     }
+    this.isFirstMove = true;
     this.inSimulation = false;
     this.currentPlayerMove = Cellenum.X;
     this.currentPlayer = Playerenum.h;
     this.isGameOver = false;
-    this.statusMessage = `Player ${this.currentPlayer}'s turn`;
+    /* Status Message */
+    this.playerinStatus = "Human";
+    if(this.opponentData==="vsHuman") this.playerinStatus = "X";
+    this.statusMessage = `${this.playerinStatus}'s turn`;
     this.lastComputerMove = [-1,-1];
+  }
+
+  newGameOnClick(){
+    /* Remove the previous content */
+    for(let row =0; row < 3 ; row ++){
+      for(let col = 0;col < 3;col++){
+        for(let pos = 0; pos < 9; pos++){
+          document.getElementById((row+"."+col+"."+pos)).innerHTML = "";
+          document.getElementById((row+"."+col+"."+pos)).style.backgroundColor = "";
+        }
+      }
+    }
+    this.newGame();
   }
 
   /* Function to shuffle an array */
@@ -107,7 +125,7 @@ export class NineXnineComponent implements OnInit {
         this.statusMessage = 'It\'s a Draw!';
         this.isGameOver = true;
       }else if(this.isWinGame(this.mainboardStatus)){
-        this.statusMessage = `Player ${this.currentPlayer} won!`;
+        this.statusMessage = `${this.playerinStatus} Won!`;
         this.isGameOver = true;
       }
     }
@@ -115,7 +133,8 @@ export class NineXnineComponent implements OnInit {
     if(this.opponentData === "vsMachine"){
       this.currentPlayer = Playerenum.c;
       this.currentPlayerMove = Cellenum.O;
-      this.statusMessage =`Player ${this.currentPlayer}'s turn`;
+      this.playerinStatus = "Agent";
+      this.statusMessage =`${this.playerinStatus}'s turn`;
       if(!this.isGameOver)this.moveComputer(row,col,pos);
     }
     
@@ -123,7 +142,6 @@ export class NineXnineComponent implements OnInit {
       this.currentPlayer = this.currentPlayer === Playerenum.h?Playerenum.c:Playerenum.h;
       this.currentPlayerMove = this.currentPlayerMove === Cellenum.O?Cellenum.X:Cellenum.O;
       this.nextCell = this.calculateNextCell(pos);
-      
       this.lastComputerMove = [row,col,pos];
       if(this.mainboardStatus[this.nextCell[0]][this.nextCell[1]]!=0){
         this.nextCell = [-1,-1];
@@ -138,6 +156,8 @@ export class NineXnineComponent implements OnInit {
           }
         }
       }
+      this.playerinStatus = this.currentPlayerMove ===Cellenum.X?"X":"O";
+      this.statusMessage =`${this.playerinStatus}'s turn`;
     }
   }
   
@@ -239,7 +259,8 @@ export class NineXnineComponent implements OnInit {
     
     this.currentPlayer = Playerenum.h;
     this.currentPlayerMove = Cellenum.X;
-    this.statusMessage =`Player ${this.currentPlayer}'s turn`;
+    this.playerinStatus = "Human";
+    this.statusMessage =`${this.playerinStatus}'s turn`;
     
   }
 

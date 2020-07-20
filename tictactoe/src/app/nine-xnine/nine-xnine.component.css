@@ -1,5 +1,10 @@
 @import '~bootstrap/dist/css/bootstrap.min.css';  
-
+.status{
+    font-size: medium;
+    font-weight: bold;
+    color: beige;
+    margin-bottom: 15px;
+}
 table{
     border-collapse: collapse;
     position: relative;
@@ -11,6 +16,7 @@ table.smallBoard {
 table.smallBoard td:hover {
     background-color:rgb(105, 105, 182)
 }
+
 
 
 td{

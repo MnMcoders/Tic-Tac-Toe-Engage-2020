@@ -29,6 +29,8 @@ export class FourXfourComponent implements OnInit {
   public isColorChanged;
   public hint:number[];
   public winningCells : number[][];
+  public playerinStatus:string;
+
 
   
 
@@ -78,7 +80,12 @@ export class FourXfourComponent implements OnInit {
     this.isGameOver = false;
     if(this.currentPlayer===Playerenum.c)this.isFirstMove = true;
     if(this.currentPlayer===Playerenum.h)this.isFirstMove = false;
-    this.statusMessage = `Player ${this.currentPlayer}'s turn`;
+
+    /*Status Message*/
+    this.playerinStatus = this.currentPlayer == Playerenum.c?"Agent":"Human";
+    if(this.opponentData==="vsHuman") this.playerinStatus = "X";
+    this.statusMessage = `${this.playerinStatus}'s turn`;
+
     if(this.currentPlayer===Playerenum.c)this.moveComputer();
   }
 
@@ -112,13 +119,15 @@ export class FourXfourComponent implements OnInit {
         this.statusMessage = 'It\'s a Draw!';
         this.isGameOver = true;
       }else if(this.isWin()){
-        this.statusMessage = `Player ${this.currentPlayer} won!`;
+        this.statusMessage = `${this.playerinStatus} Won!`;
         this.isGameOver = true;
         this.addColour(this.winningCells);
       }else{
         this.currentPlayer = Playerenum.c;
+        if(this.opponentData === "vsHuman") this.playerinStatus = this.playerinStatus === Cellenum.X?"O":"X";
+        else this.playerinStatus = "Agent";
         this.currentPlayerMove = this.currentPlayerMove === Cellenum.X?Cellenum.O:Cellenum.X;
-        this.statusMessage =`Player ${this.currentPlayer}'s turn`;
+        this.statusMessage =`${this.playerinStatus}'s turn`;
       }
     }
     if(!this.isGameOver && this.opponentData=="vsMachine")this.moveComputer();
@@ -206,13 +215,14 @@ export class FourXfourComponent implements OnInit {
     }
     else if(this.isWin()){
       this.addColour(this.winningCells);
-      this.statusMessage = `Player ${this.currentPlayer} won!`;
+      this.statusMessage = `${this.playerinStatus} Won!`;
       this.isGameOver = true;
     }
     else{
       this.currentPlayer = Playerenum.h;
+      this.playerinStatus = "Human";
       this.currentPlayerMove = this.currentPlayerMove === Cellenum.X?Cellenum.O:Cellenum.X;
-      this.statusMessage =`Player ${this.currentPlayer}'s turn`;
+      this.statusMessage =`${this.playerinStatus}'s turn`;
     }
 
   }
