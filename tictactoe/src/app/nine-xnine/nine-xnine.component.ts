@@ -193,7 +193,39 @@ export class NineXnineComponent implements OnInit {
       row = (Math.floor((Math.random() * 3) + 1))-1;
       col = (Math.floor((Math.random() * 3) + 1))-1;
     }*/
-    let nextBoardArray = [0,1,2,3,4,5,6,7,8];
+
+    let nextBoardArray = [];
+    for(let i=0;i<3;i++)
+    {
+      for(let j=0;j<3;j++)
+      {
+        if(boardStatus[i][j]==0)
+        {
+          //let id = this.selectBoard([i,j]);
+          if(i==0 && j==0)
+          nextBoardArray.push(0);
+          else if(i==0 && j==1)
+          nextBoardArray.push(1);
+          else if(i==0 && j==2)
+          nextBoardArray.push(2);
+          else if(i==1 && j==0)
+          nextBoardArray.push(3);
+          else if(i==1 && j==1)
+          nextBoardArray.push(4);
+          else if(i==1 && j==2)
+          nextBoardArray.push(5);
+          else if(i==2 && j==0)
+          nextBoardArray.push(6);
+          else if(i==2 && j==1)
+          nextBoardArray.push(7);
+          else if(i==2 && j==2)
+          nextBoardArray.push(8);
+
+        }
+      }
+    }
+    if(nextBoardArray.length==0)return [-1,-1];
+   // let nextBoardArray = [0,1,2,3,4,5,6,7,8];
     this.shuffle(nextBoardArray);
     let index = 0;
     let randomNextBoard = this.calculateNextCell(nextBoardArray[index]);
@@ -274,7 +306,8 @@ export class NineXnineComponent implements OnInit {
     rootNode.isVisited=true;
     let noOfIterations = 1000;
     let iterations = 0;
-    while(iterations < noOfIterations){
+    let startTime = Date.now();
+    while((Date.now()-startTime)<1000){
       //Select a Node : UTF VALUE
       let nodeToSimulate = this.selection(rootNode);
       if(nodeToSimulate.isVisited===true){
@@ -378,6 +411,7 @@ export class NineXnineComponent implements OnInit {
         let next = this.selectRandomBoard(boardStatus);
         row = next[0];
         col = next[1];
+        if(row==-1 && col==-1)return [-1,-1,-1];
     }
     //Select one of these random states
    let pos = 0;
@@ -422,6 +456,7 @@ export class NineXnineComponent implements OnInit {
       let next = this.selectRandomBoard(currentNode.state.board.boardStatus);
       row = next[0];
       col = next[1];
+      if(row==-1 && col==-1)return nextPossibleStates;
     }
     let nextPlayer = currentNode.state.playerNo===1?-1:1;
     let nextPlayerMove = currentNode.state.playerMove===Cellenum.X?Cellenum.O:Cellenum.X;
