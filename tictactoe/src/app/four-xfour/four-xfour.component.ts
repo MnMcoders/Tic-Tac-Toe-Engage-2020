@@ -195,7 +195,7 @@ export class FourXfourComponent implements OnInit {
             if(this.board[row][col]===Cellenum.EMPTY){
                 this.board[row][col] = this.currentPlayerMove;
                 let currScore;
-                currScore = this.alphaBetaPruning(this.board,3,-Infinity,Infinity,false);
+                currScore = this.alphaBetaPruning(this.board,5,-Infinity,Infinity,false);
                 this.board[row][col] = Cellenum.EMPTY;
                 if(currScore > bestScore){
                   bestScore = currScore;
@@ -253,7 +253,7 @@ export class FourXfourComponent implements OnInit {
       for(let col =0;col< 4;col++){
         if(this.board[row][col] === Cellenum.EMPTY){
           this.board[row][col] = this.currentPlayerMove;
-          let currHumanScore = this.alphaBetaPruning(this.board,3,-Infinity,Infinity,false);
+          let currHumanScore = this.alphaBetaPruning(this.board,5,-Infinity,Infinity,false);
           this.board[row][col] = Cellenum.EMPTY;
           if(currHumanScore > bestHumanScore){
             bestHumanScore = currHumanScore;

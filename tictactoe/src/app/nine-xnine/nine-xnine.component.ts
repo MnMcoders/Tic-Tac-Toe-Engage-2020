@@ -134,7 +134,7 @@ export class NineXnineComponent implements OnInit {
       this.currentPlayer = Playerenum.c;
       this.currentPlayerMove = Cellenum.O;
       this.playerinStatus = "Agent";
-      this.statusMessage =`${this.playerinStatus}'s turn`;
+      if(!this.isGameOver)this.statusMessage =`${this.playerinStatus}'s turn`;
       if(!this.isGameOver)this.moveComputer(row,col,pos);
     }
     
@@ -157,7 +157,7 @@ export class NineXnineComponent implements OnInit {
         }
       }
       this.playerinStatus = this.currentPlayerMove ===Cellenum.X?"X":"O";
-      this.statusMessage =`${this.playerinStatus}'s turn`;
+      if(!this.isGameOver)this.statusMessage =`${this.playerinStatus}'s turn`;
     }
   }
   
@@ -286,7 +286,7 @@ export class NineXnineComponent implements OnInit {
     this.currentPlayer = Playerenum.h;
     this.currentPlayerMove = Cellenum.X;
     this.playerinStatus = "Human";
-    this.statusMessage =`${this.playerinStatus}'s turn`;
+    if(!this.isGameOver)this.statusMessage =`${this.playerinStatus}'s turn`;
     
   }
 
