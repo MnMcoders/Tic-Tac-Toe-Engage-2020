@@ -1,10 +1,11 @@
 @import '~bootstrap/dist/css/bootstrap.min.css';  
 .status{
-    font-size: medium;
+    font-size: x-large;
     font-weight: bold;
     color: beige;
-    margin-bottom: 15px;
+    margin-left:58%;
 }
+
 table{
     border-collapse: collapse;
     position: relative;
@@ -17,8 +18,6 @@ table.smallBoard td:hover {
     background-color:rgb(105, 105, 182)
 }
 
-
-
 td{
     border: 2px solid #333;
     height: 40px;
@@ -26,15 +25,6 @@ td{
     vertical-align: middle;
     font-weight: bold;
 }
-/* 
-@media screen and (max-width: 768px) {
-    .board{
-        font-size: 6px;
-    }
-    .btn{
-        font-size: 6px;
-    }
-}  */
 
 table tr:first-child td{
     border-top: 0;
@@ -53,18 +43,18 @@ table tr td:last-child{
 }
 
 .bigtable{
+    position: relative;
     display: inline-block;
     justify-content: space-evenly;
     width: fit-content;
     height: fit-content;
-    margin: 5%;
-    margin-left: 45%;
-   /* margin-top: -20%;*/   
+    margin-left: 50%;
+    margin-top: auto;
     background-color: black;
     opacity:0.7;
 }
 
-.col-md-4{
+.col{
     padding: 1rem;
     text-align: center;
     background-color: black;
@@ -78,4 +68,45 @@ table tr td:last-child{
     width:fit-content;
     justify-content: space-evenly;
     overflow: visible;
+} 
+
+.button{
+    margin: 0 0 0 63%;
+}
+.new-game{
+    background-color:rgb(101, 101, 180);
+    border-radius: 8px;
+    border-color: black;
+    padding: 5px;
+    font-weight: bolder;
+    font-size: 15px;
+    margin-top: 4%;
+}
+
+
+/* Large desktops and laptops */
+@media (min-width: 1200px) {
+
+}
+
+/* Landscape tablets and medium desktops */
+@media (min-width: 992px) and (max-width: 1199px) {
+    .td{
+        height:10px;
+    }
+}
+
+/* Portrait tablets and small desktops */
+@media (min-width: 768px) and (max-width: 991px) {
+
+}
+
+/* Landscape phones and portrait tablets */
+@media (max-width: 767px) {
+
+}
+
+/* Portrait phones and smaller */
+@media (max-width: 480px) {
+
 }

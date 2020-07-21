@@ -1,8 +1,8 @@
-<div class ="status text-center p-4">{{statusMessage}}</div>  
+<div class ="status p-4">{{statusMessage}}</div>  
 <div>
 <div class="bigtable">
     <div class ="row" *ngFor="let row of [0,1,2]">
-        <div class="col-md-4" *ngFor="let col of [0,1,2]">
+        <div class="col" *ngFor="let col of [0,1,2]">
             <table class="smallBoard">
                 <tr>
                     <td class="cell" id="{{row}}.{{col}}.0" (click)="(isGameOver==false && mainboard[row][col][0]==' ')?move(row,col,0):false"></td>
@@ -25,6 +25,8 @@
         </div>
     </div>
 </div>
-<button class ="btn btn-primary new-game"
+    <div class = button> 
+        <button class ="btn btn-primary new-game"
         (click)="newGameOnClick()">New Game</button>
+    </div>
 </div>

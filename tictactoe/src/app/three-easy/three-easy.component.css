@@ -1,8 +1,3 @@
-/* .container{
-    position: fixed;
-    width: 30%;
-    height:30%;
-} */
 
 .board{
     display: flex; 
@@ -11,7 +6,6 @@
     justify-content: flex-start;
     color: palevioletred;
     border: 30px; 
-
 }
 
 .status{
@@ -29,7 +23,6 @@
     padding: 5px;
     font-weight: bolder;
     font-size: 10px;
-    
 }
 
 button:hover{
@@ -38,7 +31,6 @@ button:hover{
 
 .btn{
     margin:1%;
-
 }
 
 @media only screen and (min-width: 1024px) {
