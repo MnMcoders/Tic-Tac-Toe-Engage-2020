@@ -86,7 +86,7 @@ export class FourXfourComponent implements OnInit {
     if(this.opponentData==="vsHuman") this.playerinStatus = "X";
     this.statusMessage = `${this.playerinStatus}'s turn`;
 
-    if(this.opponentData=="vsMachine" && !this.isGameOver)this.moveComputer();
+    if(this.opponentData=="vsMachine" && this.currentPlayer===Playerenum.c && !this.isGameOver)this.moveComputer();
   }
 
 

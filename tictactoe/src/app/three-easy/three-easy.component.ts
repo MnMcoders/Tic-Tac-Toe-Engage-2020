@@ -87,11 +87,11 @@ export class ThreeEasyComponent implements OnInit {
     if(this.currentPlayer===Playerenum.h)this.isFirstMove = false;
 
     /* Status Message */
-    this.playerinStatus = this.currentPlayer == Playerenum.c?"Agent":"Human";
-    if(this.opponentData=="vsHuman") this.playerinStatus = "X";
+    this.playerinStatus = this.currentPlayer === Playerenum.c?"Agent":"Human";
+    if(this.opponentData==="vsHuman") this.playerinStatus = "X";
     this.statusMessage = `${this.playerinStatus}'s turn`;
     
-    if(this.opponentData=="vsMachine" && !this.isThreeGameOver)this.moveComputer();
+    if(this.opponentData==="vsMachine" && this.currentPlayer===Playerenum.c && !this.isThreeGameOver)this.moveComputer();
   }
 
   /* Function to shuffle an array */
