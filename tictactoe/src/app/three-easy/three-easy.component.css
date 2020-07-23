@@ -1,4 +1,3 @@
-
 .board{
     display: flex; 
     flex-direction: row;
@@ -58,7 +57,8 @@ button:hover{
     .btn{
         font-size: 6px;
     }
-} 
+}
+
 @media screen and (max-width: 480px) {
     .board{
         font-size: 6px;
@@ -67,8 +67,3 @@ button:hover{
         font-size: 6px;
     }
 } 
-
-/* .try{
-    background-color: blue;
-    color: chartreuse;
-} */

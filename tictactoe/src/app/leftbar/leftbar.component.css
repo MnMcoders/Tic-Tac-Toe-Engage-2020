@@ -18,6 +18,7 @@ h5,h4,h3{
 h3{
     margin-top: 30px;
 }
+
 .type{
     background-color: rgb(189, 134, 240);
 }
@@ -36,7 +37,6 @@ h3{
     padding-top: 20px;
 }
 
-
 button{
         display:inline-block;
         border-radius:2em;
@@ -48,12 +48,11 @@ button{
         background-color: rgb(105, 105, 182);
         text-align:center;
         transition: all 0.2s;
-        font-size: 20 px;
-        
+        font-size: 20 px;        
 }
-            button:hover{
-        background-color:#4095c6;
-        }
+button:hover{
+    background-color:#4095c6;
+}
 
 .levels{
     font-size: 13px;
@@ -61,21 +60,16 @@ button{
     padding:0.1em 0.5em;
 }
 
-
 @media screen and (max-width: 768px) {    
-    
     .levels{
         font-size: 7px;
         margin-left: -2px;
     }    
-
-    
     button,h3,h4,h5{
         font-size: 9px;
         text-align: center;
         width: 50px;
     }    
-
 } 
 
 @media screen and (max-width: 480px) {
@@ -84,7 +78,8 @@ button{
         text-align: center;
         width: 40px;
     }    
-  } 
+}
+
 .start{
     background-color: black;
 }

@@ -1,4 +1,5 @@
 @import '~bootstrap/dist/css/bootstrap.min.css';  
+
 .status{
     font-size: x-large;
     font-weight: bold;
@@ -73,6 +74,7 @@ table tr td:last-child{
 .button{
     margin: 0 0 0 63%;
 }
+
 .new-game{
     background-color:rgb(101, 101, 180);
     border-radius: 8px;
@@ -81,32 +83,4 @@ table tr td:last-child{
     font-weight: bolder;
     font-size: 15px;
     margin-top: 4%;
-}
-
-
-/* Large desktops and laptops */
-@media (min-width: 1200px) {
-
-}
-
-/* Landscape tablets and medium desktops */
-@media (min-width: 992px) and (max-width: 1199px) {
-    .td{
-        height:10px;
-    }
-}
-
-/* Portrait tablets and small desktops */
-@media (min-width: 768px) and (max-width: 991px) {
-
-}
-
-/* Landscape phones and portrait tablets */
-@media (max-width: 767px) {
-
-}
-
-/* Portrait phones and smaller */
-@media (max-width: 480px) {
-
 }
