@@ -9,6 +9,7 @@
   background-blend-mode: color-dodge;
   
 }
+
 h2{
   text-align: center;
 }
@@ -46,6 +47,7 @@ body, html {
   padding: 0;
   overflow: hidden;
 }
+
 canvas {
   position: absolute;
   top:0;
