@@ -292,16 +292,17 @@ export class NineXnineComponent implements OnInit {
 
   MCTS(board:Cellenum[][][],boardStatus: number[][],row:number,col:number,pos:number,playerMove:Cellenum):number[]{
     this.inSimulation = true;
+
     /*Form the root -> Start With Computer*/ 
     let initialState = new State([row,col,pos],new Board(board,boardStatus),1,playerMove,false);  
     let rootNode = new Node(initialState,null,[]); 
+    
     //Get child nodes:
     this.expansion(rootNode);
     rootNode.isVisited=true;
-    let noOfIterations = 1000;
-    let iterations = 0;
+    
     let startTime = Date.now();
-    while((Date.now()-startTime)< 800){
+    while((Date.now()-startTime)< 500){
       //Select a Node : UTF VALUE
       let nodeToSimulate = this.selection(rootNode);
       if(nodeToSimulate.isVisited===true){
@@ -311,7 +312,6 @@ export class NineXnineComponent implements OnInit {
       else{
          this.simulation(nodeToSimulate);
       }
-      iterations++;
     }
 
     //Select Best Move from children
@@ -333,19 +333,19 @@ export class NineXnineComponent implements OnInit {
     return false;
   }
 
-  calculateUTF(node:Node):number{
+  calculateUCT(node:Node):number{
     if(node.getState().visitCount ===0)return 2147483647;
     let val  = Math.fround((node.getState().winScore)/(node.getState().visitCount)) + Math.fround((1.41*(Math.sqrt(Math.log(node.parent.getState().visitCount)/(node.getState().visitCount)))));
     return val;
   }
 
   selection(node:Node){
-    let bestUTF = -Infinity;
+    let bestUCT = -Infinity;
     let bestNextNode:Node;
     for(let i =0; i < node.children.length;i++){                  
-      let currUTF = this.calculateUTF(node.children[i]);
-      if(currUTF > bestUTF){
-        bestUTF = currUTF;
+      let currUCT = this.calculateUCT(node.children[i]);
+      if(currUCT > bestUCT){
+        bestUCT = currUCT;
         bestNextNode = node.children[i];
       }
     }
