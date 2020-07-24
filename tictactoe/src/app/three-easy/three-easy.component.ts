@@ -388,6 +388,7 @@ export class ThreeEasyComponent implements OnInit {
             }
           }
         }
+        
         return bestScore;
       }
   }

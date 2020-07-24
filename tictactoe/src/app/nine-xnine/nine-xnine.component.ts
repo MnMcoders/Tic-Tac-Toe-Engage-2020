@@ -249,6 +249,7 @@ export class NineXnineComponent implements OnInit {
     let bestMove = this.MCTS(mainboardCopy,mainboardStatusCopy,row,col,pos,Cellenum.O);
 
     this.inSimulation = false;
+    
     /* Make the best move */
     this.mainboard[bestMove[0]][bestMove[1]][bestMove[2]] = this.currentPlayerMove;
     document.getElementById((bestMove[0]+"."+bestMove[1]+"."+bestMove[2])).innerHTML = this.currentPlayerMove;

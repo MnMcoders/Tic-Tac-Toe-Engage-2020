@@ -195,7 +195,7 @@ export class FourXfourComponent implements OnInit {
             if(this.board[row][col]===Cellenum.EMPTY){
                 this.board[row][col] = this.currentPlayerMove;
                 let currScore;
-                currScore = this.alphaBetaPruning(this.board,7,-Infinity,Infinity,false);
+                currScore = this.alphaBetaPruning(this.board,5,-Infinity,Infinity,false);
                 this.board[row][col] = Cellenum.EMPTY;
                 if(currScore > bestScore){
                   bestScore = currScore;
