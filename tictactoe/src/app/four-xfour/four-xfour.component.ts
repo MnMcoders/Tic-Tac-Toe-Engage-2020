@@ -271,17 +271,22 @@ export class FourXfourComponent implements OnInit {
   
   /* Minimax with Alpa beta pruning */
   alphaBetaPruning(board:Cellenum[][],depth:number,alpha:number,beta:number,isMaximizing:boolean){
+    let ans:Cellenum;
     if(depth==0)
       {
-        if(isMaximizing)return 1;
-        else return -1; 
+        /* Heuristic function for state that is not terminal */
+        let opponent = this.currentPlayerMove ===Cellenum.X?Cellenum.O:Cellenum.X;
+        ans = this.threeInRow(this.currentPlayerMove,opponent);
+        if(ans == Cellenum.EMPTY) return 0;
+        if(ans == opponent) return -50;
+        else return 50;
       }
     if(this.isDraw())return 0;
       if(this.isWin())
       {
         this.winningCells = [];
-        if(this.isWinner===this.currentPlayerMove)return 1;
-        else return -1;
+        if(this.isWinner===this.currentPlayerMove)return 100;
+        else return -100;
       }
       if(isMaximizing){
         let bestScore = -Infinity;
@@ -443,4 +448,84 @@ if(
 }
 return false;
 }
+
+/* Heuristic Function */
+
+threeInRow(player:Cellenum,opponent:Cellenum):Cellenum{
+  let ans = Cellenum.EMPTY;
+  let val;
+  //Horizontal
+  let count = 1;
+  for(let row = 0; row < 4;row++){
+    for(let col = 1; col < 4 ;col++){
+      if(this.board[row][col-1]==this.board[row][col]) {
+        count++;
+        val = this.board[row][col];
+      }
+      else count = 1;
+    }
+    if(count==3){
+      if(val == opponent) return opponent;
+      else ans = player;
+    }
+  }
+
+  //Vertical
+  count = 1; 
+  for(let col = 0; col < 4;col++){
+    for(let row = 1; row < 4 ;row++){
+      if(this.board[row-1][col]==this.board[row][col]) {
+        count++;
+        val = this.board[row][col];
+      }
+      else count = 1;
+    }
+    if(count==3){
+      if(val == opponent) return opponent;
+      else ans = player;
+    }
+  }
+
+  //Diagonal 
+
+  if(
+    this.board[0][0] === this.board[1][1] &&
+    this.board[1][1] === this.board[2][2] &&
+    this.board[0][0]!= Cellenum.EMPTY
+  ){
+    if(this.board[0][0]==opponent) return opponent  
+    else ans = player;
+  }
+
+  if(
+    this.board[1][1] === this.board[2][2] &&
+    this.board[2][2] === this.board[3][3] &&
+    this.board[1][1]!= Cellenum.EMPTY
+  ){
+    if(this.board[1][1]==opponent) return opponent  
+    else ans = player;
+  }
+  if(
+    this.board[0][3] === this.board[1][2] &&
+    this.board[1][2] === this.board[2][1] &&
+    this.board[0][3]!= Cellenum.EMPTY
+  ){   
+    if(this.board[0][3]==opponent) return opponent  
+    else ans = player;
+  }
+  if(
+    this.board[1][2] === this.board[2][1] &&
+    this.board[2][1] === this.board[3][0] &&
+    this.board[1][2]!= Cellenum.EMPTY
+  ){   
+    if(this.board[1][2]==opponent) return opponent  
+    else ans = player;
+  }
+  return ans;
+}
+
+
+
+
+
 }
